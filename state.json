@@ -184,6 +184,13 @@
     "obj-lunar": {
       "status": "Parked",
       "priority": "Low"
+    },
+    "os-board-host": {
+      "status": "Done",
+      "priority": "High",
+      "due": "2026-10-03",
+      "notes": "Board is permanently hosted at https://grey0000-0000.github.io/grey-OS/ (GitHub Pages, main / root). Cloudflare quick tunnels retired 2026-10-03. Shop host (Oxygen production) is a separate task and stays open.",
+      "blocker": ""
     }
   },
   "cardDates": {
@@ -364,6 +371,6 @@
     }
   },
   "experiments": null,
-  "updated": "2026-10-03T04:55:14.820Z",
-  "updatedBy": "grey-orchestrator"
+  "updated": "2026-10-03T10:48:48+05:30",
+  "updatedBy": "orchestrator"
 }

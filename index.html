@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500&family=IBM+Plex+Mono:wght@400&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap">
 <link rel="stylesheet" href="grey-tokens.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"/>
 
 <style>
   :root {
@@ -1638,7 +1639,8 @@ const SEED = {
     { id: "ev-product-list", workstreamId: "evergray", workstream: "Evergrey", title: "Come up with the list of products in the Evergrey collection", owner: "Utkarsh + Operations", status: "Not started", dependency: "—", blocker: "—", priority: "Low", due: "2026-10-04" },
     { id: "ev-playing-cards", workstreamId: "evergray", workstream: "Evergrey", title: "Design a set of normal playing cards", owner: "Utkarsh + Operations", status: "Not started", dependency: "—", blocker: "—", priority: "Low", due: "2026-10-10" },
 
-    { id: "web-host", workstreamId: "website", workstream: "Website / Infra", title: "Host website on GitHub/Vercel", owner: "Utkarsh (Claude) + Orchestrator", status: "Not started", dependency: "Approve GitHub connect card in Cursor; locate local site project", blocker: "GitHub not connected in Cursor · site only on laptop" , due: "2026-10-02" },
+        { id: "os-board-host", workstreamId: "website", workstream: "Website / Infra", title: "Grey OS board on GitHub Pages", owner: "Orchestrator", status: "Done", dependency: "—", blocker: "—", due: "2026-10-03", notes: "Permanent host https://grey0000-0000.github.io/grey-OS/ . Cloudflare quick tunnels retired 2026-10-03." },
+{ id: "web-host", workstreamId: "website", workstream: "Website / Infra", title: "Host website on GitHub/Vercel", owner: "Utkarsh (Claude) + Orchestrator", status: "Not started", dependency: "Approve GitHub connect card in Cursor; locate local site project", blocker: "GitHub not connected in Cursor · site only on laptop" , due: "2026-10-02" },
     { id: "web-site-align", workstreamId: "website", workstream: "Website / Infra", title: "Finish and align everything on the site", owner: "Utkarsh (Claude) + Communications", status: "Not started", dependency: "Host live on GitHub/Vercel", blocker: "Site incomplete · alignment open" , due: "2026-10-04" },
     { id: "web-asset-checklist", workstreamId: "website", workstream: "Website / Infra", title: "Checklist of all assets needed for the site", owner: "Utkarsh + Communications + Orchestrator", status: "Not started", dependency: "Site scope locked", blocker: "Asset inventory not drafted" , due: "2026-10-03" },
     { id: "web-responsive", workstreamId: "website", workstream: "Website / Infra", title: "Make the experience responsive on the phone", owner: "Utkarsh (Claude) + Communications", status: "Not started", dependency: "Site pages largely in place", blocker: "Mobile pass not done" , due: "2026-10-05" },
