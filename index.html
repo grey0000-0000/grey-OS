@@ -115,11 +115,13 @@
     padding: 4px 9px; border-radius: 999px;
     border: 1px solid var(--glass-border);
     background: rgba(255,255,255,0.04);
-    color: var(--ink-muted); white-space: nowrap; font-weight: 500;
+    color: var(--ink-muted); white-space: nowrap; font-weight: 600;
   }
-  .prio-pill.prio-high { color: #e8e4d4; border-color: rgba(196,168,106,0.4); }
-  .prio-pill.prio-medium { color: #cfcfc8; }
-  .prio-pill.prio-low { color: var(--ink-faint); border-color: rgba(255,255,255,0.12); }
+  /* Four distinct priority levels — never share a near-duplicate hue */
+  .prio-pill.prio-critical { color: #fff; background: #b33a3a; border-color: #8f2e2e; }
+  .prio-pill.prio-high { color: #1f1408; background: #f0a020; border-color: #c47d0e; }
+  .prio-pill.prio-medium { color: #fff; background: #3b6ea5; border-color: #2d5682; }
+  .prio-pill.prio-low { color: #3a3a38; background: #d4d4ce; border-color: #b0b0a8; }
 
   .launch-focus {
     display: grid;
@@ -156,18 +158,6 @@
   .next-three-item .t { font-size: 13px; font-weight: 500; letter-spacing: -0.01em; }
   .next-three-item .m { font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
   .next-three-item .d { font-size: 11px; color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .prio-pill.urg-critical, .prio-pill.urg-overdue {
-    color: #fff; background: #9c3b3b; border-color: #9c3b3b;
-  }
-  .prio-pill.urg-soon {
-    color: #2a2416; background: #e2b657; border-color: #c4922e;
-  }
-  .prio-pill.urg-later {
-    color: #14301c; background: #8fbf8a; border-color: #5e8f62;
-  }
-  .prio-pill.urg-done {
-    color: var(--ink-faint); background: transparent; border-color: var(--line);
-  }
   tr.urg-overdue td:first-child, tr.urg-critical td:first-child { border-left: 3px solid #b33a3a; }
   tr.urg-soon td:first-child { border-left: 3px solid #c4922e; }
   tr.urg-later td:first-child { border-left: 3px solid #2f6b3a; }
@@ -1657,7 +1647,7 @@
 const STAGES = ["Idea","Research","Idea Gate","Concept","Strategy","Prototype","Prototype mix","Asset","Production","Build ~50%","Live","Not started","Hiring","Sourcing","Launch","Learning","Scale","Evolve","Archive","Kill"];
 const EXP_STATUSES = ["Active","Idea","Made — needs photos","May graduate","3 samples · list open","Likely temporal","May spin out","Launch trio","Styling gap","Needs Grey restyle","Connected","Open","Recommended","Blocked","On track","At risk","Done","Parked"];
 const TASK_STATUSES = ["Not started","In progress","Ongoing","Parked","Done","Blocked"];
-const TASK_PRIORITIES = ["High","Medium","Low"];
+const TASK_PRIORITIES = ["Critical","High","Medium","Low"];
 
 const SEED = {
   updated: "28 Sep 2026, 12:29 PM IST",
@@ -1771,10 +1761,10 @@ const SEED = {
 const API = "/api/state";
 let experiments = SEED.experiments.map(e => ({ ...e }));
 const TASK_PRIORITY_SEED = {
-  "web-host": "High", "web-site-align": "High", "web-asset-checklist": "High", "web-responsive": "High",
+  "web-host": "Critical", "web-site-align": "Critical", "web-asset-checklist": "Critical", "web-responsive": "Critical",
   "web-design-spec": "Medium", "web-newsletter": "Medium",
   "web-copy-review": "Low", "web-seo": "Low",
-  "film-script": "High", "film-higgs": "High",
+  "film-script": "Critical", "film-higgs": "Critical",
   "film-reel": "Medium",
   "sel-logo": "Low", "sel-list": "Medium", "sel-photo-approach": "Low", "sel-photograph": "Low",
   "sel-shopify": "Low", "sel-site-fetch": "Low",
@@ -1851,7 +1841,6 @@ function taskUrgency(t) {
   if (due && due < today) return "overdue";
   const weekEnd = endOfWeekIST(today);
   if (due && due <= weekEnd) return "soon";
-  if ((t.priority || "Medium") === "High") return "critical";
   return "later";
 }
 function formatTaskDue(iso, urgency) {
@@ -2485,9 +2474,8 @@ function workstreamPill(t) {
 }
 function priorityPill(t) {
   const p = t.priority || "Medium";
-  const u = taskUrgency(t);
-  const urg = u === "overdue" || u === "critical" ? "urg-critical" : "urg-" + u;
-  return `<span class="prio-pill prio-${p.toLowerCase()} ${urg}">${p}</span>`;
+  const cls = String(p).toLowerCase().replace(/\s+/g, "-");
+  return `<span class="prio-pill prio-${cls}">${p}</span>`;
 }
 function renderNextThree() {
   const el = document.getElementById("next-three-list");
@@ -2504,7 +2492,7 @@ function renderNextThree() {
       const at = ad ? ad.getTime() : Number.MAX_SAFE_INTEGER;
       const bt = bd ? bd.getTime() : Number.MAX_SAFE_INTEGER;
       if (at !== bt) return at - bt;
-      const pr = p => ({ High: 0, Medium: 1, Low: 2 }[p] ?? 1);
+      const pr = p => ({ Critical: 0, High: 1, Medium: 2, Low: 3 }[p] ?? 2);
       return pr(a.priority) - pr(b.priority);
     })
     .slice(0, 3);
@@ -2544,7 +2532,7 @@ function renderTaskRows() {
   const order = ["website", "film", "selection", "one-of-none", "objects", "evergray"];
   let html = "";
   order.forEach(ws => {
-    const prioRank = p => ({ High: 0, Medium: 1, Low: 2 }[p] ?? 3);
+    const prioRank = p => ({ Critical: 0, High: 1, Medium: 2, Low: 3 }[p] ?? 4);
     const seedIndex = id => SEED.tasks.findIndex(t => t.id === id);
     const group = rows.filter(t => t.workstreamId === ws)
       .slice()
