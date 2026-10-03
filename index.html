@@ -1177,7 +1177,7 @@
         <section class="next-move glass" id="critical-path">
           <div class="label">Soft-launch critical path</div>
           <ol class="critical-steps">
-            <li><span class="n">1</span><span>Host site on GitHub/Vercel</span></li>
+            <li><span class="n">1</span><span>Storefront live on Oxygen/Hydrogen</span></li>
             <li><span class="n">2</span><span>Finish and align everything on the site</span></li>
             <li><span class="n">3</span><span>Checklist of all assets needed for the site</span></li>
             <li><span class="n">4</span><span>Phone-responsive experience</span></li>
@@ -1645,7 +1645,7 @@
 
 <script>
 const STAGES = ["Idea","Research","Idea Gate","Concept","Strategy","Prototype","Prototype mix","Asset","Production","Build ~50%","Live","Not started","Hiring","Sourcing","Launch","Learning","Scale","Evolve","Archive","Kill"];
-const EXP_STATUSES = ["Active","Idea","Made — needs photos","May graduate","3 samples · list open","Likely temporal","May spin out","Launch trio","Styling gap","Needs Grey restyle","Connected","Open","Recommended","Blocked","On track","At risk","Done","Parked"];
+const EXP_STATUSES = ["Active","Idea","Made — needs photos","May graduate","3 samples · list open","Likely temporal","May spin out","Launch trio","Styling gap","Soft-live","Needs Grey restyle","Connected","Open","Recommended","Blocked","On track","At risk","Done","Parked"];
 const TASK_STATUSES = ["Not started","In progress","Ongoing","Parked","Done","Blocked"];
 const TASK_PRIORITIES = ["Critical","High","Medium","Low"];
 
@@ -1676,16 +1676,16 @@ const SEED = {
     { id: "lunar", collectionId: "objects", collection: "Objects (temporary)", name: "Lunar Clock — parked / later", artifact: "Moon-phase clock object", stage: "Idea", status: "Parked", owner: "CD · Researcher · Operations", next: "Parked · Low — not soft-launch; Path A kit sourced but demoted", blocker: "Deprioritized — not launch path", deadline: "Later" },
     { id: "ganjifa", collectionId: "one-of-none", collection: "One of None", name: "Ganjifa playing cards — parked / later", artifact: "Ganjifa card deck / system-test object", stage: "Concept", status: "Parked", owner: "CD · Researcher · Operations", next: "Parked · Low priority — not launch; Diwali 24 Oct 2026 possible future window (uncommitted)", blocker: "Deprioritized — not soft-launch", deadline: "Later · Diwali window optional" },
     { id: "film", collectionId: "film", collection: "Launch asset", name: "Gallery-tour film", artifact: "~60s cinematic / interactive film", stage: "Concept", status: "Launch trio", owner: "CD · Communications · Distribution", next: "Lock launch role + storyboard owner", blocker: "Storyboard / owner unset", deadline: "Needs CD" },
-    { id: "site", collectionId: "infra", collection: "Infra", name: "Site / storefront", artifact: "GreyObjects.com experience", stage: "Build ~50%", status: "Styling gap", owner: "CD (Claude) · Visual designer", next: "Engage visual systems designer; production stylesheet", blocker: "Liquid-glass not productionized", deadline: "1–2 wk engagement" },
+    { id: "site", collectionId: "infra", collection: "Infra", name: "Site / storefront", artifact: "GreyObjects.com experience", stage: "Live", status: "Soft-live", owner: "CD (Claude) · Visual designer", next: "Claude: product pages + website structure", blocker: "Pages and structure still open", deadline: "1–2 wk engagement" },
     { id: "razorpay", collectionId: "infra", collection: "Infra", name: "Razorpay checkout UI", artifact: "Grey-styled checkout", stage: "Live", status: "Needs Grey restyle", owner: "CD · Visual designer", next: "Restyle checkout into Grey system", blocker: "Visual system unlocked", deadline: "With stylesheet" },
     { id: "ship", collectionId: "infra", collection: "Infra", name: "Shopify + Shiprocket", artifact: "Live commerce + India shipping", stage: "Live", status: "Connected", owner: "Operations", next: "Keep green; verify rates/weights if needed", blocker: "None known", deadline: "—" },
-    { id: "newsletter", collectionId: "infra", collection: "GTM", name: "Newsletter", artifact: "Grey Dispatch list + welcome flow", stage: "Not started", status: "Open", owner: "Communications · Operations", next: "Choose tool + list capture flow", blocker: "Not started", deadline: "After soft-launch criteria" },
+    { id: "newsletter", collectionId: "infra", collection: "GTM", name: "Newsletter", artifact: "Grey Dispatch list + welcome flow", stage: "Live", status: "Done", owner: "Communications · Operations", next: "Welcome base done — one welcome for signups", blocker: "—", deadline: "After soft-launch criteria" },
     { id: "ig", collectionId: "infra", collection: "GTM", name: "Instagram", artifact: "IG presence (if launch needs it)", stage: "Not started", status: "Open", owner: "Communications · Distribution", next: "Decide if needed for launch trio or defer", blocker: "Not started", deadline: "After narrative" },
     { id: "assistant", collectionId: "infra", collection: "Org", name: "Exec + Ops Assistant", artifact: "Hired operator (~₹30k/mo)", stage: "Hiring", status: "Open", owner: "CD · Operations", next: "Scorecard + search", blocker: "No hire yet", deadline: "Needs CD" },
     { id: "designer", collectionId: "infra", collection: "Org", name: "Visual systems designer", artifact: "Production stylesheet (logo/palette/glass)", stage: "Sourcing", status: "Recommended", owner: "CD · Orchestrator", next: "Approve brief + engage 1–2 weeks", blocker: "Not engaged", deadline: "ASAP" }
   ],
   workstreams: [
-    { id: "website", name: "Website / Infra", blurb: "GitHub/Vercel host · align site · asset checklist · phone responsive · then Brevo/SEO/copy", owner: "Utkarsh (Claude) + Orchestrator + Communications", rank: 1 },
+    { id: "website", name: "Website / Infra", blurb: "Oxygen/Hydrogen storefront (live) · align site · asset checklist · phone responsive · Brevo done · SEO/copy", owner: "Utkarsh (Claude) + Orchestrator + Communications", rank: 1 },
     { id: "film", name: "Film", blurb: "Script → Higgsfield (make the film) → Instagram reel", owner: "Utkarsh + Communications", rank: 2 },
     { id: "selection", name: "Selection Collection", blurb: "After site + film — list · photo · Shopify", owner: "Utkarsh + Operations + Communications", rank: 3 },
     { id: "one-of-none", name: "One of None", blurb: "After site + film — bags · pencils · Hot Wheels · mystery", owner: "Utkarsh + Operations", rank: 4 },
@@ -1712,13 +1712,13 @@ const SEED = {
     { id: "ev-product-list", workstreamId: "evergray", workstream: "Evergrey", title: "Come up with the list of products in the Evergrey collection", owner: "Utkarsh + Operations", status: "Not started", dependency: "—", blocker: "—", priority: "Low", due: "2026-10-04" },
     { id: "ev-playing-cards", workstreamId: "evergray", workstream: "Evergrey", title: "Design a set of normal playing cards", owner: "Utkarsh + Operations", status: "Not started", dependency: "—", blocker: "—", priority: "Low", due: "2026-10-10" },
 
-        { id: "os-board-host", workstreamId: "website", workstream: "Website / Infra", title: "Grey OS board on GitHub Pages", owner: "Orchestrator", status: "Done", dependency: "—", blocker: "—", due: "2026-10-03", notes: "Permanent host https://grey0000-0000.github.io/grey-OS/ . Cloudflare quick tunnels retired 2026-10-03." },
-{ id: "web-host", workstreamId: "website", workstream: "Website / Infra", title: "Host website on GitHub/Vercel", owner: "Utkarsh (Claude) + Orchestrator", status: "Not started", dependency: "Approve GitHub connect card in Cursor; locate local site project", blocker: "GitHub not connected in Cursor · site only on laptop" , due: "2026-10-02" },
-    { id: "web-site-align", workstreamId: "website", workstream: "Website / Infra", title: "Finish and align everything on the site", owner: "Utkarsh (Claude) + Communications", status: "Not started", dependency: "Host live on GitHub/Vercel", blocker: "Site incomplete · alignment open" , due: "2026-10-04" },
-    { id: "web-asset-checklist", workstreamId: "website", workstream: "Website / Infra", title: "Checklist of all assets needed for the site", owner: "Utkarsh + Communications + Orchestrator", status: "Not started", dependency: "Site scope locked", blocker: "Asset inventory not drafted" , due: "2026-10-03" },
+        { id: "os-board-host", workstreamId: "website", workstream: "Website / Infra", title: "Grey OS board on GitHub Pages", owner: "Orchestrator", status: "Done", dependency: "—", blocker: "—", due: "2026-10-03", notes: "2026-10-03: Still live at https://grey0000-0000.github.io/grey-OS/ (GitHub Pages, main / root). Cloudflare quick tunnels retired. Storefront host is a separate Done task (Oxygen/Hydrogen)." },
+    { id: "web-host", workstreamId: "website", workstream: "Website / Infra", title: "Host storefront on Oxygen/Hydrogen", owner: "Utkarsh (Claude) + Orchestrator", status: "Done", dependency: "Shopify Oxygen · GREY Hydrogen Production", blocker: "—", due: "2026-10-02", notes: "2026-10-03: www.greyobjects.com is Primary under GREY (Hydrogen Production) on Shopify Oxygen. Production URL privacy set to Public. www.greyobjects.com and the Oxygen host return HTTP 200 Hydrogen HTML (powered-by Shopify, Oxygen, Hydrogen). Apex 301→www. Hosting path is Oxygen/Hydrogen — not Vercel." },
+    { id: "web-site-align", workstreamId: "website", workstream: "Website / Infra", title: "Finish and align everything on the site", owner: "CD · Claude", status: "In progress", dependency: "Storefront live on Oxygen/Hydrogen", blocker: "Product pages and website structure still need the Claude session", due: "2026-10-03", priority: "High", notes: "2026-10-03 today's plan: work with Claude to fully set up product pages and website structure. Storefront is already live on Oxygen/Hydrogen; this session is pages + structure." },
+    { id: "web-asset-checklist", workstreamId: "website", workstream: "Website / Infra", title: "Checklist of all assets needed for the site", owner: "CD · Communications · Distribution", status: "In progress", dependency: "Site scope locked", blocker: "Final asset list not drafted — shoot-needed vs create-in-tool still open", due: "2026-10-03", priority: "High", notes: "2026-10-03 today's plan: produce the final soft-launch asset list. Make shoot-needed vs create-in-tool explicit for each item. Include Instagram assets." },
     { id: "web-responsive", workstreamId: "website", workstream: "Website / Infra", title: "Make the experience responsive on the phone", owner: "Utkarsh (Claude) + Communications", status: "Not started", dependency: "Site pages largely in place", blocker: "Mobile pass not done" , due: "2026-10-05" },
     { id: "web-design-spec", workstreamId: "website", workstream: "Website / Infra", title: "Finalize Grey design language spec (typography, button radius, shadows, visual foundations)", owner: "Utkarsh + visual systems designer + Communications", status: "Not started", dependency: "Designer engagement or CD lock", blocker: "Spec incomplete · styling gap — needs type, radius, shadows, foundations locked" , due: "2026-10-03" },
-    { id: "web-newsletter", workstreamId: "website", workstream: "Website / Infra", title: "Set up newsletter with Brevo", owner: "Utkarsh + Communications", status: "Not started", dependency: "Website host live (or embed on staging)", blocker: "From-address + verified domain (SPF/DKIM) before live · list + logo CDN still open" , due: "2026-10-05" },
+    { id: "web-newsletter", workstreamId: "website", workstream: "Website / Infra", title: "Set up newsletter with Brevo", owner: "Utkarsh + Communications", status: "Done", dependency: "Storefront live on Oxygen/Hydrogen", blocker: "—", due: "2026-10-05", notes: "2026-10-03 DONE. greyobjects.com verified + authenticated in Brevo. GoDaddy DNS: TXT @ brevo-code:a1fecd641f7f9a851e031128e6194edf; CNAME brevo1._domainkey → b1.greyobjects-com.dkim.brevo.com; CNAME brevo2._domainkey → b2.greyobjects-com.dkim.brevo.com. Existing _dmarc p=reject left untouched (no MX — DKIM records are CNAMEs). From hello@greyobjects.com, sender display name GRAY. Transactional tests to hello@greyobjects.com delivered today: (a) Test from Grey, messageId 202610030623.92472205153@smtp-relay.mailin.fr, delivered ~11:53 IST, opened ~11:54 IST; (b) Grey test — second send, messageId 202610030635.93790112495@smtp-relay.mailin.fr, ~12:05 IST. Newsletter welcome email base done (one welcome for signups). Gmail ops: hello@greyobjects.com inbox labeled Grey, Brevo, Shopify, Razorpay, GitHub, Google, Personal, Marketing — labeling only, no deletes or archives." },
     { id: "web-copy-review", workstreamId: "website", workstream: "Website / Infra", title: "Review all captions and copy", owner: "Utkarsh + Communications", status: "Not started", dependency: "Product lists + photography captions drafted", blocker: "—" , due: "2026-10-07" },
     { id: "web-seo", workstreamId: "website", workstream: "Website / Infra", title: "SEO and AI search optimization", owner: "Utkarsh (Claude) + Communications", status: "Not started", dependency: "Core pages / product URLs exist", blocker: "—" , due: "2026-10-09" },
     { id: "obj-lunar", workstreamId: "objects", workstream: "Objects (temporary)", title: "Lunar Clock Path A — parked / later", owner: "Utkarsh + Operations + Researcher", status: "Parked", dependency: "—", blocker: "Deprioritized — not soft-launch", priority: "Low" }
@@ -1809,12 +1809,16 @@ function applyExpEdits(edits) {
 function applyTaskEdits(edits) {
   return SEED.tasks.map(seed => {
     const s = (edits && edits[seed.id]) || {};
-    return {
+    const row = {
       ...seed,
       status: s.status || seed.status,
       priority: s.priority || seed.priority || TASK_PRIORITY_SEED[seed.id] || "Medium",
       due: (s.due != null && String(s.due).trim()) ? String(s.due).trim() : (seed.due || "")
     };
+    if (Object.prototype.hasOwnProperty.call(s, "notes")) row.notes = s.notes || "";
+    if (Object.prototype.hasOwnProperty.call(s, "blocker")) row.blocker = s.blocker || "";
+    if (s.owner) row.owner = s.owner;
+    return row;
   });
 }
 function startOfTodayIST() {

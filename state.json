@@ -45,8 +45,9 @@
       "status": "Launch trio"
     },
     "site": {
-      "stage": "Build ~50%",
-      "status": "Styling gap"
+      "stage": "Live",
+      "status": "Soft-live",
+      "notes": "www.greyobjects.com live on Oxygen/Hydrogen (Production public, HTTP 200). Product pages and website structure still need Claude."
     },
     "razorpay": {
       "stage": "Live",
@@ -57,8 +58,9 @@
       "status": "Connected"
     },
     "newsletter": {
-      "stage": "Not started",
-      "status": "Open"
+      "stage": "Live",
+      "status": "Done",
+      "notes": "Brevo domain authenticated. From hello@greyobjects.com, display name GRAY. Welcome email base done (one welcome for signups)."
     },
     "ig": {
       "stage": "Not started",
@@ -75,16 +77,16 @@
   },
   "taskEdits": {
     "web-host": {
-      "status": "In progress",
+      "status": "Done",
       "priority": "High",
       "due": "2026-10-02",
-      "notes": "2026-10-03: Claude confirms Hydrogen on Oxygen Preview (ephemeral URL). Production 404 until first deploy. Desired stack: GoDaddy \u2192 Oxygen, GitHub source, Shopify catalog, Razorpay checkout. Grey OS board moved to GitHub Pages (permanent).",
-      "blocker": "Oxygen Preview live (Private). Production never deployed \u2014 awaiting CD approval in Claude. GitHub grey0000-0000 empty for storefront; this Pages board is separate."
+      "notes": "2026-10-03: www.greyobjects.com is Primary under GREY (Hydrogen Production) on Shopify Oxygen. Production URL privacy set to Public. www.greyobjects.com and the Oxygen host return HTTP 200 Hydrogen HTML (powered-by Shopify, Oxygen, Hydrogen). Apex 301\u2192www. Hosting path is Oxygen/Hydrogen \u2014 not Vercel.",
+      "blocker": ""
     },
     "web-newsletter": {
-      "status": "In progress",
-      "blocker": "From-address + verified domain (SPF/DKIM) before live \u00b7 list + logo CDN still open",
-      "notes": "Brevo Standard locked. API key + dry-run templates ready. Need CD: BREVO_FROM_EMAIL + verified sending domain before live. Then: list, SPF/DKIM, logo CDN.",
+      "status": "Done",
+      "blocker": "",
+      "notes": "2026-10-03 DONE. greyobjects.com verified + authenticated in Brevo. GoDaddy DNS: TXT @ brevo-code:a1fecd641f7f9a851e031128e6194edf; CNAME brevo1._domainkey \u2192 b1.greyobjects-com.dkim.brevo.com; CNAME brevo2._domainkey \u2192 b2.greyobjects-com.dkim.brevo.com. Existing _dmarc p=reject left untouched (no MX \u2014 DKIM records are CNAMEs). From hello@greyobjects.com, sender display name GRAY. Transactional tests to hello@greyobjects.com delivered today: (a) Test from Grey, messageId 202610030623.92472205153@smtp-relay.mailin.fr, delivered ~11:53 IST, opened ~11:54 IST; (b) Grey test \u2014 second send, messageId 202610030635.93790112495@smtp-relay.mailin.fr, ~12:05 IST. Newsletter welcome email base done (one welcome for signups). Gmail ops: hello@greyobjects.com inbox labeled Grey, Brevo, Shopify, Razorpay, GitHub, Google, Personal, Marketing \u2014 labeling only, no deletes or archives.",
       "priority": "Medium"
     },
     "film-script": {
@@ -167,14 +169,20 @@
       "due": "2026-10-10"
     },
     "web-site-align": {
-      "status": "Not started",
+      "status": "In progress",
       "priority": "High",
-      "due": "2026-10-04"
+      "due": "2026-10-03",
+      "owner": "CD \u00b7 Claude",
+      "notes": "2026-10-03 today's plan: work with Claude to fully set up product pages and website structure. Storefront is already live on Oxygen/Hydrogen; this session is pages + structure.",
+      "blocker": "Product pages and website structure still need the Claude session"
     },
     "web-asset-checklist": {
-      "status": "Not started",
+      "status": "In progress",
       "priority": "High",
-      "due": "2026-10-03"
+      "due": "2026-10-03",
+      "owner": "CD \u00b7 Communications \u00b7 Distribution",
+      "notes": "2026-10-03 today's plan: produce the final soft-launch asset list. Make shoot-needed vs create-in-tool explicit for each item. Include Instagram assets.",
+      "blocker": "Final asset list not drafted \u2014 shoot-needed vs create-in-tool still open"
     },
     "web-responsive": {
       "status": "Not started",
@@ -189,7 +197,7 @@
       "status": "Done",
       "priority": "High",
       "due": "2026-10-03",
-      "notes": "Board is permanently hosted at https://grey0000-0000.github.io/grey-OS/ (GitHub Pages, main / root). Cloudflare quick tunnels retired 2026-10-03. Shop host (Oxygen production) is a separate task and stays open.",
+      "notes": "2026-10-03: Still live at https://grey0000-0000.github.io/grey-OS/ (GitHub Pages, main / root). Cloudflare quick tunnels retired. Storefront host is a separate Done task (Oxygen/Hydrogen).",
       "blocker": ""
     }
   },
@@ -371,6 +379,6 @@
     }
   },
   "experiments": null,
-  "updated": "2026-10-03T10:48:48+05:30",
+  "updated": "2026-10-03T12:10:00+05:30",
   "updatedBy": "orchestrator"
 }
