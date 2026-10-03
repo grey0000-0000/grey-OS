@@ -121,6 +121,72 @@
   .prio-pill.prio-medium { color: #cfcfc8; }
   .prio-pill.prio-low { color: var(--ink-faint); border-color: rgba(255,255,255,0.12); }
 
+  .launch-focus {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.9fr) minmax(320px, 1.25fr);
+    gap: 14px;
+    margin: 0 0 18px;
+  }
+  @media (max-width: 860px) {
+    .launch-focus { grid-template-columns: 1fr; }
+  }
+  .critical-steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+  .critical-steps li {
+    display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start;
+    font-size: 14px; line-height: 1.4;
+  }
+  .critical-steps .n {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 1px solid var(--glass-border);
+    display: grid; place-items: center;
+    font-size: 11px; color: var(--ink-muted);
+  }
+  .path-note { margin: 12px 0 0; font-size: 12px; line-height: 1.45; color: var(--ink-muted); }
+  .next-three-list { display: grid; gap: 0; }
+  .next-three-item {
+    display: grid; grid-template-columns: 8px 1fr auto; gap: 10px; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid var(--line);
+  }
+  .next-three-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .urg-dot { width: 8px; height: 8px; border-radius: 50%; background: #2f6b3a; }
+  .urg-dot.urg-overdue, .urg-dot.urg-critical { background: #b33a3a; }
+  .urg-dot.urg-soon { background: #c4922e; }
+  .urg-dot.urg-later { background: #2f6b3a; }
+  .urg-dot.urg-done { background: var(--ink-faint); }
+  .next-three-item .t { font-size: 13px; font-weight: 500; letter-spacing: -0.01em; }
+  .next-three-item .m { font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
+  .next-three-item .d { font-size: 11px; color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .prio-pill.urg-critical, .prio-pill.urg-overdue {
+    color: #fff; background: #9c3b3b; border-color: #9c3b3b;
+  }
+  .prio-pill.urg-soon {
+    color: #2a2416; background: #e2b657; border-color: #c4922e;
+  }
+  .prio-pill.urg-later {
+    color: #14301c; background: #8fbf8a; border-color: #5e8f62;
+  }
+  .prio-pill.urg-done {
+    color: var(--ink-faint); background: transparent; border-color: var(--line);
+  }
+  tr.urg-overdue td:first-child, tr.urg-critical td:first-child { border-left: 3px solid #b33a3a; }
+  tr.urg-soon td:first-child { border-left: 3px solid #c4922e; }
+  tr.urg-later td:first-child { border-left: 3px solid #2f6b3a; }
+  tr.urg-done td:first-child { border-left: 3px solid transparent; }
+  .due-locked.soon { color: #8a5a12; font-weight: 600; }
+  .due-locked.later { color: #2f6b3a; font-weight: 500; }
+  .due-locked.overdue, .due-locked.critical { color: #9c3b3b; font-weight: 600; }
+  .card.ws-major {
+    border-color: color-mix(in srgb, var(--color-ink) 34%, transparent);
+  }
+  .card.ws-major h2 { font-size: 18px; }
+  tr.workstream-head.ws-major td {
+    color: var(--ink);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    background: color-mix(in srgb, var(--color-ink) 7%, transparent);
+  }
+  tr.task-major td strong { font-size: 13.5px; }
+
   .workstream-filter-label {
     font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
     color: var(--ink-faint); font-weight: 500; margin: 0 0 8px;
@@ -819,10 +885,17 @@
   }
   #view-identity .ids-tile.dont { border-color: var(--ids-red); }
   #view-identity .ids-tile.dont .ids-tile-cap { color: var(--ids-red); border-top-color: color-mix(in srgb, var(--ids-red) 35%, var(--ids-fog)); }
-  #view-identity .ids-tile.dont::before {
-    content: "DON'T"; position: absolute; top: 8px; left: 8px; z-index: 2;
+  #view-identity .ids-tile.dont .dont-flag {
+    align-self: flex-start;
+    margin: 8px 8px 0;
     font-family: var(--ids-mono); font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--color-white); background: var(--ids-red); padding: 3px 6px;
+  }
+  /* Keep generated labels inside hidden views from painting into the tasks gap */
+  .hidden::before, .hidden::after, .hidden *::before, .hidden *::after {
+    content: none !important;
+    display: none !important;
   }
   /* Live SVG marks — mask + currentColor for inversion greys */
   #view-identity .ids-mark {
@@ -1047,6 +1120,142 @@
     </div>
 
 
+    <div id="view-experiments" class="hidden">
+      <div class="panels">
+        <section class="panel glass">
+          <div class="drill-bar" id="drill-bar">
+            <div class="crumb" id="drill-crumb">All experiments across Grey</div>
+            <button type="button" class="btn-ghost hidden" id="btn-all">Show all</button>
+          </div>
+          <div class="toolbar">
+            <h3 style="margin:0" id="exp-heading">Experiments</h3>
+            <input class="search" id="search" type="search" placeholder="Filter experiments…" />
+            <span class="count" id="count"></span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Experiment</th>
+                  <th>Artifact</th>
+                  <th>Collection</th>
+                  <th>Stage</th>
+                  <th>Status</th>
+                  <th>Owner</th>
+                  <th>Next action</th>
+                  <th>Blocker</th>
+                  <th>Deadline</th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+            <div class="empty" id="empty" hidden>No experiments in this view.</div>
+          </div>
+          <p class="save-note">Stage / Status dropdowns sync to the live board.</p>
+        </section>
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <section class="panel glass">
+            <h3>Decisions needed</h3>
+            <div id="decisions"></div>
+          </section>
+          <section class="panel glass">
+            <h3>Team</h3>
+            <div class="team" id="team"></div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    
+    <div id="view-collections" class="hidden">
+      <section class="panel glass" id="coll-grid-panel">
+        <h3 style="margin:0 0 8px">Collections</h3>
+        <p class="coll-note">Commercial picture per collection. Click a card for detail. Sold and revenue are editable (pre-launch zeros).</p>
+        <div class="coll-grid" id="coll-grid"></div>
+      </section>
+      <section class="panel glass hidden" id="coll-detail-panel">
+        <div class="coll-detail" id="coll-detail"></div>
+      </section>
+    </div>
+
+    <div id="view-launch-tasks">
+      <div class="launch-focus">
+        <section class="next-move glass" id="next-three">
+          <div class="label">Next three tasks</div>
+          <div class="next-three-list" id="next-three-list"></div>
+        </section>
+        <section class="next-move glass" id="critical-path">
+          <div class="label">Soft-launch critical path</div>
+          <ol class="critical-steps">
+            <li><span class="n">1</span><span>Host site on GitHub/Vercel</span></li>
+            <li><span class="n">2</span><span>Finish and align everything on the site</span></li>
+            <li><span class="n">3</span><span>Checklist of all assets needed for the site</span></li>
+            <li><span class="n">4</span><span>Phone-responsive experience</span></li>
+            <li><span class="n">5</span><span>Film script</span></li>
+            <li><span class="n">6</span><span>Make the film</span></li>
+          </ol>
+          <p class="path-note">Lunar / Ganjifa / lenticular and other non-launch items are parked or demoted. Order locked by CD, 30 Sep.</p>
+        </section>
+      </div>
+      <div class="task-filters">
+        <div class="workstream-filter">
+          <div class="workstream-filter-label">Filter by workstream</div>
+          <nav class="tabs" id="task-tabs" aria-label="Filter by workstream"></nav>
+        </div>
+      </div>
+      <section class="grid-collections" id="workstreams"></section>
+      <section class="panel glass">
+        <div class="toolbar">
+          <h3 style="margin:0">Launch tasks</h3>
+          <input class="search" id="task-search" type="search" placeholder="Filter tasks…" />
+          <span class="count" id="task-count"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Workstream</th>
+                <th>Priority</th>
+                <th>Owner</th>
+                <th>Collaborators</th>
+                <th>Status</th>
+                <th>Due</th>
+                <th>Link</th>
+                <th>Notes</th>
+                <th>Blocker</th>
+              </tr>
+            </thead>
+            <tbody id="task-rows"></tbody>
+          </table>
+          <div class="empty" id="task-empty" hidden>No tasks in this view.</div>
+        </div>
+        <p class="save-note">Task fields sync across devices. Due dates are locked (display only). Grouped by workstream.</p>
+      </section>
+    </div>
+
+    
+    <div id="view-business" class="hidden">
+      <section class="panel glass">
+        <div class="biz-toolbar">
+          <div>
+            <h3 style="margin:0">Business oversight</h3>
+            <p class="biz-note" style="margin-top:8px;margin-bottom:0">Day-one metrics for soft launch. Owned by <strong>Grey Strategist</strong> with Creative Director — edit metric values and numeric targets here (calendar dates stay locked).</p>
+          </div>
+          <button type="button" class="btn-add" id="btn-add-metric">Add metric</button>
+        </div>
+        <div class="metric-grid" id="metric-grid"></div>
+      </section>
+      <section class="next-move glass" style="margin-top:14px">
+        <div class="label">Strategist ownership</div>
+        <p>Populate actuals weekly, interpret against targets, and surface pricing / volume / channel recommendations into experiments. Placeholder sparklines hold history until live analytics connectors are wired.</p>
+      </section>
+    </div>
+
+    <section class="next-move glass hidden" id="exp-next">
+      <div class="label">Single most important next move</div>
+      <p>Approve the 1–2 week visual systems designer engagement and lock which One of None pieces (beyond the 2 bags) sit on the launch wall with Film + Selection Collection. Photography and stylesheet both gate a coherent soft launch.</p>
+    </section>
     <div id="view-identity" class="hidden">
       <div class="ids-layout">
         <nav class="ids-index" aria-label="Identity System index">
@@ -1279,26 +1488,26 @@
               <div>
                 <div class="ids-mono">Don't</div>
                 <div class="ids-tile-grid ids-tile-4" style="margin-top:8px">
-                  <div class="ids-tile dont">
+                  <div class="ids-tile dont"><div class="dont-flag">Don't</div>
                     <div class="ids-tile-stage" style="background:var(--color-white)">
                       <div class="ids-mark on-black" role="img" aria-label="Illegible white mark on white"></div>
                     </div>
                     <div class="ids-tile-cap">Non-inverse · white on white</div>
                   </div>
-                  <div class="ids-tile dont">
+                  <div class="ids-tile dont"><div class="dont-flag">Don't</div>
                     <div class="ids-tile-stage" style="background:var(--color-wall);gap:12px;flex-direction:row;padding:10px">
                       <div class="ids-mark oval ink" style="width:46%"></div>
                       <div class="ids-mark oval ink" style="width:46%"></div>
                     </div>
                     <div class="ids-tile-cap">Oval twice in one view</div>
                   </div>
-                  <div class="ids-tile dont">
+                  <div class="ids-tile dont"><div class="dont-flag">Don't</div>
                     <div class="ids-tile-stage" style="background:var(--ids-plinth);align-items:flex-start">
                       <p class="ids-euro-body-bad">Grey notices, collects, transforms, and gives meaning. This paragraph is set in Eurostile as body copy — which is wrong. Body is Host Grotesk; Eurostile is the wordmark only — never body, UI, or headlines.</p>
                     </div>
                     <div class="ids-tile-cap">Eurostile as body text</div>
                   </div>
-                  <div class="ids-tile dont">
+                  <div class="ids-tile dont"><div class="dont-flag">Don't</div>
                     <div class="ids-tile-stage" style="background:var(--color-white);gap:6px">
                       <div class="ids-mark ink stretch" style="width:70%"></div>
                       <div class="ids-mark recolour" style="width:48%"></div>
@@ -1441,132 +1650,7 @@
       </div>
     </div>
 
-    <div id="view-experiments" class="hidden">
-      <div class="panels">
-        <section class="panel glass">
-          <div class="drill-bar" id="drill-bar">
-            <div class="crumb" id="drill-crumb">All experiments across Grey</div>
-            <button type="button" class="btn-ghost hidden" id="btn-all">Show all</button>
-          </div>
-          <div class="toolbar">
-            <h3 style="margin:0" id="exp-heading">Experiments</h3>
-            <input class="search" id="search" type="search" placeholder="Filter experiments…" />
-            <span class="count" id="count"></span>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Experiment</th>
-                  <th>Artifact</th>
-                  <th>Collection</th>
-                  <th>Stage</th>
-                  <th>Status</th>
-                  <th>Owner</th>
-                  <th>Next action</th>
-                  <th>Blocker</th>
-                  <th>Deadline</th>
-                </tr>
-              </thead>
-              <tbody id="rows"></tbody>
-            </table>
-            <div class="empty" id="empty" hidden>No experiments in this view.</div>
-          </div>
-          <p class="save-note">Stage / Status dropdowns sync to the live board.</p>
-        </section>
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <section class="panel glass">
-            <h3>Decisions needed</h3>
-            <div id="decisions"></div>
-          </section>
-          <section class="panel glass">
-            <h3>Team</h3>
-            <div class="team" id="team"></div>
-          </section>
-        </div>
-      </div>
-    </div>
 
-    
-    <div id="view-collections" class="hidden">
-      <section class="panel glass" id="coll-grid-panel">
-        <h3 style="margin:0 0 8px">Collections</h3>
-        <p class="coll-note">Commercial picture per collection. Click a card for detail. Sold and revenue are editable (pre-launch zeros).</p>
-        <div class="coll-grid" id="coll-grid"></div>
-      </section>
-      <section class="panel glass hidden" id="coll-detail-panel">
-        <div class="coll-detail" id="coll-detail"></div>
-      </section>
-    </div>
-
-    <div id="view-launch-tasks">
-      <div class="task-filters">
-        <div class="workstream-filter">
-          <div class="workstream-filter-label">Filter by workstream</div>
-          <nav class="tabs" id="task-tabs" aria-label="Filter by workstream"></nav>
-        </div>
-      </div>
-      <section class="grid-collections" id="workstreams"></section>
-      <section class="panel glass">
-        <div class="toolbar">
-          <h3 style="margin:0">Launch tasks</h3>
-          <input class="search" id="task-search" type="search" placeholder="Filter tasks…" />
-          <span class="count" id="task-count"></span>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Task</th>
-                <th>Workstream</th>
-                <th>Priority</th>
-                <th>Owner</th>
-                <th>Collaborators</th>
-                <th>Status</th>
-                <th>Due</th>
-                <th>Link</th>
-                <th>Notes</th>
-                <th>Blocker</th>
-              </tr>
-            </thead>
-            <tbody id="task-rows"></tbody>
-          </table>
-          <div class="empty" id="task-empty" hidden>No tasks in this view.</div>
-        </div>
-        <p class="save-note">Task fields sync across devices. Due dates are locked (display only). Grouped by workstream.</p>
-      </section>
-      <section class="next-move glass" style="margin-top:14px">
-        <div class="label">Soft-launch deadline</div>
-        <p><strong>Sunday, 11 October 2026</strong> — overall soft launch target for Film + Selection Collection + One of None. Collection and task dates are display-only; only Grey Orchestrator can change them after a decision with you.</p>
-      </section>
-      <section class="next-move glass" style="margin-top:14px">
-        <div class="label">Soft-launch critical path</div>
-        <p>Priority order (CD 30 Sep): 1) Host site on GitHub/Vercel · 2) Finish and align everything on the site · 3) Checklist of all assets needed for the site · 4) Phone-responsive experience · 5) Film script · 6) Make the film. Lunar / Ganjifa / lenticular and other non-launch items are parked or demoted.</p>
-      </section>
-    </div>
-
-    
-    <div id="view-business" class="hidden">
-      <section class="panel glass">
-        <div class="biz-toolbar">
-          <div>
-            <h3 style="margin:0">Business oversight</h3>
-            <p class="biz-note" style="margin-top:8px;margin-bottom:0">Day-one metrics for soft launch. Owned by <strong>Grey Strategist</strong> with Creative Director — edit metric values and numeric targets here (calendar dates stay locked).</p>
-          </div>
-          <button type="button" class="btn-add" id="btn-add-metric">Add metric</button>
-        </div>
-        <div class="metric-grid" id="metric-grid"></div>
-      </section>
-      <section class="next-move glass" style="margin-top:14px">
-        <div class="label">Strategist ownership</div>
-        <p>Populate actuals weekly, interpret against targets, and surface pricing / volume / channel recommendations into experiments. Placeholder sparklines hold history until live analytics connectors are wired.</p>
-      </section>
-    </div>
-
-    <section class="next-move glass hidden" id="exp-next">
-      <div class="label">Single most important next move</div>
-      <p>Approve the 1–2 week visual systems designer engagement and lock which One of None pieces (beyond the 2 bags) sit on the launch wall with Film + Selection Collection. Photography and stylesheet both gate a coherent soft launch.</p>
-    </section>
     <footer>Museum-calm greyscale · liquid-glass UI · open anytime · Orchestrator maintains source data</footer>
   </div>
 
@@ -1744,18 +1828,42 @@ function applyTaskEdits(edits) {
     };
   });
 }
-function formatTaskDue(iso) {
-  if (!iso) return { text: "—", cls: "due-locked empty" };
-  const d = new Date(iso + "T12:00:00");
-  if (Number.isNaN(d.getTime())) return { text: iso, cls: "due-locked" };
-  const text = d.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
-  const today = new Date();
-  const todayIST = new Date(today.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
-  todayIST.setHours(0,0,0,0);
-  const dueDay = new Date(iso + "T12:00:00");
-  const cls = dueDay < todayIST ? "due-locked overdue" : "due-locked";
-  return { text, cls };
+function startOfTodayIST() {
+  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+  today.setHours(0, 0, 0, 0);
+  return today;
 }
+function endOfWeekIST(today) {
+  const end = new Date(today);
+  const add = end.getDay() === 0 ? 0 : 7 - end.getDay();
+  end.setDate(end.getDate() + add);
+  end.setHours(23, 59, 59, 999);
+  return end;
+}
+function parseDue(iso) {
+  if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(String(iso))) return null;
+  const d = new Date(iso + "T12:00:00");
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+function taskUrgency(t) {
+  if (t.status === "Done" || t.status === "Parked") return "done";
+  const today = startOfTodayIST();
+  const due = parseDue(t.due);
+  if (due && due < today) return "overdue";
+  const weekEnd = endOfWeekIST(today);
+  if (due && due <= weekEnd) return "soon";
+  if ((t.priority || "Medium") === "High") return "critical";
+  return "later";
+}
+function formatTaskDue(iso, urgency) {
+  if (!iso) return { text: "—", cls: "due-locked empty" };
+  const d = parseDue(iso) || new Date(iso + "T12:00:00");
+  if (Number.isNaN(d.getTime())) return { text: iso, cls: "due-locked" };
+  const text = d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
+  const tone = urgency === "critical" ? "critical" : urgency === "overdue" ? "overdue" : urgency === "soon" ? "soon" : urgency === "later" ? "later" : "";
+  return { text, cls: "due-locked" + (tone ? " " + tone : "") };
+}
+const MAJOR_WORKSTREAMS = new Set(["website", "film", "selection"]);
 
 let cardDates = {};
 function initCardDates(saved) {
@@ -2378,7 +2486,42 @@ function workstreamPill(t) {
 }
 function priorityPill(t) {
   const p = t.priority || "Medium";
-  return `<span class="prio-pill prio-${p.toLowerCase()}">${p}</span>`;
+  const u = taskUrgency(t);
+  const urg = u === "overdue" || u === "critical" ? "urg-critical" : "urg-" + u;
+  return `<span class="prio-pill prio-${p.toLowerCase()} ${urg}">${p}</span>`;
+}
+function renderNextThree() {
+  const el = document.getElementById("next-three-list");
+  if (!el) return;
+  const ranked = filteredTasks()
+    .filter(t => t.status !== "Done" && t.status !== "Parked")
+    .slice()
+    .sort((a, b) => {
+      const ad = parseDue(a.due), bd = parseDue(b.due);
+      const today = startOfTodayIST();
+      const ao = ad && ad < today ? 0 : 1;
+      const bo = bd && bd < today ? 0 : 1;
+      if (ao !== bo) return ao - bo;
+      const at = ad ? ad.getTime() : Number.MAX_SAFE_INTEGER;
+      const bt = bd ? bd.getTime() : Number.MAX_SAFE_INTEGER;
+      if (at !== bt) return at - bt;
+      const pr = p => ({ High: 0, Medium: 1, Low: 2 }[p] ?? 1);
+      return pr(a.priority) - pr(b.priority);
+    })
+    .slice(0, 3);
+  if (!ranked.length) {
+    el.innerHTML = `<p class="path-note" style="margin:0">No open tasks in this view.</p>`;
+    return;
+  }
+  el.innerHTML = ranked.map(t => {
+    const u = taskUrgency(t);
+    const due = formatTaskDue(t.due, u);
+    return `<div class="next-three-item">
+      <span class="urg-dot urg-${u}" aria-hidden="true"></span>
+      <div><div class="t">${t.title}</div><div class="m">${t.workstream || ""}</div></div>
+      <div class="d">${due.text}</div>
+    </div>`;
+  }).join("");
 }
 function renderWorkstreams() {
   const el = document.getElementById("workstreams");
@@ -2386,7 +2529,7 @@ function renderWorkstreams() {
     const count = tasks.filter(t => t.workstreamId === w.id).length;
     const done = tasks.filter(t => t.workstreamId === w.id && t.status === "Done").length;
     const rank = w.rank ? `P${w.rank}` : "";
-    const wsClass = "ws-" + w.id;
+    const wsClass = "ws-" + w.id + (MAJOR_WORKSTREAMS.has(w.id) ? " ws-major" : "");
     return `<article class="card ${wsClass}" data-id="${w.id}">
       <div class="top"><h2>${w.name}</h2><span class="badge fluid">${rank ? rank + " · " : ""}${done}/${count}</span></div>
       <p>${w.blurb}</p>
@@ -2408,6 +2551,7 @@ function renderTaskRows() {
   const tbody = document.getElementById("task-rows");
   const empty = document.getElementById("task-empty");
   document.getElementById("task-count").textContent = `${rows.length} tasks`;
+  renderNextThree();
   if (!rows.length) { tbody.innerHTML = ""; empty.hidden = false; return; }
   empty.hidden = true;
   const order = ["website", "film", "selection", "one-of-none", "objects", "evergray"];
@@ -2422,9 +2566,12 @@ function renderTaskRows() {
     const wmeta = SEED.workstreams.find(w => w.id === ws);
     const label = wmeta?.name || ws;
     const rank = wmeta?.rank ? `P${wmeta.rank} · ` : "";
-    html += `<tr class="workstream-head"><td colspan="10">${rank}${label}</td></tr>`;
+    const major = MAJOR_WORKSTREAMS.has(ws) ? " ws-major" : "";
+    html += `<tr class="workstream-head${major}"><td colspan="10">${rank}${label}</td></tr>`;
     html += group.map(t => {
-      const due = formatTaskDue(t.due);
+      const u = taskUrgency(t);
+      const due = formatTaskDue(t.due, u);
+      const majorRow = MAJOR_WORKSTREAMS.has(ws) ? " task-major" : "";
       const collab = t.collaborators || t.dependency || "—";
       const link = t.link || "";
       const notes = t.notes || "";
@@ -2432,7 +2579,7 @@ function renderTaskRows() {
         ? `<a class="task-link-open" href="${link}" target="_blank" rel="noopener" title="Open link">↗</a>`
         : `<span class="task-link-open" aria-disabled="true">↗</span>`;
       return `
-      <tr data-id="${t.id}">
+      <tr class="urg-${u}${majorRow}" data-id="${t.id}">
         <td><strong>${t.title}</strong></td>
         <td>${workstreamPill(t)}</td>
         <td>${priorityPill(t)}</td>
@@ -2453,7 +2600,7 @@ function renderTaskRows() {
       if (!row) return;
       row.status = sel.value;
       sel.disabled = true;
-      try { await persistAll(); renderWorkstreams(); }
+      try { await persistAll(); renderWorkstreams(); renderNextThree(); }
       catch (err) { alert("Could not save — retry."); console.error(err); }
       finally { sel.disabled = false; }
     });
