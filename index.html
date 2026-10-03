@@ -693,18 +693,18 @@
   }
   .ws-pill {
     display: inline-flex; align-items: center;
-    font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
-    padding: 4px 9px; border-radius: 999px;
-    border: 1px solid var(--glass-border);
-    background: rgba(255,255,255,0.05);
-    color: var(--ink-muted); white-space: nowrap; font-weight: 500;
+    font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 5px 10px; border-radius: 999px;
+    border: 1.5px solid color-mix(in srgb, var(--color-ink) 28%, transparent);
+    background: color-mix(in srgb, var(--color-ink) 10%, var(--color-wall));
+    color: var(--color-ink); white-space: nowrap; font-weight: 600;
   }
-  .ws-pill.ws-film { border-color: rgba(255,255,255,0.28); color: #e8e8e2; }
-  .ws-pill.ws-selection { border-color: rgba(200,200,190,0.35); color: #d4d4cc; }
-  .ws-pill.ws-one-of-none { border-color: rgba(180,180,170,0.4); color: #cfcfc8; }
-  .ws-pill.ws-website { border-color: rgba(160,160,150,0.35); color: #bdbdb4; }
-  .ws-pill.ws-objects { border-color: rgba(150,170,160,0.4); color: #c8d4cc; }
-  .ws-pill.ws-evergray { border-color: rgba(160,165,150,0.4); color: #d0d2c8; }
+  .ws-pill.ws-website { border-color: color-mix(in srgb, var(--color-ink) 40%, transparent); background: color-mix(in srgb, var(--color-ink) 14%, var(--color-wall)); }
+  .ws-pill.ws-film { border-color: color-mix(in srgb, var(--color-ink) 36%, transparent); background: color-mix(in srgb, var(--color-ink) 12%, var(--color-wall)); }
+  .ws-pill.ws-selection { border-color: color-mix(in srgb, var(--color-ink) 34%, transparent); background: color-mix(in srgb, var(--color-ink) 11%, var(--color-wall)); }
+  .ws-pill.ws-one-of-none { border-color: color-mix(in srgb, var(--color-ink) 32%, transparent); }
+  .ws-pill.ws-objects { border-color: color-mix(in srgb, var(--color-ink) 30%, transparent); }
+  .ws-pill.ws-evergray { border-color: color-mix(in srgb, var(--color-ink) 30%, transparent); }
   .tab .tab-count {
     margin-left: 6px; opacity: 0.65; font-weight: 400;
   }
@@ -1203,7 +1203,6 @@
           <nav class="tabs" id="task-tabs" aria-label="Filter by workstream"></nav>
         </div>
       </div>
-      <section class="grid-collections" id="workstreams"></section>
       <section class="panel glass">
         <div class="toolbar">
           <h3 style="margin:0">Launch tasks</h3>
@@ -2524,19 +2523,7 @@ function renderNextThree() {
   }).join("");
 }
 function renderWorkstreams() {
-  const el = document.getElementById("workstreams");
-  el.innerHTML = SEED.workstreams.map(w => {
-    const count = tasks.filter(t => t.workstreamId === w.id).length;
-    const done = tasks.filter(t => t.workstreamId === w.id && t.status === "Done").length;
-    const rank = w.rank ? `P${w.rank}` : "";
-    const wsClass = "ws-" + w.id + (MAJOR_WORKSTREAMS.has(w.id) ? " ws-major" : "");
-    return `<article class="card ${wsClass}" data-id="${w.id}">
-      <div class="top"><h2>${w.name}</h2><span class="badge fluid">${rank ? rank + " · " : ""}${done}/${count}</span></div>
-      <p>${w.blurb}</p>
-      <div class="stat">${w.owner}</div>
-    </article>`;
-  }).join("");
-  el.querySelectorAll(".card").forEach(card => card.addEventListener("click", () => { taskFilter = card.dataset.id; renderLaunch(); }));
+  /* Workstream summary cards removed — filters + table remain. */
 }
 function filteredTasks() {
   return tasks.filter(t => {
