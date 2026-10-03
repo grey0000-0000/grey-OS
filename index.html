@@ -1,0 +1,2656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Grey OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500&family=IBM+Plex+Mono:wght@400&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap">
+<link rel="stylesheet" href="grey-tokens.css">
+
+<style>
+  :root {
+    /* Shell aliases — all colour from grey-tokens.css / Tailwind tokens */
+    --bg: var(--color-wall);
+    --glass: color-mix(in srgb, var(--color-ink) 4%, transparent);
+    --glass-strong: color-mix(in srgb, var(--color-ink) 8%, transparent);
+    --glass-border: color-mix(in srgb, var(--color-ink) 12%, transparent);
+    --glass-highlight: color-mix(in srgb, var(--color-ink) 10%, transparent);
+    --ink: var(--color-ink);
+    --ink-muted: var(--color-graphite);
+    --ink-faint: var(--color-grey);
+    --line: var(--color-fog);
+    --ok: var(--color-grey);
+    --warn: var(--color-graphite);
+    --danger: var(--color-red-dot);
+    --chip: color-mix(in srgb, var(--color-ink) 6%, transparent);
+    --radius: 0px;
+    --font: var(--font-sans);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--ink); font-family: var(--font-sans, var(--font)); }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .shell { max-width: 1360px; margin: 0 auto; padding: 28px 20px 64px; }
+  header.app {
+    display: flex; flex-wrap: wrap; align-items: stretch; justify-content: space-between; gap: 12px;
+    margin-bottom: 24px;
+  }
+  .brand {
+    flex: 1 1 280px;
+    min-width: 240px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .brand-top { display: flex; flex-direction: column; gap: 4px; }
+  .brand-bottom { margin-top: auto; }
+  .brand h1 {
+    margin: 0; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; font-size: 13px; color: var(--ink-muted);
+  }
+  .brand .title { font-size: 26px; font-weight: 500; letter-spacing: -0.03em; margin-top: 4px; }
+  .brand .greeting {
+    font-size: 12px; color: var(--ink-muted); letter-spacing: 0.04em;
+    margin: 0 0 2px; font-weight: 400;
+  }
+  .brand .meta, .brand-bottom.meta { font-size: 11px; color: var(--ink-faint); margin-top: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .live-ind {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--ink-muted); letter-spacing: 0.06em; text-transform: uppercase;
+    font-size: 10px; font-weight: 500;
+  }
+  .live-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 0 0 rgba(138, 168, 144, 0.45);
+    animation: livePulse 2.4s ease-out infinite;
+  }
+  @keyframes livePulse {
+    0% { box-shadow: 0 0 0 0 rgba(138, 168, 144, 0.45); opacity: 1; }
+    70% { box-shadow: 0 0 0 8px rgba(138, 168, 144, 0); opacity: 0.85; }
+    100% { box-shadow: 0 0 0 0 rgba(138, 168, 144, 0); opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .live-dot { animation: none; }
+  }
+  .launch-pill {
+    backdrop-filter: blur(18px) saturate(1.2);
+    -webkit-backdrop-filter: blur(18px) saturate(1.2);
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-size: 12px;
+    color: var(--ink-muted);
+    letter-spacing: 0.04em;
+  }
+  .launch-pill strong { color: var(--ink); font-weight: 500; }
+  .glass {
+    backdrop-filter: blur(22px) saturate(1.25);
+    -webkit-backdrop-filter: blur(22px) saturate(1.25);
+    background: linear-gradient(180deg, var(--glass-strong), var(--glass));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    box-shadow: inset 0 1px 0 var(--glass-highlight), 0 12px 40px color-mix(in srgb, var(--color-ink) 10%, transparent);
+  }
+  .view-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+  .view-tab {
+    appearance: none; cursor: pointer;
+    background: var(--chip); color: var(--ink-muted);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 12px 18px; font: 500 13px/1 var(--font); letter-spacing: 0.04em;
+  }
+  .view-tab.active { background: rgba(255,255,255,0.12); color: var(--ink); border-color: var(--glass-highlight); }
+  .task-filters { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
+  .workstream-filter { margin-bottom: 0; }
+  .prio-pill {
+    display: inline-flex; align-items: center;
+    font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 4px 9px; border-radius: 999px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,0.04);
+    color: var(--ink-muted); white-space: nowrap; font-weight: 500;
+  }
+  .prio-pill.prio-high { color: #e8e4d4; border-color: rgba(196,168,106,0.4); }
+  .prio-pill.prio-medium { color: #cfcfc8; }
+  .prio-pill.prio-low { color: var(--ink-faint); border-color: rgba(255,255,255,0.12); }
+
+  .workstream-filter-label {
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 500; margin: 0 0 8px;
+  }
+  .workstream-filter .tabs { margin-bottom: 0; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .tab {
+    appearance: none; cursor: pointer;
+    background: var(--chip); color: var(--ink-muted);
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: 8px 14px; font: 500 12px/1 var(--font); letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .tab:hover { color: var(--ink); border-color: var(--glass-border); }
+  .tab.active { background: rgba(255,255,255,0.12); color: var(--ink); border-color: var(--glass-highlight); }
+  .coll-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;
+  }
+  .coll-card {
+    padding: 22px 20px 18px;
+    display: flex; flex-direction: column; gap: 14px;
+    min-height: 220px;
+  }
+  .coll-card .coll-name {
+    margin: 0; font-size: 28px; font-weight: 500; letter-spacing: -0.04em; line-height: 1.1;
+  }
+  .coll-card .coll-desc {
+    margin: 0; font-size: 13px; color: var(--ink-muted); line-height: 1.45;
+  }
+  .coll-card .coll-metrics {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    margin-top: auto; padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .coll-card .coll-metric label {
+    display: block; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 6px;
+  }
+  .coll-card .coll-metric .val {
+    font: 500 18px/1.2 var(--font); letter-spacing: -0.02em; color: var(--ink);
+  }
+  .coll-card .coll-metric input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: var(--ink);
+    font: 500 16px/1.2 var(--font);
+    padding: 8px 10px;
+  }
+  .coll-card .coll-metric input:focus { outline: none; border-color: var(--glass-highlight); }
+  .coll-note { font-size: 12px; color: var(--ink-muted); line-height: 1.45; margin: 0 0 14px; }
+  .coll-card { cursor: pointer; transition: border-color .2s, background .2s; }
+  .coll-card:hover { border-color: var(--glass-highlight); background: rgba(255,255,255,0.07); }
+  .coll-card input { cursor: text; }
+  .coll-detail { display: flex; flex-direction: column; gap: 18px; }
+  .coll-detail-head {
+    display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px;
+  }
+  .coll-detail-head .coll-name { font-size: 36px; margin: 0; }
+  .coll-detail-desc {
+    margin: 0; font-size: 14px; color: var(--ink-muted); line-height: 1.55; max-width: 52rem;
+  }
+  .coll-detail-metrics {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;
+  }
+  .coll-detail-metrics .coll-metric {
+    padding: 14px 14px 12px; border-radius: 14px;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+  }
+  .coll-detail-metrics .coll-metric .val { font-size: 22px; }
+  .coll-detail-metrics .coll-metric input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: var(--ink);
+    font: 500 18px/1.2 var(--font);
+    padding: 8px 10px;
+  }
+  .coll-detail-metrics .coll-metric input:focus { outline: none; border-color: var(--glass-highlight); }
+  .coll-notes {
+    width: 100%; min-height: 96px; resize: vertical;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+    border-radius: 12px; color: var(--ink); font: 13px/1.5 var(--font);
+    padding: 12px 14px;
+  }
+  .coll-notes:focus { outline: none; border-color: var(--glass-highlight); }
+  .coll-exp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .coll-exp-table th {
+    text-align: left; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); padding: 8px 10px; border-bottom: 1px solid var(--line);
+  }
+  .coll-exp-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: top; }
+  .coll-exp-table tr:last-child td { border-bottom: none; }
+  .coll-exp-empty { font-size: 13px; color: var(--ink-muted); padding: 8px 0; }
+
+  .grid-collections {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px;
+    margin-bottom: 22px;
+  }
+  .card {
+    padding: 18px 16px; cursor: pointer; transition: border-color .2s, background .2s, box-shadow .2s;
+    min-height: 120px; display: flex; flex-direction: column; gap: 10px;
+    backdrop-filter: blur(22px) saturate(1.25);
+    -webkit-backdrop-filter: blur(22px) saturate(1.25);
+    background: linear-gradient(180deg, var(--glass-strong), var(--glass));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    box-shadow: inset 0 1px 0 var(--glass-highlight), 0 20px 50px rgba(0,0,0,0.35);
+  }
+  .card:hover { border-color: var(--glass-highlight); background: rgba(255,255,255,0.09); }
+  .card.active-filter { border-color: rgba(255,255,255,0.35); box-shadow: inset 0 1px 0 var(--glass-highlight), 0 20px 50px rgba(0,0,0,0.4); }
+  .card.ws-website {
+    background: linear-gradient(180deg, rgba(120,150,180,0.14), var(--glass));
+    border-color: rgba(140,170,200,0.28);
+  }
+  .card.ws-film {
+    background: linear-gradient(180deg, rgba(196,168,106,0.12), var(--glass));
+    border-color: rgba(196,168,106,0.28);
+  }
+  .card.ws-selection {
+    background: linear-gradient(180deg, rgba(180,180,175,0.12), var(--glass));
+    border-color: rgba(255,255,255,0.18);
+  }
+  .card.ws-one-of-none {
+    background: linear-gradient(180deg, rgba(150,130,160,0.12), var(--glass));
+    border-color: rgba(170,150,180,0.28);
+  }
+  .card.ws-objects {
+    background: linear-gradient(180deg, rgba(130,150,140,0.12), var(--glass));
+    border-color: rgba(150,170,160,0.28);
+  }
+  .card.ws-evergray {
+    background: linear-gradient(180deg, rgba(140,145,135,0.14), var(--glass));
+    border-color: rgba(160,165,150,0.28);
+  }
+  .card .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .card h2 { margin: 0; font-size: 16px; font-weight: 500; letter-spacing: -0.02em; }
+  .badge {
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 4px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-muted); white-space: nowrap;
+  }
+  .badge.permanent { color: #cfcfc8; border-color: rgba(255,255,255,0.22); }
+  .badge.temporal { color: var(--warn); border-color: rgba(196,168,106,0.35); }
+  .badge.fluid { color: var(--ink-faint); }
+  .card p { margin: 0; font-size: 12px; color: var(--ink-muted); line-height: 1.45; flex: 1; }
+  .card .stat { font-size: 11px; color: var(--ink-faint); letter-spacing: 0.04em; }
+  .panels { display: grid; grid-template-columns: 1.7fr 1fr; gap: 14px; }
+  @media (max-width: 1100px) { .panels { grid-template-columns: 1fr; } }
+  .panel { padding: 18px; }
+  .panel h3 {
+    margin: 0 0 14px; font-size: 11px; font-weight: 500; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink-faint);
+  }
+  .toolbar {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .search {
+    flex: 1; min-width: 180px;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--line); border-radius: 10px;
+    color: var(--ink); padding: 10px 12px; font: 13px var(--font);
+  }
+  .search:focus { outline: none; border-color: var(--glass-highlight); }
+  .count { font-size: 11px; color: var(--ink-faint); letter-spacing: 0.06em; }
+  .table-wrap { overflow: auto; border-radius: 12px; border: 1px solid var(--line); }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 980px; }
+  th, td { padding: 10px 10px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  th {
+    position: sticky; top: 0; background: rgba(20,20,20,0.92); backdrop-filter: blur(10px);
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.03); }
+  td.muted { color: var(--ink-muted); }
+  select.cell-select {
+    appearance: none; -webkit-appearance: none;
+    width: 100%; max-width: 170px;
+    background: rgba(255,255,255,0.06) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%239a9a94' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") right 10px center no-repeat;
+    color: var(--ink);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 8px 28px 8px 10px;
+    font: 500 12px/1.2 var(--font);
+    cursor: pointer;
+  }
+  select.cell-select:hover { border-color: var(--glass-highlight); }
+  select.cell-select:focus { outline: none; border-color: rgba(255,255,255,0.4); box-shadow: 0 0 0 1px rgba(255,255,255,0.2); }
+  select.cell-select option { background: #1a1a1a; color: var(--ink); }
+  .decision {
+    display: grid; grid-template-columns: 28px 1fr; gap: 10px;
+    padding: 12px 0; border-bottom: 1px solid var(--line);
+  }
+  .decision:last-child { border-bottom: none; }
+  .decision .n {
+    width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--glass-border);
+    display: grid; place-items: center; font-size: 11px; color: var(--ink-muted);
+  }
+  .decision p { margin: 0; font-size: 13px; line-height: 1.45; }
+  .decision .who { margin-top: 4px; font-size: 11px; color: var(--ink-faint); }
+  .team { display: flex; flex-direction: column; gap: 10px; }
+  .person {
+    display: flex; justify-content: space-between; gap: 12px; align-items: flex-start;
+    padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--line);
+  }
+  .person .name { font-size: 13px; font-weight: 500; }
+  .person .role { font-size: 11px; color: var(--ink-faint); margin-top: 2px; }
+  .person .own { font-size: 11px; color: var(--ink-muted); text-align: right; max-width: 55%; }
+  .next-move { margin-top: 14px; padding: 16px 18px; }
+  .next-move .label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--warn); margin-bottom: 8px; }
+  .next-move p { margin: 0; font-size: 14px; line-height: 1.5; }
+  .empty { padding: 28px; text-align: center; color: var(--ink-faint); font-size: 13px; }
+  footer { margin-top: 22px; font-size: 11px; color: var(--ink-faint); letter-spacing: 0.04em; }
+  .save-note { font-size: 11px; color: var(--ink-faint); margin: 10px 0 0; }
+
+  .section-label {
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-faint); margin: 0 0 10px; font-weight: 500;
+  }
+  .card.launch-asset {
+    border-color: rgba(196,168,106,0.28);
+    background: linear-gradient(180deg, rgba(196,168,106,0.08), var(--glass));
+  }
+  .card.launch-asset .badge { color: var(--warn); border-color: rgba(196,168,106,0.4); }
+  .card.ops { opacity: 0.92; }
+  .progress-track {
+    height: 4px; border-radius: 999px; background: rgba(255,255,255,0.06); overflow: hidden; margin-top: 4px;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 999px; background: rgba(242,242,240,0.55);
+  }
+  .progress-fill.mixed { background: linear-gradient(90deg, var(--ok), var(--warn)); }
+  .drill-bar {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+    margin-bottom: 12px;
+  }
+  .drill-bar .crumb { font-size: 13px; color: var(--ink-muted); }
+  .drill-bar .crumb strong { color: var(--ink); font-weight: 500; }
+  .btn-ghost {
+    appearance: none; cursor: pointer;
+    background: transparent; color: var(--ink-muted);
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: 8px 14px; font: 500 12px/1 var(--font); letter-spacing: 0.04em;
+  }
+  .btn-ghost:hover { color: var(--ink); border-color: var(--glass-border); }
+  .card-date-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line);
+  }
+  .card-date-row label {
+    font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); white-space: nowrap;
+  }
+  .card-date {
+    appearance: none; -webkit-appearance: none;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: var(--ink);
+    font: 500 11px/1 var(--font);
+    padding: 6px 8px;
+    min-width: 0; flex: 1; max-width: 148px;
+    color-scheme: dark;
+  }
+  .card-date:focus { outline: none; border-color: var(--glass-highlight); }
+  .card-date::-webkit-calendar-picker-indicator { filter: invert(0.8); opacity: 0.7; cursor: pointer; }
+  .launch-deadline-banner {
+    display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px;
+    padding: 14px 18px; margin-bottom: 16px;
+  }
+  .launch-deadline-banner .label {
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--warn);
+  }
+  .launch-deadline-banner strong { font-size: 16px; font-weight: 500; letter-spacing: -0.02em; }
+  .milestone-card {
+    /* Fixed box — no resize when milestones change; height tuned to content (no bottom slack) */
+    flex: 0 0 280px;
+    width: 280px;
+    min-width: 280px;
+    max-width: 280px;
+    height: 210px;
+    min-height: 210px;
+    max-height: 210px;
+    box-sizing: border-box;
+    padding: 12px 14px 10px;
+    display: flex; flex-direction: column; gap: 2px;
+    align-items: stretch;
+    justify-content: flex-start;
+    position: relative;
+    overflow: hidden;
+  }
+  .milestone-card .ms-label-row {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; gap: 8px;
+  }
+  .milestone-card .ms-label {
+    font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--warn); font-weight: 500;
+  }
+  .milestone-card .ms-nav {
+    display: inline-flex; align-items: center; gap: 2px;
+  }
+  .milestone-card .ms-nav-btn {
+    appearance: none; cursor: pointer;
+    width: 22px; height: 22px; border-radius: 6px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,0.06);
+    color: var(--ink-muted);
+    font: 500 12px/1 var(--font);
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 0;
+  }
+  .milestone-card .ms-nav-btn:hover {
+    color: var(--ink); border-color: var(--glass-highlight); background: rgba(255,255,255,0.1);
+  }
+  .milestone-card .ms-nav-btn:focus { outline: none; border-color: rgba(255,255,255,0.4); }
+  .milestone-card .ms-desc {
+    font: 400 11px/1.35 var(--font);
+    color: var(--ink-muted);
+    margin: 4px 0 0;
+    width: 100%;
+    flex: 0 0 auto;
+    min-height: 2.7em;
+    max-height: 3.6em;
+    overflow: hidden;
+  }
+  .milestone-card .ms-index {
+    font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-faint); margin-left: auto;
+  }
+  .milestone-card .ms-title {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--ink);
+    font: 500 12px/1.25 var(--font);
+    letter-spacing: -0.02em;
+    padding: 1px 4px;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .milestone-card .ms-title:hover,
+  .milestone-card .ms-title:focus {
+    border-color: var(--glass-border);
+    background: rgba(255,255,255,0.04);
+    outline: none;
+  }
+  .milestone-card .ms-date {
+    color: var(--ink-muted);
+    font: 400 11px/1.35 var(--font);
+    padding: 2px 0;
+    margin-top: 2px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    pointer-events: none;
+    user-select: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .milestone-card .ms-countdown {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 2px 0 0;
+    flex: 0 0 auto;
+  }
+  .milestone-card .ms-countdown-num {
+    font: 500 44px/0.9 var(--font);
+    letter-spacing: -0.06em;
+    color: var(--ink);
+    min-width: 1.1em;
+  }
+  .milestone-card .ms-countdown-label {
+    font-size: 10px; color: var(--ink-muted); letter-spacing: 0.06em;
+    text-transform: lowercase;
+  }
+  .milestone-card .ms-countdown.urgent .ms-countdown-num { color: var(--warn); }
+  .milestone-card .ms-countdown.urgent .ms-countdown-label { color: var(--warn); }
+  .milestone-card .ms-countdown.past .ms-countdown-num { color: var(--danger); }
+  .milestone-card .ms-countdown.past .ms-countdown-label { color: var(--danger); }
+  .metric-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px;
+  }
+  .metric-card { padding: 16px; display: flex; flex-direction: column; gap: 10px; min-height: 168px; }
+  .metric-card .m-name {
+    width: 100%; background: transparent; border: 1px solid transparent; border-radius: 6px;
+    color: var(--ink); font: 500 13px/1.3 var(--font); padding: 2px 4px; margin: 0 -4px;
+  }
+  .metric-card .m-name:hover, .metric-card .m-name:focus {
+    border-color: var(--glass-border); background: rgba(255,255,255,0.04); outline: none;
+  }
+  .metric-card .m-owner { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); }
+  .metric-card .m-values { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .metric-card .m-field label {
+    display: block; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 4px;
+  }
+  .metric-card .m-field input {
+    width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+    border-radius: 8px; color: var(--ink); font: 500 14px/1.2 var(--font); padding: 8px 10px;
+  }
+  .metric-card .m-field input:focus { outline: none; border-color: var(--glass-highlight); }
+  .metric-card .m-progress {
+    height: 4px; border-radius: 999px; background: rgba(255,255,255,0.06); overflow: hidden;
+  }
+  .metric-card .m-progress > span { display: block; height: 100%; background: rgba(242,242,240,0.55); border-radius: 999px; }
+  .metric-card .m-pct { font-size: 11px; color: var(--ink-muted); }
+  .sparkline { width: 100%; height: 36px; display: block; }
+  .sparkline polyline { fill: none; stroke: rgba(242,242,240,0.55); stroke-width: 1.5; }
+  .sparkline circle { fill: #f2f2f0; }
+  .biz-note { font-size: 12px; color: var(--ink-muted); line-height: 1.45; margin: 0 0 14px; }
+  .biz-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .btn-add {
+    appearance: none; cursor: pointer;
+    background: rgba(255,255,255,0.08); color: var(--ink);
+    border: 1px solid var(--glass-border); border-radius: 999px;
+    padding: 8px 14px; font: 500 12px/1 var(--font); letter-spacing: 0.04em;
+  }
+  .btn-add:hover { border-color: var(--glass-highlight); }
+
+
+  /* Vertical Wall/Night rocker — mirrors client ThemeLightSwitch */
+  .header-right {
+    display: flex; flex-wrap: nowrap; align-items: stretch; gap: 12px; flex: 0 0 auto;
+  }
+  .theme-rocker-wrap {
+    display: flex; align-items: stretch; align-self: stretch;
+    flex: 0 0 auto;
+  }
+  .theme-rocker {
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+    gap: 8px; align-self: stretch;
+    width: 56px; min-width: 56px;
+    height: 210px; min-height: 210px; max-height: 210px;
+    padding: 4px 0; box-sizing: border-box;
+  }
+  .theme-rocker-label {
+    flex-shrink: 0;
+    font-family: var(--font-mono, var(--font));
+    font-size: 11px; line-height: 1;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--muted-foreground, var(--ink-faint));
+    user-select: none;
+  }
+  .theme-rocker-label.active { color: var(--foreground, var(--ink)); }
+  .theme-rocker-switch {
+    position: relative;
+    display: block;
+    width: 44px; flex: 1 1 auto; min-height: 88px;
+    margin: 0; padding: 0;
+    cursor: pointer; overflow: hidden;
+    appearance: none; -webkit-appearance: none;
+    border: 1px solid var(--border, var(--line));
+    background: var(--card, var(--color-plinth));
+    border-radius: var(--radius);
+    outline: none;
+  }
+  .theme-rocker-switch:focus-visible {
+    outline: 2px solid var(--ring, var(--color-red-dot));
+    outline-offset: 2px;
+  }
+  .theme-rocker-thumb {
+    position: absolute; left: 4px; right: 4px;
+    height: 46%;
+    border: 1px solid var(--border, var(--line));
+    background: var(--primary, var(--color-ink));
+    border-radius: 0;
+    transition: top 480ms cubic-bezier(0.65, 0, 0.35, 1);
+    top: 4px; /* Wall (light) */
+  }
+  [data-theme="night"] .theme-rocker-thumb,
+  .dark .theme-rocker-thumb {
+    top: calc(54% - 4px); /* Night */
+  }
+  .theme-rocker-thumb .groove-mid {
+    position: absolute; left: 6px; right: 6px; top: 50%;
+    height: 1px; transform: translateY(-50%);
+    background: color-mix(in srgb, var(--primary-foreground, var(--color-wall)) 30%, transparent);
+  }
+  .theme-rocker-thumb .groove-sm {
+    position: absolute; left: 8px; right: 8px; height: 1px;
+    background: color-mix(in srgb, var(--primary-foreground, var(--color-wall)) 15%, transparent);
+  }
+  .theme-rocker-thumb .groove-sm.top { top: 32%; }
+  .theme-rocker-thumb .groove-sm.bot { top: 68%; }
+  @media (prefers-reduced-motion: reduce) {
+    .theme-rocker-thumb { transition: none; }
+  }
+
+
+
+
+  .hidden { display: none !important; }
+  .workstream-head td {
+    background: rgba(255,255,255,0.035);
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-muted); font-weight: 500; padding-top: 14px; padding-bottom: 14px;
+  }
+  .ws-pill {
+    display: inline-flex; align-items: center;
+    font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 4px 9px; border-radius: 999px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,0.05);
+    color: var(--ink-muted); white-space: nowrap; font-weight: 500;
+  }
+  .ws-pill.ws-film { border-color: rgba(255,255,255,0.28); color: #e8e8e2; }
+  .ws-pill.ws-selection { border-color: rgba(200,200,190,0.35); color: #d4d4cc; }
+  .ws-pill.ws-one-of-none { border-color: rgba(180,180,170,0.4); color: #cfcfc8; }
+  .ws-pill.ws-website { border-color: rgba(160,160,150,0.35); color: #bdbdb4; }
+  .ws-pill.ws-objects { border-color: rgba(150,170,160,0.4); color: #c8d4cc; }
+  .ws-pill.ws-evergray { border-color: rgba(160,165,150,0.4); color: #d0d2c8; }
+  .tab .tab-count {
+    margin-left: 6px; opacity: 0.65; font-weight: 400;
+  }
+  .task-cell-input {
+    width: 100%; min-width: 120px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--ink);
+    font: 500 13px/1.35 var(--font);
+    padding: 6px 8px;
+  }
+  .task-cell-input:hover { border-color: var(--glass-border); background: rgba(255,255,255,0.05); }
+  .task-cell-input:focus { outline: none; border-color: var(--glass-highlight); background: rgba(255,255,255,0.06); }
+  .task-notes-input { min-width: 100px; font-weight: 400; color: var(--ink-muted); }
+  .task-link-cell { min-width: 140px; vertical-align: middle; }
+  .task-link-cell .task-cell-input { min-width: 100px; font-weight: 400; font-size: 12px; }
+  .task-link-open {
+    appearance: none; cursor: pointer; flex: 0 0 auto;
+    width: 28px; height: 28px; border-radius: 8px;
+    background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
+    color: var(--ink-muted); font-size: 12px; line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+    text-decoration: none;
+  }
+  .task-link-open:hover { color: var(--ink); border-color: var(--glass-highlight); }
+  .task-link-open[aria-disabled="true"] { opacity: 0.35; pointer-events: none; cursor: default; }
+  .due-locked {
+    font-size: 12px; color: var(--ink-muted); white-space: nowrap;
+    letter-spacing: 0.01em;
+  }
+  .due-locked.overdue { color: #d4a0a0; }
+  .due-locked.empty { color: var(--ink-faint); }
+  .blocker-muted { font-size: 11px; color: var(--ink-faint); max-width: 140px; line-height: 1.35; }
+  .ms-wrap { position: relative; min-width: 140px; max-width: 220px; }
+  .ms-trigger {
+    appearance: none; cursor: pointer; width: 100%;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+    min-height: 34px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 4px 8px;
+    color: var(--ink); font: 500 11px/1.2 var(--font);
+    text-align: left;
+  }
+  .ms-trigger:hover, .ms-trigger:focus { outline: none; border-color: var(--glass-highlight); }
+  .ms-chip {
+    display: inline-flex; align-items: center;
+    padding: 2px 7px; border-radius: 999px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--ink-muted); font-size: 10px; letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .ms-placeholder { color: var(--ink-faint); font-weight: 400; }
+  .ms-dropdown {
+    position: absolute; z-index: 40; top: calc(100% + 4px); left: 0; right: 0;
+    min-width: 200px;
+    background: linear-gradient(180deg, rgba(32,32,30,0.98), rgba(18,18,17,0.98));
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.55), inset 0 1px 0 var(--glass-highlight);
+    padding: 8px;
+    backdrop-filter: blur(18px);
+  }
+  .ms-dropdown[hidden] { display: none !important; }
+  .ms-search {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: var(--ink);
+    font: 12px/1.3 var(--font);
+    padding: 7px 9px;
+    margin-bottom: 6px;
+  }
+  .ms-search:focus { outline: none; border-color: var(--glass-highlight); }
+  .ms-opts { max-height: 180px; overflow: auto; display: flex; flex-direction: column; gap: 2px; }
+  .ms-opt {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 8px; border-radius: 8px;
+    cursor: pointer; color: var(--ink-muted); font-size: 12px;
+  }
+  .ms-opt:hover, .ms-opt.active { background: rgba(255,255,255,0.08); color: var(--ink); }
+  .ms-opt input { accent-color: #cfcfc8; }
+  .table-wrap table { min-width: 1180px; }
+  td .cell-select { min-width: 110px; }
+
+
+  /* Identity System — Wall gallery language (scoped) */
+  #view-identity {
+    --ids-wall: var(--color-wall);
+    --ids-plinth: var(--color-plinth);
+    --ids-ink: var(--color-ink);
+    --ids-graphite: var(--color-graphite);
+    --ids-grey: var(--color-grey);
+    --ids-fog: var(--color-fog);
+    --ids-red: var(--color-red-dot);
+    --ids-sans: var(--font-sans);
+    --ids-serif: var(--font-serif);
+    --ids-mono: var(--font-mono);
+    background: var(--ids-wall);
+    color: var(--ids-ink);
+    font-family: var(--ids-sans);
+    font-size: 16px;
+    line-height: 1.5;
+    border: 1px solid var(--ids-fog);
+    margin: 0 -4px;
+    padding: 0;
+  }
+  #view-identity * { border-radius: 0 !important; box-shadow: none !important; }
+  #view-identity a { color: inherit; text-decoration: none; }
+  #view-identity .ids-layout {
+    display: grid; grid-template-columns: 168px minmax(0, 1fr); gap: 40px;
+    max-width: 1240px; margin: 0 auto; padding: 28px 24px 64px; align-items: start;
+  }
+  #view-identity .ids-wrap { max-width: none; margin: 0; padding: 0; min-width: 0; }
+  #view-identity .ids-index {
+    position: sticky; top: 16px; align-self: start;
+    display: grid; gap: 0; padding: 0 16px 0 0;
+    border-right: 1px solid var(--ids-fog);
+    max-height: calc(100vh - 32px); overflow-y: auto;
+  }
+  #view-identity .ids-index > .ids-mono { margin-bottom: 10px; color: var(--ids-grey); }
+  #view-identity .ids-index a {
+    position: relative; display: block;
+    font-family: var(--ids-mono); font-size: 11px; letter-spacing: 0.06em;
+    text-transform: uppercase; font-variant-numeric: tabular-nums;
+    color: var(--ids-ink); padding: 9px 0;
+    border-bottom: 1px solid var(--ids-fog);
+  }
+  #view-identity .ids-index a::after {
+    content: ""; position: absolute; left: 0; bottom: -1px;
+    width: 0; height: 2px; background: var(--ids-red);
+    transition: width 480ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #view-identity .ids-index a:hover { color: var(--ids-ink); }
+  #view-identity .ids-index a:hover::after { width: 100%; }
+  #view-identity .ids-index a:focus-visible { outline: 2px solid var(--ids-red); outline-offset: 3px; }
+  @media (max-width: 900px) {
+    #view-identity .ids-layout { grid-template-columns: 1fr; gap: 20px; }
+    #view-identity .ids-index {
+      position: sticky; top: 0; z-index: 5;
+      border-right: none; border-bottom: 1px solid var(--ids-fog);
+      max-height: none; overflow-x: auto; overflow-y: hidden;
+      display: flex; flex-wrap: wrap; gap: 0 18px; align-items: center;
+      background: var(--ids-wall); padding: 0 0 12px; margin: 0 -4px;
+    }
+    #view-identity .ids-index > .ids-mono { width: 100%; margin-bottom: 4px; }
+    #view-identity .ids-index a { border-bottom: none; padding: 8px 0; }
+  }
+  #view-identity .ids-mono {
+    font-family: var(--ids-mono); font-size: 11px; letter-spacing: 0.06em;
+    text-transform: uppercase; font-variant-numeric: tabular-nums; color: var(--ids-grey);
+  }
+
+  #view-identity .ids-logo-guide { display: grid; gap: 22px; margin-top: 8px; }
+  #view-identity .ids-swatches { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-width: 560px; }
+  #view-identity .ids-swatch { border: 1px solid var(--ids-fog); min-height: 72px; display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; }
+  #view-identity .ids-swatch .hex { font-family: var(--ids-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+  #view-identity .ids-swatch .name { font-size: 12px; margin-top: 2px; }
+  #view-identity .ids-tile-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  @media (min-width: 900px) {
+    #view-identity .ids-tile-grid.ids-tile-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  #view-identity .ids-tile {
+    border: 1px solid var(--ids-fog); position: relative; overflow: hidden; min-height: 120px;
+    display: flex; flex-direction: column;
+  }
+  #view-identity .ids-tile-stage {
+    flex: 1; min-height: 100px; display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  #view-identity .ids-tile-cap {
+    font-family: var(--ids-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ids-grey); padding: 8px 10px; border-top: 1px solid var(--ids-fog); background: var(--ids-plinth);
+  }
+  #view-identity .ids-tile.dont { border-color: var(--ids-red); }
+  #view-identity .ids-tile.dont .ids-tile-cap { color: var(--ids-red); border-top-color: color-mix(in srgb, var(--ids-red) 35%, var(--ids-fog)); }
+  #view-identity .ids-tile.dont::before {
+    content: "DON'T"; position: absolute; top: 8px; left: 8px; z-index: 2;
+    font-family: var(--ids-mono); font-size: 10px; letter-spacing: 0.08em;
+    color: var(--color-white); background: var(--ids-red); padding: 3px 6px;
+  }
+  /* Live SVG marks — mask + currentColor for inversion greys */
+  #view-identity .ids-mark {
+    display: block;
+    width: 78%;
+    aspect-ratio: 750 / 136;
+    height: auto;
+    flex-shrink: 0;
+    background-color: currentColor;
+    color: #000000;
+    -webkit-mask: url("brand/grey-wordmark-naked.svg") center / contain no-repeat;
+    mask: url("brand/grey-wordmark-naked.svg") center / contain no-repeat;
+  }
+  #view-identity .ids-mark.oval {
+    aspect-ratio: 750 / 271;
+    -webkit-mask-image: url("brand/grey-wordmark-oval.svg");
+    mask-image: url("brand/grey-wordmark-oval.svg");
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+  }
+  #view-identity .ids-mark.ink { color: var(--color-black); }
+  #view-identity .ids-mark.on-cdcdcd { color: var(--color-dark-gray); }
+  #view-identity .ids-mark.on-383838 { color: var(--color-light-gray); }
+  #view-identity .ids-mark.on-black { color: var(--color-white); }
+  #view-identity .ids-euro-head {
+    font-family: var(--font-logo);
+    font-style: italic; font-weight: 700; font-size: clamp(22px, 3.2vw, 36px);
+    letter-spacing: 0.04em; text-transform: uppercase; margin: 0; color: var(--ids-ink);
+  }
+  #view-identity .ids-euro-label {
+    font-family: var(--font-logo);
+    font-style: italic; font-weight: 700; font-size: 12px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--ids-ink);
+  }
+  #view-identity .ids-euro-body-bad {
+    font-family: var(--font-logo);
+    font-style: italic; font-weight: 700; font-size: 15px; letter-spacing: 0.02em;
+    line-height: 1.45; color: var(--ids-ink); max-width: 36ch; margin: 0; padding: 12px;
+  }
+  #view-identity .ids-mark.stretch { transform: scaleX(1.55); transform-origin: center; }
+  #view-identity .ids-mark.recolour { color: var(--color-red-dot); }
+  #view-identity .ids-mark.shadow { filter: drop-shadow(0 10px 14px rgba(0,0,0,0.45)); }
+
+  #view-identity .ids-proposed { color: var(--ids-red); }
+  #view-identity .ids-hero {
+    border-bottom: 1px solid var(--ids-fog); padding-bottom: 28px; margin-bottom: 20px;
+    display: grid; gap: 16px;
+  }
+  #view-identity .ids-hero h2 {
+    margin: 0; font-weight: 400; font-size: clamp(28px, 4vw, 40px);
+    letter-spacing: -0.025em; line-height: 1; color: var(--ids-ink);
+  }
+  #view-identity .ids-question {
+    font-size: clamp(18px, 1.8vw, 22px); line-height: 1.35; letter-spacing: -0.01em;
+    max-width: 42ch; color: var(--ids-ink);
+  }
+  #view-identity .ids-question em { font-family: var(--ids-serif); font-style: italic; }
+  #view-identity .ids-sec {
+    display: grid; grid-template-columns: 160px 1fr; gap: 24px;
+    padding: 40px 0; border-bottom: 1px solid var(--ids-fog);
+  }
+  @media (max-width: 720px) {
+    #view-identity .ids-sec { grid-template-columns: 1fr; padding: 28px 0; }
+  }
+  #view-identity .ids-sec-num { font-family: var(--ids-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ids-grey); }
+  #view-identity .ids-sec h3 {
+    margin: 4px 0 0; font-weight: 400; font-size: 22px; letter-spacing: -0.02em; line-height: 1.15; color: var(--ids-ink);
+  }
+  #view-identity .ids-body { display: grid; gap: 18px; min-width: 0; }
+  #view-identity .ids-body p { margin: 0; color: var(--ids-ink); max-width: 62ch; }
+  #view-identity .ids-body .graphite { color: var(--ids-graphite); }
+  #view-identity .ids-plinth {
+    background: var(--ids-plinth); border: 1px solid var(--ids-fog); padding: 16px; max-width: 52ch;
+  }
+  #view-identity .ids-quote {
+    font-size: 18px; line-height: 1.4; letter-spacing: -0.01em; max-width: 40ch;
+  }
+  #view-identity .ids-principles { display: grid; gap: 0; border-top: 1px solid var(--ids-ink); }
+  #view-identity .ids-principle {
+    display: grid; grid-template-columns: 28px 1fr; gap: 12px;
+    padding: 14px 0; border-bottom: 1px solid var(--ids-fog);
+  }
+  #view-identity .ids-principle strong { font-weight: 500; display: block; margin-bottom: 4px; }
+  #view-identity .ids-principle span { color: var(--ids-graphite); font-size: 14px; }
+  #view-identity .ids-sliders { display: grid; gap: 16px; }
+  #view-identity .ids-slider {
+    display: grid; grid-template-columns: 110px 1fr 110px; gap: 12px; align-items: center; font-size: 13px; color: var(--ids-graphite);
+  }
+  #view-identity .ids-slider .track { position: relative; height: 1px; background: var(--ids-fog); }
+  #view-identity .ids-slider .track i {
+    position: absolute; top: 50%; width: 8px; height: 8px; border-radius: 50% !important;
+    background: var(--ids-ink); transform: translate(-50%, -50%);
+  }
+  #view-identity .ids-slider .end:last-child { text-align: right; }
+  #view-identity table.ids-tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+  #view-identity table.ids-tbl th {
+    font-family: var(--ids-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ids-grey); font-weight: 400; text-align: left; padding: 0 12px 8px 0; border-bottom: 1px solid var(--ids-ink);
+  }
+  #view-identity table.ids-tbl td {
+    padding: 10px 12px 10px 0; border-bottom: 1px solid var(--ids-fog); vertical-align: top;
+  }
+  #view-identity table.ids-tbl td.never {
+    color: var(--ids-grey); text-decoration: line-through; text-decoration-color: var(--ids-red);
+  }
+  #view-identity .ids-label {
+    background: var(--ids-plinth); border: 1px solid var(--ids-fog); padding: 16px; max-width: 280px; display: grid; gap: 2px;
+  }
+  #view-identity .ids-label .t {
+    font-family: var(--ids-serif); font-style: italic; font-size: 24px; line-height: 1.1; margin: 4px 0 6px;
+  }
+  #view-identity ul.ids-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+  #view-identity ul.ids-list li {
+    padding: 10px 0; border-top: 1px solid var(--ids-fog); font-size: 14px; color: var(--ids-graphite);
+  }
+  #view-identity ul.ids-list li:last-child { border-bottom: 1px solid var(--ids-fog); }
+  #view-identity ul.ids-list li strong { color: var(--ids-ink); font-weight: 500; }
+  #view-identity .ids-gap {
+    border: 1px solid var(--ids-fog); border-left: 2px solid var(--ids-red); padding: 12px 14px; max-width: 52ch;
+    font-size: 14px; color: var(--ids-graphite);
+  }
+  #view-identity .ids-gap .ids-proposed { font-family: var(--ids-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+  #view-identity .ids-foot { padding-top: 24px; font-size: 12px; color: var(--ids-grey); }
+
+</style>
+<script>
+(function initGreyTheme() {
+  const KEY = "grey-theme";
+  const root = document.documentElement;
+  function normalize(theme) {
+    if (theme === "night" || theme === "dark") return "night";
+    return "light";
+  }
+  function apply(theme) {
+    const next = normalize(theme);
+    root.setAttribute("data-theme", next);
+    if (next === "night") root.classList.add("dark");
+    else root.classList.remove("dark");
+    try { localStorage.setItem(KEY, next); } catch (_) {}
+    const btn = document.getElementById("theme-toggle");
+    if (btn) {
+      btn.setAttribute("aria-checked", next === "night" ? "true" : "false");
+      btn.setAttribute("aria-label", next === "night" ? "Switch to Wall (light)" : "Switch to Night");
+    }
+    const wall = document.querySelector(".theme-rocker-wall");
+    const night = document.querySelector(".theme-rocker-night");
+    if (wall) wall.classList.toggle("active", next === "light");
+    if (night) night.classList.toggle("active", next === "night");
+  }
+  let saved = "light";
+  try { saved = localStorage.getItem(KEY) || "light"; } catch (_) {}
+  apply(saved);
+  document.addEventListener("DOMContentLoaded", () => {
+    apply(root.getAttribute("data-theme") || "light");
+    const btn = document.getElementById("theme-toggle");
+    if (btn) btn.addEventListener("click", () => {
+      const cur = root.getAttribute("data-theme") === "night" ? "night" : "light";
+      apply(cur === "night" ? "light" : "night");
+    });
+  });
+})();
+</script>
+</head>
+<body>
+  <div class="shell">
+    <header class="app">
+      <div class="brand glass">
+        <div class="brand-top">
+          <div class="greeting" id="greeting">Good evening</div>
+          <h1>Grey</h1>
+          <div class="title">Grey OS</div>
+        </div>
+        <div class="brand-bottom meta">
+          <span class="live-ind" title="Board is live and syncing"><span class="live-dot" aria-hidden="true"></span>Live</span>
+          <span>· last updated <span id="updated"></span> · edits sync · dates locked</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="theme-rocker-wrap" title="Wall / Night gallery">
+          <div class="theme-rocker">
+            <span class="theme-rocker-label theme-rocker-wall active">Wall</span>
+            <button type="button" class="theme-rocker-switch" id="theme-toggle" role="switch" aria-checked="false" aria-label="Switch to Night">
+              <span class="theme-rocker-thumb" aria-hidden="true">
+                <span class="groove-mid"></span>
+                <span class="groove-sm top"></span>
+                <span class="groove-sm bot"></span>
+              </span>
+            </button>
+            <span class="theme-rocker-label theme-rocker-night">Night</span>
+          </div>
+        </div>
+        <div class="milestone-card glass" id="milestone-card" title="Milestone dates are locked — only Grey Orchestrator can change them with a stated reason">
+          <div class="ms-label-row">
+            <div class="ms-label">Next milestone</div>
+            <span class="ms-index" id="ms-index">1 / 2</span>
+            <div class="ms-nav" role="group" aria-label="Browse milestones">
+              <button type="button" class="ms-nav-btn" id="ms-prev" aria-label="Previous milestone">‹</button>
+              <button type="button" class="ms-nav-btn" id="ms-next" aria-label="Next milestone">›</button>
+            </div>
+          </div>
+          <input class="ms-title" id="ms-title" type="text" value="Soft Launch — Grey Objects" aria-label="Milestone name" />
+          <div class="ms-countdown" id="ms-countdown" aria-live="polite">
+            <span class="ms-countdown-num" id="ms-countdown-num">—</span>
+            <span class="ms-countdown-label" id="ms-countdown-label">days left</span>
+          </div>
+          <div class="ms-date" id="ms-date" aria-label="Milestone date">Sunday, 11 October 2026</div>
+          <p class="ms-desc" id="ms-desc">Website goes live with the Selection Collection live; One of None marked as "coming soon."</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="view-tabs">
+      <button class="view-tab active" data-view="launch" id="view-launch">Tasks</button>
+      <button class="view-tab" data-view="collections" id="view-coll">Collections</button>
+      <button class="view-tab" data-view="business" id="view-biz">Business</button>
+      <button class="view-tab" data-view="experiments" id="view-exp">Experiments</button>
+      <button class="view-tab" data-view="identity" id="view-identity-tab">Identity System</button>
+    </div>
+
+
+    <div id="view-identity" class="hidden">
+      <div class="ids-layout">
+        <nav class="ids-index" aria-label="Identity System index">
+          <div class="ids-mono">Index</div>
+          <a href="#ids-01">01 Idea</a>
+          <a href="#ids-02">02 Audience</a>
+          <a href="#ids-03">03 Objective</a>
+          <a href="#ids-04">04 Narrative</a>
+          <a href="#ids-05">05 Voice</a>
+          <a href="#ids-06">06 Visual</a>
+          <a href="#ids-07">07 Formats</a>
+          <a href="#ids-08">08 Content system</a>
+          <a href="#ids-09">09 Do / don't</a>
+          <a href="#ids-10">10 Assets</a>
+          <a href="#ids-11">11 Production</a>
+          <a href="#ids-12">12 Launch</a>
+          <a href="#ids-13">13 Measurement</a>
+        </nav>
+        <div class="ids-wrap">
+        <header class="ids-hero">
+          <div class="ids-mono">Grey · Identity System · brand-level</div>
+          <h2>Identity System</h2>
+          <p class="ids-question">What is the story of this artifact, and what is the most natural way for that story to exist in the world?</p>
+          <p class="graphite" style="margin:0;max-width:52ch;font-size:14px;color:var(--ids-graphite)">Brand-level system for Grey / Grey Objects. Sourced from Style Reference v0.1, Design System HTML, and the communications research digest. Collection-specific launches wait on locked concept.</p>
+        </header>
+
+
+        <section class="ids-sec" id="ids-01">
+          <div>
+            <div class="ids-sec-num">§ 01</div>
+            <h3>Core idea</h3>
+          </div>
+          <div class="ids-body">
+            <div class="ids-plinth ids-quote">“Grey is not defined by what it sells. It is defined by what Grey notices, collects, transforms, and chooses to give meaning to. The store is the entry point; the gallery is the world.”</div>
+            <p>A white-cube gallery that happens to take payment. Grey notices, collects, transforms, and gives meaning. The interface stays silent so the objects can speak.</p>
+            <div class="ids-mono">Principles · settle arguments</div>
+            <div class="ids-principles">
+              <div class="ids-principle"><div class="ids-mono">1</div><div><strong>The object speaks first</strong><span>Interface, copy, and motion step back until the work is seen.</span></div></div>
+              <div class="ids-principle"><div class="ids-mono">2</div><div><strong>Rooms, not feeds</strong><span>Content is paged and stepped. Every view is complete and composed. No infinite scroll anywhere.</span></div></div>
+              <div class="ids-principle"><div class="ids-mono">3</div><div><strong>Label, don't sell</strong><span>Describe like a curator, never like an advert. Facts, provenance, process.</span></div></div>
+              <div class="ids-principle"><div class="ids-mono">4</div><div><strong>Meaning through intervention</strong><span>Show what Grey did (One of None) or what Grey noticed (Selection Collection). That distinction is always visible.</span></div></div>
+              <div class="ids-principle"><div class="ids-mono">5</div><div><strong>Commerce is quiet, not hidden</strong><span>Price and Acquire are always one glance away, but they never shout.</span></div></div>
+            </div>
+            <p class="graphite" style="font-size:14px">Universe: <strong style="color:var(--ids-ink);font-weight:500">Grey</strong> (Grey Experience). Store: <strong style="color:var(--ids-ink);font-weight:500">Grey Objects</strong>. Site is the center of gravity; social media creates awareness and points here.</p>
+            <p class="graphite" style="font-size:14px;margin-top:10px">Brand architecture — locked collections: <strong style="color:var(--ids-ink);font-weight:500">One of None</strong>; <strong style="color:var(--ids-ink);font-weight:500">Selection Collection</strong>; <strong style="color:var(--ids-ink);font-weight:500">Cyber Gunk</strong>; <strong style="color:var(--ids-ink);font-weight:500">Evergrey</strong>; <strong style="color:var(--ids-ink);font-weight:500">Objects</strong> <em>(temporary title)</em>. Dialects TBD where not locked; inherit Grey foundation. No .</p>
+          </div>
+        </section>
+
+        <section class="ids-sec" id="ids-02">
+          <div>
+            <div class="ids-sec-num">§ 02</div>
+            <h3>Audience insight</h3>
+          </div>
+          <div class="ids-body">
+            <div class="ids-gap">
+              <span class="ids-proposed">Gap · needs Creative Director</span>
+              Not established in Style Reference or Design System. No persona invented here. When who this is for and what they already believe is locked, it slots in this section.
+            </div>
+          </div>
+        </section>
+
+        <section class="ids-sec" id="ids-03">
+          <div>
+            <div class="ids-sec-num">§ 03</div>
+            <h3>Communication objective</h3>
+          </div>
+          <div class="ids-body">
+            <p>Make the site where people browse, discover, read, listen, and sometimes acquire. Social creates awareness and always points back. Commerce stays quiet, never hidden.</p>
+            <p class="graphite" style="font-size:14px">Grammar is museum, not e-commerce. Rooms, not feeds.</p>
+          </div>
+        </section>
+
+        <section class="ids-sec" id="ids-04">
+          <div>
+            <div class="ids-sec-num">§ 04</div>
+            <h3>Narrative</h3>
+          </div>
+          <div class="ids-body">
+            <p>A white-cube gallery that happens to take payment. Meaning shows through intervention or noticing. Deadpan gravity on ordinary finds is the wit. Culture is the primary sentence; checkout is a footnote.</p>
+            <div class="ids-mono">Shown</div>
+            <ul class="ids-list">
+              <li><strong>Selection, material fact, transformation</strong> — what Grey did or noticed</li>
+              <li><strong>Provenance as place and when</strong> — enough: “Found in Shoreditch, 2025.”</li>
+              <li><strong>Status as fact</strong> — Available · By Request · Not for Sale · Collected</li>
+            </ul>
+            <div class="ids-mono">Withheld</div>
+            <ul class="ids-list">
+              <li><strong>Lifestyle filler and explanatory noise</strong> — do not annotate every object to death</li>
+              <li><strong>Urgency and scarcity theatre</strong> — no “only 2 left”, countdowns, Sold Out</li>
+              <li><strong>Instagram-first default</strong> — feed earns a place only with a reason</li>
+            </ul>
+            <div class="ids-mono">Founder presence</div>
+            <p>Founder is a creative tool, not the default. Use presence when it clarifies meaning (criteria of noticing, like a gallery director). Default to silence so the object remains the hero. Borrow the register of quiet object-first peers (Aesop / The Row silence); refuse founder-as-celebrity engine.</p>
+          </div>
+        </section>
+
+        <section class="ids-sec" id="ids-05">
+          <div>
+            <div class="ids-sec-num">§ 05</div>
+            <h3>Voice &amp; language</h3>
+          </div>
+          <div class="ids-body">
+            <p>Grey writes like a wall label: exact, brief, and dry. The objects carry the wit.</p>
+            <div class="ids-mono">Tone</div>
+            <div class="ids-sliders">
+              <div class="ids-slider"><span class="end">Curatorial</span><div class="track"><i style="left:70%"></i></div><span class="end">Casual</span></div>
+              <div class="ids-slider"><span class="end">Laconic</span><div class="track"><i style="left:75%"></i></div><span class="end">Explanatory</span></div>
+              <div class="ids-slider"><span class="end">Serious</span><div class="track"><i style="left:35%"></i></div><span class="end">Playful</span></div>
+              <div class="ids-slider"><span class="end">Warm</span><div class="track"><i style="left:45%"></i></div><span class="end">Cool</span></div>
+            </div>
+            <p class="graphite" style="font-size:13px">70% curatorial · 75% laconic · 35% playful (deadpan) · 45% warm. Knowledgeable, never academic. One exact sentence beats three good ones.</p>
+            <p><span class="ids-proposed">Proposed:</span> Grey refers to itself as “Grey”, never “we”. “You” only in functional UI.</p>
+            <div class="ids-mono">Vocabulary · use / never</div>
+            <div style="overflow-x:auto">
+              <table class="ids-tbl">
+                <thead><tr><th>Use</th><th>Never</th><th>Note</th></tr></thead>
+                <tbody>
+                  <tr><td>Acquire</td><td class="never">Buy, Add to cart, Shop now</td><td>The one purchase verb</td></tr>
+                  <tr><td>Work, object</td><td class="never">Product, item, merch</td><td>Works for art pieces</td></tr>
+                                    <tr><td>Collection 01</td><td class="never">Category, range</td><td>Always numbered</td></tr>
+                  <tr><td>Collected</td><td class="never">Sold, Sold out</td><td>Marked with the red dot</td></tr>
+                  <tr><td>By Request</td><td class="never">Enquire now</td><td>Status</td></tr>
+                  <tr><td>Not for Sale</td><td class="never">Unavailable, Coming soon</td><td>Status</td></tr>
+                  <tr><td>Index</td><td class="never">Menu</td><td>Navigation takeover</td></tr>
+                  <tr><td>Provenance</td><td class="never">Description, Story</td><td>Where it came from</td></tr>
+                  <tr><td>Edition of 12</td><td class="never">Limited! Only 3 left</td><td>Edition is a fact</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="ids-mono">Label anatomy · fixed order</div>
+            <div class="ids-label">
+              <div class="ids-mono">1 of 1</div>
+              <div class="t">Parking Lot</div>
+              <div>Grey, 2026</div>
+              <div style="color:var(--ids-graphite)">Die-cast cars, wood, acrylic</div>
+              <div style="font-family:var(--ids-mono);font-size:13px;margin-top:4px">120 × 40 × 8 cm</div>
+              <div class="ids-mono" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--ids-fog)">ON-003 · One of None</div>
+              <div class="ids-mono" style="margin-top:8px">● Not for Sale</div>
+            </div>
+            <p class="graphite" style="font-size:13px">Title: italic serif, no quotation marks. Plate ≤3 sentences; full record ~80 words. <span class="ids-proposed">Accession ON- / SC- proposed.</span></p>
+            <div class="ids-mono">Mechanics</div>
+            <ul class="ids-list">
+              <li><strong>Currency</strong> — £180, never £180.00</li>
+              <li><strong>Dimensions</strong> — H × W × D in cm, real × sign</li>
+              <li><strong>Dates</strong> — year on labels; 28 September 2026 in prose; never 28/09/26</li>
+              <li><strong>Punctuation</strong> — no exclamation marks, no emoji, no ALL-CAPS sentences</li>
+            </ul>
+            <div class="ids-mono">Before / after</div>
+            <div style="overflow-x:auto">
+              <table class="ids-tbl">
+                <thead><tr><th>Where</th><th>Before</th><th>Grey</th></tr></thead>
+                <tbody>
+                  <tr><td>Object copy</td><td class="never">Grab this one-of-a-kind upcycled tote before it's gone!</td><td>A canvas tote, taken apart and rebuilt by hand. One exists.</td></tr>
+                  <tr><td>Sold state</td><td class="never">SOLD OUT</td><td>● Collected</td></tr>
+                  <tr><td>Empty cart</td><td class="never">Your cart is empty! Start shopping →</td><td>Nothing here yet. The collections are open.</td></tr>
+                  <tr><td>Instagram</td><td class="never">NEW DROP ALERT, link in bio!!</td><td>ON-004. A hotel pencil, measured against the others. Collection 01, at greyobjects.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="ids-sec" id="ids-06">
+          <div>
+            <div class="ids-sec-num">§ 06</div>
+            <h3>Visual identity summary</h3>
+          </div>
+          <div class="ids-body">
+            <p>Full interactive specs live in the Design System HTML companion and Style Reference (DESIGN.md). Summary for communications:</p>
+            <ul class="ids-list">
+              <li><strong>Colour</strong> — Wall <span class="ids-proposed">#ECECE9</span>, Plinth <span class="ids-proposed">#F7F7F5</span>, Ink #111110, Graphite, Grey, Fog; Red Dot #D7261E as rule, 8px dot, or focus only. Objects bring colour; interface never does.</li>
+              <li><strong>Type</strong> — <span class="ids-proposed">Host Grotesk</span> (building / UI / headings / body / display, 400–500), <span class="ids-proposed">Newsreader Italic</span> (work titles only), <span class="ids-proposed">IBM Plex Mono</span> (record). <strong>Eurostile locked for the wordmark only</strong> (custom-kerned SVGs are SoT). Never Eurostile for body, UI, or headlines.</li>
+              <li><strong>Shape</strong> — 0px radius everywhere; only the status dot is round. No shadows.</li>
+              <li><strong>Motion</strong> — doors and lights; slow; ease-door / ease-light; never springy.</li>
+            </ul>
+            <div class="ids-mono" style="margin-top:8px">Logo</div>
+            <p>From Style Reference · Visual · Grey foundation · Logo. <strong>Eurostile locked</strong> as the logo face (custom-kerned cut). Vector source of truth: <code>brand/grey-wordmark-naked.svg</code> + <code>brand/grey-wordmark-oval.svg</code> (PNG sheet kept as raster reference). Host Grotesk remains the building face for UI, navigation, headings, body, and display.</p>
+            <p class="graphite" style="font-size:13px;margin:0 0 8px">Visual usage guide below — tiles render from SVG with live fill colour per ground.</p>
+            <ul class="ids-list">
+              <li><strong>Oval seal</strong> — Naked wordmark is the default on everyday surfaces (nav, letterhead, UI). Oval reserved for the seal: collection covers, launch moments, rare stamped moments. At most one oval per view.</li>
+              <li><strong>Placement / inversion</strong> — Logo tone is always the direct inverse of its ground. On #FFFFFF → #000000; on #CDCDCD → #383838; on #383838 → #CDCDCD; on #000000 → #FFFFFF. No midtones. No fixed colour.</li>
+              <li><strong>Never</strong> — outline, shadow, stretch, casual pill/badge, animate letterforms, red mark, centred in nav.</li>
+              <li><strong>Clear space / min</strong> — Cap-height of the G on all sides; 14px cap height minimum on screen; top-left corner mark.</li>
+            </ul>
+
+            <div class="ids-logo-guide">
+              <div>
+                <div class="ids-mono">Logo greys</div>
+                <div class="ids-swatches" style="margin-top:8px">
+                  <div class="ids-swatch" style="background:var(--color-white)"><span class="hex" style="color:var(--color-black)">#FFFFFF</span><span class="name" style="color:var(--color-black)">White</span></div>
+                  <div class="ids-swatch" style="background:var(--color-light-gray)"><span class="hex" style="color:var(--color-dark-gray)">#CDCDCD</span><span class="name" style="color:var(--color-dark-gray)">Light gray</span></div>
+                  <div class="ids-swatch" style="background:var(--color-dark-gray)"><span class="hex" style="color:var(--color-light-gray)">#383838</span><span class="name" style="color:var(--color-light-gray)">Dark gray</span></div>
+                  <div class="ids-swatch" style="background:var(--color-black)"><span class="hex" style="color:var(--color-white)">#000000</span><span class="name" style="color:var(--color-white)">Black</span></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="ids-mono">Do — naked wordmark · inversion</div>
+                <div class="ids-tile-grid ids-tile-4" style="margin-top:8px">
+                  <div class="ids-tile"><div class="ids-tile-stage" style="background:var(--color-white)"><div class="ids-mark ink" role="img" aria-label="GREY naked on white"></div></div><div class="ids-tile-cap">Black on #FFFFFF</div></div>
+                  <div class="ids-tile"><div class="ids-tile-stage" style="background:var(--color-light-gray)"><div class="ids-mark on-cdcdcd" role="img" aria-label="GREY naked on light gray"></div></div><div class="ids-tile-cap">#383838 on #CDCDCD</div></div>
+                  <div class="ids-tile"><div class="ids-tile-stage" style="background:var(--color-dark-gray)"><div class="ids-mark on-383838" role="img" aria-label="GREY naked on dark gray"></div></div><div class="ids-tile-cap">#CDCDCD on #383838</div></div>
+                  <div class="ids-tile"><div class="ids-tile-stage" style="background:var(--color-black)"><div class="ids-mark on-black" role="img" aria-label="GREY naked on black"></div></div><div class="ids-tile-cap">White on #000000</div></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="ids-mono">Do — oval seal · once</div>
+                <div class="ids-tile-grid" style="margin-top:8px;max-width:560px">
+                  <div class="ids-tile">
+                    <div class="ids-tile-stage" style="background:var(--color-night);flex-direction:column;gap:10px;padding:16px">
+                      <div class="ids-mono" style="color:var(--color-grey);align-self:flex-start">Collection 01 · cover</div>
+                      <div class="ids-mark oval on-black" style="width:62%" role="img" aria-label="GREY oval seal on black"></div>
+                      <div style="align-self:flex-start;font-family:var(--ids-serif);font-style:italic;font-size:18px;color:#EAEAE6">One of None</div>
+                    </div>
+                    <div class="ids-tile-cap">Oval as seal on a collection cover</div>
+                  </div>
+                  <div class="ids-tile">
+                    <div class="ids-tile-stage" style="background:var(--ids-plinth);flex-direction:column;gap:14px;padding:18px;align-items:flex-start">
+                      <p style="margin:0;font-family:var(--ids-sans);font-weight:500;font-size:clamp(22px,3.2vw,32px);letter-spacing:-0.025em;color:var(--ids-ink)">Grey Rooms</p>
+                      <div style="font-family:var(--ids-sans);font-size:12px;letter-spacing:0.04em;text-transform:uppercase;color:var(--ids-ink)">Index · Collection 02</div>
+                      <div class="ids-mark ink" style="width:42%;margin-top:4px" role="img" aria-label="GREY wordmark"></div>
+                      <p class="graphite" style="margin:0;font-size:13px;max-width:28ch">Building = Host Grotesk. Mark = Eurostile kerned wordmark only.</p>
+                    </div>
+                    <div class="ids-tile-cap">Do — Host Grotesk building · Eurostile mark</div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div class="ids-mono">Don't</div>
+                <div class="ids-tile-grid ids-tile-4" style="margin-top:8px">
+                  <div class="ids-tile dont">
+                    <div class="ids-tile-stage" style="background:var(--color-white)">
+                      <div class="ids-mark on-black" role="img" aria-label="Illegible white mark on white"></div>
+                    </div>
+                    <div class="ids-tile-cap">Non-inverse · white on white</div>
+                  </div>
+                  <div class="ids-tile dont">
+                    <div class="ids-tile-stage" style="background:var(--color-wall);gap:12px;flex-direction:row;padding:10px">
+                      <div class="ids-mark oval ink" style="width:46%"></div>
+                      <div class="ids-mark oval ink" style="width:46%"></div>
+                    </div>
+                    <div class="ids-tile-cap">Oval twice in one view</div>
+                  </div>
+                  <div class="ids-tile dont">
+                    <div class="ids-tile-stage" style="background:var(--ids-plinth);align-items:flex-start">
+                      <p class="ids-euro-body-bad">Grey notices, collects, transforms, and gives meaning. This paragraph is set in Eurostile as body copy — which is wrong. Body is Host Grotesk; Eurostile is the wordmark only — never body, UI, or headlines.</p>
+                    </div>
+                    <div class="ids-tile-cap">Eurostile as body text</div>
+                  </div>
+                  <div class="ids-tile dont">
+                    <div class="ids-tile-stage" style="background:var(--color-white);gap:6px">
+                      <div class="ids-mark ink stretch" style="width:70%"></div>
+                      <div class="ids-mark recolour" style="width:48%"></div>
+                      <div class="ids-mark ink shadow" style="width:48%"></div>
+                    </div>
+                    <div class="ids-tile-cap">Stretched · recoloured · drop shadow</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p class="graphite" style="font-size:14px">Night Gallery dark tokens and type stack remain <span class="ids-proposed">proposed</span> until Creative Director sign-off.</p>
+          </div>
+        </section>
+
+        <section class="ids-sec" id="ids-07">
+          <div>
+            <div class="ids-sec-num">§ 07</div>
+            <h3>Formats &amp; channels</h3>
+          </div>
+          <div class="ids-body">
+            <div style="overflow-x:auto">
+              <table class="ids-tbl">
+                <thead><tr><th>Channel</th><th>Register</th></tr></thead>
+                <tbody>
+                  <tr><td>Object label</td><td>Most laconic. Facts only.</td></tr>
+                  <tr><td>About / editorial</td><td>Considered, fuller sentences; no empty adjectives.</td></tr>
+                  <tr><td>Film</td><td>Title card only. The film does the talking.</td></tr>
+                  <tr><td>Instagram</td><td>One line, like a wall label through a doorway. Always points back to the site.</td></tr>
+                  <tr><td>Transactional email</td><td>Plain and useful. Label format in order summaries.</td></tr>
+                  <tr><td>Errors / UI</td><td>What happened and what to do. No apology theatre.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="graphite" style="font-size:14px">Natural habitats: website rooms, labels, film, editorial, Instagram as pointer, certificates. Instagram is a format with a reason — not the default.</p>
+          </div>
+        </section>
+
+        <section class="ids-sec" id="ids-08">
+          <div>
+            <div class="ids-sec-num">§ 08</div>
+            <h3>Content system</h3>
+          </div>
+          <div class="ids-body">
+            <p>Rules that hold without a person in the room — encode the idea into caption order, status language, and what never appears.</p>
+            <ul class="ids-list">
+              <li><strong>Always</strong> — object first; fixed label order; Acquire only; rooms not feeds; point social to the site</li>
+              <li><strong>Never appears</strong> — Buy/cart urgency; Sold Out; emoji; exclamation; scarcity countdowns; lifestyle props/models; founder-as-feed default; infinite scroll copy</li>
+              <li><strong>Open vessels</strong> — marks and pages accrue meaning from objects over time; do not over-furnish the story on day one</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="ids-sec" id="ids-09">
+          <div>
+            <div class="ids-sec-num">§ 09</div>
+            <h3>Do's and don'ts</h3>
+          </div>
+          <div class="ids-body">
+            <div class="ids-mono">Do</div>
+            <ul class="ids-list">
+              <li>Fit every view in the viewport. Step between rooms.</li>
+              <li>Red only as a rule, a dot, or a focus ring. One red element per view at rest.</li>
+              <li>Work titles in Newsreader Italic, nothing else.</li>
+              <li>Every number in IBM Plex Mono, tabular.</li>
+              <li>0px radius on everything but the status dot.</li>
+              <li>Labels in the fixed anatomy order, left-aligned.</li>
+              <li>Acquire as the only purchase verb.</li>
+            </ul>
+            <div class="ids-mono">Don't</div>
+            <ul class="ids-list">
+              <li>Infinite scroll, parallax, “load more”.</li>
+              <li>Drop shadows, blur, glassmorphism, UI gradients.</li>
+              <li>Rounded corners or pill buttons.</li>
+              <li>Font weight above 500.</li>
+              <li>Red as fill, background, or text blocks.</li>
+              <li>Urgency language, emoji, exclamation marks, icon libraries.</li>
+              <li>More than one filled button in a view.</li>
+              <li>Autoplaying sound.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="ids-sec" id="ids-10">
+          <div>
+            <div class="ids-sec-num">§ 10</div>
+            <h3>Asset requirements</h3>
+          </div>
+          <div class="ids-body">
+            <ul class="ids-list">
+              <li><strong>Photography</strong> — objects as installed works; wall-grey or real wall; soft even light; no props or hands. 4:5 tiles; full-bleed plates. Selection Collection: shoot as found.</li>
+              <li><strong>Optional</strong> — monochrome find-map with one red dot; per-object ambient sound off by default.</li>
+              <li><strong>No</strong> — lifestyle, models, marble flat-lays, stock, AI-looking renders.</li>
+              <li><strong>Logo</strong> — Eurostile locked (custom-kerned). Vector SoT: <code>grey-wordmark-naked.svg</code> + <code>grey-wordmark-oval.svg</code> (PNG sheet = raster reference). Oval = seal only; inversion greys #FFFFFF / #CDCDCD / #383838 / #000000. Host Grotesk for all non-mark type.</li>
+              <li><strong>Film / certificates</strong> — Night takeover for film; certificate carries full label anatomy.</li>
+            </ul>
+            <p class="graphite" style="font-size:14px"><span class="ids-proposed">Imagery section proposed</span> until Creative Director sign-off.</p>
+          </div>
+        </section>
+
+        <section class="ids-sec" id="ids-11">
+          <div>
+            <div class="ids-sec-num">§ 11</div>
+            <h3>Production brief</h3>
+          </div>
+          <div class="ids-body">
+            <div class="ids-plinth">
+              <p style="margin:0 0 10px">Write like a curator, not an advert. Sentence case. No !, no emoji, no ALL-CAPS sentences, no urgency. £ whole amounts. Dimensions with ×. Year-only on labels. Titles italic serif; numbers mono. One filled action per view: Acquire — £{price}.</p>
+              <p class="graphite" style="margin:0;font-size:14px">Plate: what it is, what Grey did or noticed, one detail. Full record ~80 words. Point every social line back to the site.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="ids-sec" id="ids-12">
+          <div>
+            <div class="ids-sec-num">§ 12</div>
+            <h3>Launch sequence</h3>
+          </div>
+          <div class="ids-body">
+            <p>Brand system first. Artifact launches wait on locked creative concept and the Creative Director checklist (artifact plainly, locked vs open, core idea, audience, objective, reveal/withhold, natural habitat, claims, timing).</p>
+            <p class="graphite" style="font-size:14px">Soft-launch operations (dates, workstreams, Film + Selection Collection + One of None) live under the <strong style="color:var(--ids-ink);font-weight:500">Tasks</strong> tab. This Identity System does not invent a campaign calendar or feed plan.</p>
+          </div>
+        </section>
+
+        <section class="ids-sec" id="ids-13">
+          <div>
+            <div class="ids-sec-num">§ 13</div>
+            <h3>Measurement</h3>
+          </div>
+          <div class="ids-body">
+            <div class="ids-gap">
+              <span class="ids-proposed">Gap · needs Creative Director</span>
+              Not specified in Style Reference. No vanity metrics invented. Define what “the story landed” means per artifact before measuring.
+            </div>
+          </div>
+        </section>
+
+        <p class="ids-foot">Source of truth: Style Reference / DESIGN.md v0.1 · September 2026 · Design System HTML companion · Communications research digest. Red marks proposals or gaps.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-experiments" class="hidden">
+      <div class="panels">
+        <section class="panel glass">
+          <div class="drill-bar" id="drill-bar">
+            <div class="crumb" id="drill-crumb">All experiments across Grey</div>
+            <button type="button" class="btn-ghost hidden" id="btn-all">Show all</button>
+          </div>
+          <div class="toolbar">
+            <h3 style="margin:0" id="exp-heading">Experiments</h3>
+            <input class="search" id="search" type="search" placeholder="Filter experiments…" />
+            <span class="count" id="count"></span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Experiment</th>
+                  <th>Artifact</th>
+                  <th>Collection</th>
+                  <th>Stage</th>
+                  <th>Status</th>
+                  <th>Owner</th>
+                  <th>Next action</th>
+                  <th>Blocker</th>
+                  <th>Deadline</th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+            <div class="empty" id="empty" hidden>No experiments in this view.</div>
+          </div>
+          <p class="save-note">Stage / Status dropdowns sync to the live board.</p>
+        </section>
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <section class="panel glass">
+            <h3>Decisions needed</h3>
+            <div id="decisions"></div>
+          </section>
+          <section class="panel glass">
+            <h3>Team</h3>
+            <div class="team" id="team"></div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    
+    <div id="view-collections" class="hidden">
+      <section class="panel glass" id="coll-grid-panel">
+        <h3 style="margin:0 0 8px">Collections</h3>
+        <p class="coll-note">Commercial picture per collection. Click a card for detail. Sold and revenue are editable (pre-launch zeros).</p>
+        <div class="coll-grid" id="coll-grid"></div>
+      </section>
+      <section class="panel glass hidden" id="coll-detail-panel">
+        <div class="coll-detail" id="coll-detail"></div>
+      </section>
+    </div>
+
+    <div id="view-launch-tasks">
+      <div class="task-filters">
+        <div class="workstream-filter">
+          <div class="workstream-filter-label">Filter by workstream</div>
+          <nav class="tabs" id="task-tabs" aria-label="Filter by workstream"></nav>
+        </div>
+      </div>
+      <section class="grid-collections" id="workstreams"></section>
+      <section class="panel glass">
+        <div class="toolbar">
+          <h3 style="margin:0">Launch tasks</h3>
+          <input class="search" id="task-search" type="search" placeholder="Filter tasks…" />
+          <span class="count" id="task-count"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Workstream</th>
+                <th>Priority</th>
+                <th>Owner</th>
+                <th>Collaborators</th>
+                <th>Status</th>
+                <th>Due</th>
+                <th>Link</th>
+                <th>Notes</th>
+                <th>Blocker</th>
+              </tr>
+            </thead>
+            <tbody id="task-rows"></tbody>
+          </table>
+          <div class="empty" id="task-empty" hidden>No tasks in this view.</div>
+        </div>
+        <p class="save-note">Task fields sync across devices. Due dates are locked (display only). Grouped by workstream.</p>
+      </section>
+      <section class="next-move glass" style="margin-top:14px">
+        <div class="label">Soft-launch deadline</div>
+        <p><strong>Sunday, 11 October 2026</strong> — overall soft launch target for Film + Selection Collection + One of None. Collection and task dates are display-only; only Grey Orchestrator can change them after a decision with you.</p>
+      </section>
+      <section class="next-move glass" style="margin-top:14px">
+        <div class="label">Soft-launch critical path</div>
+        <p>Priority order (CD 30 Sep): 1) Host site on GitHub/Vercel · 2) Finish and align everything on the site · 3) Checklist of all assets needed for the site · 4) Phone-responsive experience · 5) Film script · 6) Make the film. Lunar / Ganjifa / lenticular and other non-launch items are parked or demoted.</p>
+      </section>
+    </div>
+
+    
+    <div id="view-business" class="hidden">
+      <section class="panel glass">
+        <div class="biz-toolbar">
+          <div>
+            <h3 style="margin:0">Business oversight</h3>
+            <p class="biz-note" style="margin-top:8px;margin-bottom:0">Day-one metrics for soft launch. Owned by <strong>Grey Strategist</strong> with Creative Director — edit metric values and numeric targets here (calendar dates stay locked).</p>
+          </div>
+          <button type="button" class="btn-add" id="btn-add-metric">Add metric</button>
+        </div>
+        <div class="metric-grid" id="metric-grid"></div>
+      </section>
+      <section class="next-move glass" style="margin-top:14px">
+        <div class="label">Strategist ownership</div>
+        <p>Populate actuals weekly, interpret against targets, and surface pricing / volume / channel recommendations into experiments. Placeholder sparklines hold history until live analytics connectors are wired.</p>
+      </section>
+    </div>
+
+    <section class="next-move glass hidden" id="exp-next">
+      <div class="label">Single most important next move</div>
+      <p>Approve the 1–2 week visual systems designer engagement and lock which One of None pieces (beyond the 2 bags) sit on the launch wall with Film + Selection Collection. Photography and stylesheet both gate a coherent soft launch.</p>
+    </section>
+    <footer>Museum-calm greyscale · liquid-glass UI · open anytime · Orchestrator maintains source data</footer>
+  </div>
+
+<script>
+const STAGES = ["Idea","Research","Idea Gate","Concept","Strategy","Prototype","Prototype mix","Asset","Production","Build ~50%","Live","Not started","Hiring","Sourcing","Launch","Learning","Scale","Evolve","Archive","Kill"];
+const EXP_STATUSES = ["Active","Idea","Made — needs photos","May graduate","3 samples · list open","Likely temporal","May spin out","Launch trio","Styling gap","Needs Grey restyle","Connected","Open","Recommended","Blocked","On track","At risk","Done","Parked"];
+const TASK_STATUSES = ["Not started","In progress","Ongoing","Parked","Done","Blocked"];
+const TASK_PRIORITIES = ["High","Medium","Low"];
+
+const SEED = {
+  updated: "28 Sep 2026, 12:29 PM IST",
+  collections: [
+    { id: "selection", name: "Selection Collection", label: "permanent", blurb: "Travel finds and curated accessible objects — the permanent storefront line.", description: "Selection Collection is Grey Objects’ permanent, accessible line: travel finds and curated objects meant to be the everyday commercial engine of the store. Assortment criteria and first candidates are still being defined ahead of soft launch.", products: 0, targetDate: "2026-10-11" },
+    { id: "one-of-none", name: "One of None", label: "permanent", blurb: "Material lab: bags, pencils, lenticular prints, and one-off experiments.", description: "One of None is the permanent material lab — one-offs and short runs that test form, material, and story. Launch-wall pieces include bags (two made, need photos), pencil art, lenticular work, and other experiments; Hot Wheels sits post-launch.", products: 2, targetDate: "2026-10-11" },
+    { id: "evergray", name: "Evergrey", label: "fluid", blurb: "Evergrey garment line leaning permanent — shirts and ties (tie is a lifecycle system test); three samples in hand.", description: "Evergrey is the garment line leaning permanent: shirts and ties as a quieter, recurring wardrobe system. Three samples exist; the first commercial list and economics are still open.", products: 3, targetDate: "2026-10-11" },
+    { id: "cyber-gunk", name: "Cyber Gunk", label: "temporal", blurb: "Likely temporal series combining old tech with modern parts.", description: "Cyber Gunk mixes old technology with modern parts. It is likely temporal rather than permanent — active vs parked and the temporal label still need Creative Director lock.", products: 0, targetDate: "2026-10-11" },
+    { id: "objects", name: "Objects (temporary)", label: "temporary", blurb: "Object line — Lunar Clock, lenticular chain, and related pieces; home still fluid vs One of None.", description: "Objects is the collection home for discrete object work. Lunar Clock (moon-phase clock) sits here as a product; whether the line stays independent, folds under One of None, or parks is still open.", products: 1, targetDate: "2026-10-11" }
+  ],
+  launchAssets: [
+    { id: "film", name: "Grey Film", blurb: "Launch asset · ~60s gallery-tour film · discovery layer for soft launch", role: "Launch trio", targetDate: "2026-10-11" }
+  ],
+  opsBuckets: [
+    { id: "infra", name: "Infra / Org", blurb: "Store, payments, GTM, hires — not a collection", label: "ops", targetDate: "2026-10-11" }
+  ],
+  experiments: [
+    { id: "sel-travel", collectionId: "selection", collection: "Selection Collection", name: "Travel finds", artifact: "Curated object assortment", stage: "Concept", status: "Active", owner: "CD · Communications", next: "Define first assortment criteria + 3–5 candidates", blocker: "Assortment undefined", deadline: "Needs CD" },
+    { id: "oon-lab", collectionId: "one-of-none", collection: "One of None", name: "Lab wall", artifact: "Launch-wall piece set", stage: "Prototype mix", status: "Active", owner: "CD · Operations", next: "Lock launch-wall pieces vs lab-only", blocker: "Launch wall unlocked", deadline: "Needs CD" },
+    { id: "oon-bags", collectionId: "one-of-none", collection: "One of None", name: "Bags", artifact: "2 physical bags", stage: "Asset", status: "Made — needs photos", owner: "CD · Communications", next: "Shoot bag photos", blocker: "Photography not done", deadline: "ASAP" },
+    { id: "oon-hotwheels", collectionId: "one-of-none", collection: "One of None", name: "Hot Wheels cards", artifact: "Framed Hot Wheels installation / cards", stage: "Concept", status: "Idea", owner: "CD · Researcher", next: "Decide active vs parked", blocker: "No brief", deadline: "Needs CD" },
+    { id: "oon-pencils", collectionId: "one-of-none", collection: "One of None", name: "Hotel / resort pencils", artifact: "Pencil time-capsule object", stage: "Concept", status: "Idea", owner: "CD · Distribution", next: "Decide active vs parked; placement if active", blocker: "No decision", deadline: "Needs CD" },
+    { id: "oon-lenticular", collectionId: "objects", collection: "Objects (temporary)", name: "Lenticular chain — parked / later", artifact: "Lenticular print edition / chain", stage: "Concept", status: "Parked", owner: "CD · Operations", next: "Revisit later — not One of None launch-wall", blocker: "Deprioritized", deadline: "Later" },
+    { id: "ev-shirts", collectionId: "evergray", collection: "Evergrey", name: "Shirts / ties", artifact: "Evergrey garment SKUs", stage: "Prototype", status: "3 samples · list open", owner: "CD · Strategist · Operations", next: "Finalize first Evergrey list + economics", blocker: "Assortment fluid", deadline: "Needs CD" },
+    { id: "cg-core", collectionId: "cyber-gunk", collection: "Cyber Gunk", name: "Old tech + modern parts", artifact: "Hybrid tech object(s)", stage: "Idea", status: "Likely temporal", owner: "Creative Director", next: "Decide active vs parked; lock temporal label", blocker: "Label open", deadline: "Needs CD" },
+    { id: "lunar", collectionId: "objects", collection: "Objects (temporary)", name: "Lunar Clock — parked / later", artifact: "Moon-phase clock object", stage: "Idea", status: "Parked", owner: "CD · Researcher · Operations", next: "Parked · Low — not soft-launch; Path A kit sourced but demoted", blocker: "Deprioritized — not launch path", deadline: "Later" },
+    { id: "ganjifa", collectionId: "one-of-none", collection: "One of None", name: "Ganjifa playing cards — parked / later", artifact: "Ganjifa card deck / system-test object", stage: "Concept", status: "Parked", owner: "CD · Researcher · Operations", next: "Parked · Low priority — not launch; Diwali 24 Oct 2026 possible future window (uncommitted)", blocker: "Deprioritized — not soft-launch", deadline: "Later · Diwali window optional" },
+    { id: "film", collectionId: "film", collection: "Launch asset", name: "Gallery-tour film", artifact: "~60s cinematic / interactive film", stage: "Concept", status: "Launch trio", owner: "CD · Communications · Distribution", next: "Lock launch role + storyboard owner", blocker: "Storyboard / owner unset", deadline: "Needs CD" },
+    { id: "site", collectionId: "infra", collection: "Infra", name: "Site / storefront", artifact: "GreyObjects.com experience", stage: "Build ~50%", status: "Styling gap", owner: "CD (Claude) · Visual designer", next: "Engage visual systems designer; production stylesheet", blocker: "Liquid-glass not productionized", deadline: "1–2 wk engagement" },
+    { id: "razorpay", collectionId: "infra", collection: "Infra", name: "Razorpay checkout UI", artifact: "Grey-styled checkout", stage: "Live", status: "Needs Grey restyle", owner: "CD · Visual designer", next: "Restyle checkout into Grey system", blocker: "Visual system unlocked", deadline: "With stylesheet" },
+    { id: "ship", collectionId: "infra", collection: "Infra", name: "Shopify + Shiprocket", artifact: "Live commerce + India shipping", stage: "Live", status: "Connected", owner: "Operations", next: "Keep green; verify rates/weights if needed", blocker: "None known", deadline: "—" },
+    { id: "newsletter", collectionId: "infra", collection: "GTM", name: "Newsletter", artifact: "Grey Dispatch list + welcome flow", stage: "Not started", status: "Open", owner: "Communications · Operations", next: "Choose tool + list capture flow", blocker: "Not started", deadline: "After soft-launch criteria" },
+    { id: "ig", collectionId: "infra", collection: "GTM", name: "Instagram", artifact: "IG presence (if launch needs it)", stage: "Not started", status: "Open", owner: "Communications · Distribution", next: "Decide if needed for launch trio or defer", blocker: "Not started", deadline: "After narrative" },
+    { id: "assistant", collectionId: "infra", collection: "Org", name: "Exec + Ops Assistant", artifact: "Hired operator (~₹30k/mo)", stage: "Hiring", status: "Open", owner: "CD · Operations", next: "Scorecard + search", blocker: "No hire yet", deadline: "Needs CD" },
+    { id: "designer", collectionId: "infra", collection: "Org", name: "Visual systems designer", artifact: "Production stylesheet (logo/palette/glass)", stage: "Sourcing", status: "Recommended", owner: "CD · Orchestrator", next: "Approve brief + engage 1–2 weeks", blocker: "Not engaged", deadline: "ASAP" }
+  ],
+  workstreams: [
+    { id: "website", name: "Website / Infra", blurb: "GitHub/Vercel host · align site · asset checklist · phone responsive · then Brevo/SEO/copy", owner: "Utkarsh (Claude) + Orchestrator + Communications", rank: 1 },
+    { id: "film", name: "Film", blurb: "Script → Higgsfield (make the film) → Instagram reel", owner: "Utkarsh + Communications", rank: 2 },
+    { id: "selection", name: "Selection Collection", blurb: "After site + film — list · photo · Shopify", owner: "Utkarsh + Operations + Communications", rank: 3 },
+    { id: "one-of-none", name: "One of None", blurb: "After site + film — bags · pencils · Hot Wheels · mystery", owner: "Utkarsh + Operations", rank: 4 },
+    { id: "objects", name: "Objects (temporary)", blurb: "Parked / later — Lunar Clock + lenticular demoted off launch path", owner: "Utkarsh + Operations", rank: 5 },
+    { id: "evergray", name: "Evergrey", blurb: "Demoted vs site+film — product list + playing cards when capacity", owner: "Utkarsh + Operations", rank: 6 }
+  ],
+  tasks: [
+    { id: "film-script", workstreamId: "film", workstream: "Film", title: "Final film theme and script", owner: "Utkarsh + Communications", status: "Not started", dependency: "—", blocker: "—" , due: "2026-10-04" },
+    { id: "film-higgs", workstreamId: "film", workstream: "Film", title: "Generate / shoot in Higgsfield", owner: "Utkarsh + Communications", status: "Not started", dependency: "Final film theme and script", blocker: "Script not locked" , due: "2026-10-06" },
+    { id: "film-reel", workstreamId: "film", workstream: "Film", title: "Cut for Instagram reel", owner: "Utkarsh + Communications", status: "Not started", dependency: "Higgsfield generate / shoot", blocker: "—" , due: "2026-10-09" },
+
+    { id: "sel-logo", workstreamId: "selection", workstream: "Selection Collection", title: "Animated logo fitting Grey design system", owner: "Utkarsh + Communications", status: "Not started", dependency: "Design language spec (or interim tokens)", blocker: "Design system not finalized" , due: "2026-10-03" },
+    { id: "sel-list", workstreamId: "selection", workstream: "Selection Collection", title: "Finalize product list from collection", owner: "Utkarsh + Operations + Communications", status: "Not started", dependency: "—", blocker: "List unfinalized" , due: "2026-10-04" },
+    { id: "sel-photo-approach", workstreamId: "selection", workstream: "Selection Collection", title: "Decide photography approach (DIY house vs hire)", owner: "Utkarsh + Operations", status: "Not started", dependency: "Finalize product list", blocker: "Different products need different setups (shoes, shirts, etc.)" , due: "2026-10-05" },
+    { id: "sel-photograph", workstreamId: "selection", workstream: "Selection Collection", title: "Photograph Selection products", owner: "Utkarsh + Operations", status: "Not started", dependency: "Photography approach decision", blocker: "—" , due: "2026-10-07" },
+    { id: "sel-shopify", workstreamId: "selection", workstream: "Selection Collection", title: "Add to Shopify with captions / details", owner: "Utkarsh + Operations + Communications", status: "Not started", dependency: "Photograph Selection products", blocker: "—" , due: "2026-10-08" },
+    { id: "sel-site-fetch", workstreamId: "selection", workstream: "Selection Collection", title: "Site fetches latest Selection products", owner: "Utkarsh (Claude)", status: "Not started", dependency: "Shopify listings live", blocker: "—" , due: "2026-10-09" },
+
+    { id: "oon-bags-photo", workstreamId: "one-of-none", workstream: "One of None", title: "Bags ×2 — photograph", owner: "Utkarsh + Operations", status: "Not started", dependency: "Same photography cycle as Selection Collection", blocker: "Photos needed" , due: "2026-10-04" },
+    { id: "oon-pencil-art", workstreamId: "one-of-none", workstream: "One of None", title: "Pencil artwork — create", owner: "Utkarsh + Operations", status: "Not started", dependency: "—", blocker: "Not started · needs creation" , due: "2026-10-05" },
+    { id: "oon-hotwheels", workstreamId: "one-of-none", workstream: "One of None", title: "Hot Wheels cards", owner: "Utkarsh + Operations", status: "Not started", dependency: "Can follow after launch", blocker: "Post-launch OK" , due: "2026-10-06" },
+    { id: "oon-mystery", workstreamId: "one-of-none", workstream: "One of None", title: "1 mystery product — TBD", owner: "Utkarsh + Operations", status: "Not started", dependency: "CD defines product", blocker: "TBD" , due: "2026-10-10" },
+    { id: "obj-lenticular", workstreamId: "objects", workstream: "Objects (temporary)", title: "Lenticular chain — parked / later", owner: "Utkarsh + Operations", status: "Parked", dependency: "—", blocker: "Not near-term — out of One of None launch", priority: "Low" },
+    { id: "ev-product-list", workstreamId: "evergray", workstream: "Evergrey", title: "Come up with the list of products in the Evergrey collection", owner: "Utkarsh + Operations", status: "Not started", dependency: "—", blocker: "—", priority: "Low", due: "2026-10-04" },
+    { id: "ev-playing-cards", workstreamId: "evergray", workstream: "Evergrey", title: "Design a set of normal playing cards", owner: "Utkarsh + Operations", status: "Not started", dependency: "—", blocker: "—", priority: "Low", due: "2026-10-10" },
+
+    { id: "web-host", workstreamId: "website", workstream: "Website / Infra", title: "Host website on GitHub/Vercel", owner: "Utkarsh (Claude) + Orchestrator", status: "Not started", dependency: "Approve GitHub connect card in Cursor; locate local site project", blocker: "GitHub not connected in Cursor · site only on laptop" , due: "2026-10-02" },
+    { id: "web-site-align", workstreamId: "website", workstream: "Website / Infra", title: "Finish and align everything on the site", owner: "Utkarsh (Claude) + Communications", status: "Not started", dependency: "Host live on GitHub/Vercel", blocker: "Site incomplete · alignment open" , due: "2026-10-04" },
+    { id: "web-asset-checklist", workstreamId: "website", workstream: "Website / Infra", title: "Checklist of all assets needed for the site", owner: "Utkarsh + Communications + Orchestrator", status: "Not started", dependency: "Site scope locked", blocker: "Asset inventory not drafted" , due: "2026-10-03" },
+    { id: "web-responsive", workstreamId: "website", workstream: "Website / Infra", title: "Make the experience responsive on the phone", owner: "Utkarsh (Claude) + Communications", status: "Not started", dependency: "Site pages largely in place", blocker: "Mobile pass not done" , due: "2026-10-05" },
+    { id: "web-design-spec", workstreamId: "website", workstream: "Website / Infra", title: "Finalize Grey design language spec (typography, button radius, shadows, visual foundations)", owner: "Utkarsh + visual systems designer + Communications", status: "Not started", dependency: "Designer engagement or CD lock", blocker: "Spec incomplete · styling gap — needs type, radius, shadows, foundations locked" , due: "2026-10-03" },
+    { id: "web-newsletter", workstreamId: "website", workstream: "Website / Infra", title: "Set up newsletter with Brevo", owner: "Utkarsh + Communications", status: "Not started", dependency: "Website host live (or embed on staging)", blocker: "From-address + verified domain (SPF/DKIM) before live · list + logo CDN still open" , due: "2026-10-05" },
+    { id: "web-copy-review", workstreamId: "website", workstream: "Website / Infra", title: "Review all captions and copy", owner: "Utkarsh + Communications", status: "Not started", dependency: "Product lists + photography captions drafted", blocker: "—" , due: "2026-10-07" },
+    { id: "web-seo", workstreamId: "website", workstream: "Website / Infra", title: "SEO and AI search optimization", owner: "Utkarsh (Claude) + Communications", status: "Not started", dependency: "Core pages / product URLs exist", blocker: "—" , due: "2026-10-09" },
+    { id: "obj-lunar", workstreamId: "objects", workstream: "Objects (temporary)", title: "Lunar Clock Path A — parked / later", owner: "Utkarsh + Operations + Researcher", status: "Parked", dependency: "—", blocker: "Deprioritized — not soft-launch", priority: "Low" }
+  ],
+
+  businessMetrics: [
+    { id: "visitors", name: "Site visitors", unit: "count", current: "0", target: "2000", history: [0,0,0,0,0,0,0], owner: "Strategist" },
+    { id: "newsletter", name: "Newsletter signups", unit: "count", current: "0", target: "150", history: [0,0,0,0,0,0,0], owner: "Strategist · Communications" },
+    { id: "ig", name: "Instagram followers", unit: "count", current: "0", target: "500", history: [0,0,0,0,0,0,0], owner: "Strategist · Distribution" },
+    { id: "cvr", name: "Conversion rate", unit: "%", current: "0", target: "1.5", history: [0,0,0,0,0,0,0], owner: "Strategist" },
+    { id: "aov", name: "Average order value", unit: "₹", current: "0", target: "3500", history: [0,0,0,0,0,0,0], owner: "Strategist" },
+    { id: "repeat", name: "Repeat purchase rate", unit: "%", current: "0", target: "10", history: [0,0,0,0,0,0,0], owner: "Strategist" },
+    { id: "reach", name: "Brand reach / content output", unit: "pieces", current: "0", target: "12", history: [0,0,0,0,0,0,0], owner: "Strategist · Communications" }
+  ],
+  decisions: [
+    "CD priority (30 Sep): 1) GitHub/Vercel host live 2) Finish + align site 3) Site asset checklist 4) Phone responsive 5) Film script 6) Make the film. Selection / One of None trail after. Lunar / Ganjifa / lenticular parked or demoted.",
+
+    "Parked / later: Lunar Clock Path A, Ganjifa, lenticular — not soft-launch blockers.",
+    "Collection labels: locked five-name set — One of None; Selection Collection; Cyber Gunk; Evergrey; Objects (temporary title). Dialects TBD.",
+    "Objects: Lunar Clock parked under Objects until CD reopens.",
+    "One of None launch wall: which pieces ship with Film + Selection Collection (bags need photos; lenticular / others)?",
+    "Evergrey first list: which of the 3 samples + shirts/ties open the assortment?",
+    "Visual systems designer: approve 1–2 week engagement to refine existing logo / palette / liquid-glass?",
+    "Assistant hire: authorize search at ~₹30k/mo now or after launch trio soft criteria?",
+    "Photography: DIY house setup vs hire — and per-category setups (shoes, shirts, bags, etc.)?"
+  ],
+  team: [
+    { name: "Utkarsh", role: "Creative Director", own: "Taste, locks, Higgsfield, Claude site, photography call" },
+    { name: "Grey Orchestrator", role: "Orchestrator", own: "This board · blockers · handoffs" },
+    { name: "Grey Researcher", role: "Researcher", own: "Feasibility when CD activates ideas" },
+    { name: "Grey Strategist", role: "Strategist", own: "Evergrey economics · MOQ/price" },
+    { name: "Grey Operations", role: "Operations", own: "Selection/OON ops · sourcing · shoots" },
+    { name: "Grey Communications", role: "Communications", own: "Film · captions · newsletter · briefs" },
+    { name: "Grey Distribution", role: "Distribution & Participation", own: "Placement · Film participation · IG if needed" },
+    { name: "Exec + Ops Assistant", role: "Hire pending · ~₹30k/mo", own: "Physical chase once hired" },
+    { name: "Visual systems designer", role: "Short engagement pending", own: "Design language spec · site + checkout" }
+  ]
+};
+
+const API = "/api/state";
+let experiments = SEED.experiments.map(e => ({ ...e }));
+const TASK_PRIORITY_SEED = {
+  "web-host": "High", "web-site-align": "High", "web-asset-checklist": "High", "web-responsive": "High",
+  "web-design-spec": "Medium", "web-newsletter": "Medium",
+  "web-copy-review": "Low", "web-seo": "Low",
+  "film-script": "High", "film-higgs": "High",
+  "film-reel": "Medium",
+  "sel-logo": "Low", "sel-list": "Medium", "sel-photo-approach": "Low", "sel-photograph": "Low",
+  "sel-shopify": "Low", "sel-site-fetch": "Low",
+  "oon-bags-photo": "Medium", "oon-pencil-art": "Low", "oon-hotwheels": "Low",
+  "oon-mystery": "Low",
+  "obj-lenticular": "Low", "obj-lunar": "Low",
+  "ev-product-list": "Low", "ev-playing-cards": "Low"
+};
+let tasks = SEED.tasks.map(t => ({ ...t, priority: t.priority || TASK_PRIORITY_SEED[t.id] || "Medium" }));
+let filter = "all";
+let taskFilter = "all";
+let query = "";
+let taskQuery = "";
+let currentView = "launch";
+
+const expTabs = [
+  { id: "all", label: "Full board" },
+  { id: "selection", label: "Selection Collection" },
+  { id: "one-of-none", label: "One of None" },
+  { id: "evergray", label: "Evergrey" },
+  { id: "cyber-gunk", label: "Cyber Gunk" },
+  { id: "objects", label: "Objects (temporary)" },
+  { id: "film", label: "Film" },
+  { id: "infra", label: "Infra / Org" },
+  { id: "decisions", label: "Decisions" }
+];
+const taskTabs = [
+  { id: "all", label: "All tasks" },
+  { id: "website", label: "Website / Infra" },
+  { id: "film", label: "Film" },
+  { id: "selection", label: "Selection Collection" },
+  { id: "one-of-none", label: "One of None" },
+  { id: "objects", label: "Objects (temporary)" },
+  { id: "evergray", label: "Evergrey" }
+];
+function applyExpEdits(edits) {
+  return SEED.experiments.map(seed => {
+    const s = (edits && edits[seed.id]) || {};
+    return { ...seed, stage: s.stage || seed.stage, status: s.status || seed.status };
+  });
+}
+function applyTaskEdits(edits) {
+  return SEED.tasks.map(seed => {
+    const s = (edits && edits[seed.id]) || {};
+    return {
+      ...seed,
+      status: s.status || seed.status,
+      priority: s.priority || seed.priority || TASK_PRIORITY_SEED[seed.id] || "Medium",
+      due: (s.due != null && String(s.due).trim()) ? String(s.due).trim() : (seed.due || "")
+    };
+  });
+}
+function formatTaskDue(iso) {
+  if (!iso) return { text: "—", cls: "due-locked empty" };
+  const d = new Date(iso + "T12:00:00");
+  if (Number.isNaN(d.getTime())) return { text: iso, cls: "due-locked" };
+  const text = d.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
+  const today = new Date();
+  const todayIST = new Date(today.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+  todayIST.setHours(0,0,0,0);
+  const dueDay = new Date(iso + "T12:00:00");
+  const cls = dueDay < todayIST ? "due-locked overdue" : "due-locked";
+  return { text, cls };
+}
+
+let cardDates = {};
+function initCardDates(saved) {
+  cardDates = {};
+  [...SEED.collections, ...SEED.launchAssets, ...SEED.opsBuckets].forEach(c => {
+    cardDates[c.id] = (saved && saved[c.id]) || c.targetDate || "";
+  });
+}
+
+const MILESTONES = [
+  {
+    id: "soft-launch",
+    title: "Soft Launch — Grey Objects",
+    date: "2026-10-11",
+    description: "Website goes live with the Selection Collection live; One of None marked as \"coming soon.\""
+  },
+  {
+    id: "oon-launch",
+    title: "One of None Launch",
+    date: "2026-10-18",
+    description: "One of None collection goes live."
+  }
+];
+let milestoneIndex = 0;
+// Persisted soft-launch milestone (overall deadline / API) — always Soft Launch dates
+let milestone = { title: MILESTONES[0].title, date: MILESTONES[0].date };
+
+function currentMilestone() {
+  return MILESTONES[milestoneIndex] || MILESTONES[0];
+}
+function nearestMilestoneIndex() {
+  let best = 0;
+  let bestDays = Infinity;
+  MILESTONES.forEach((m, i) => {
+    const d = daysUntil(m.date);
+    if (d === null) return;
+    if (d >= 0 && d < bestDays) { bestDays = d; best = i; }
+  });
+  // If all past, show last
+  if (bestDays === Infinity) {
+    const allPast = MILESTONES.every(m => { const d = daysUntil(m.date); return d !== null && d < 0; });
+    if (allPast) return MILESTONES.length - 1;
+  }
+  return best;
+}
+function greetingForNow() {
+  // Asia/Kolkata local hour
+  const hour = Number(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata", hour: "numeric", hour12: false }));
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
+function updateGreeting() {
+  const el = document.getElementById("greeting");
+  if (el) el.textContent = greetingForNow();
+}
+
+function daysUntil(iso) {
+  if (!iso) return null;
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const target = new Date(iso + "T00:00:00");
+  return Math.round((target - today) / 86400000);
+}
+
+function formatMilestoneLabel(iso) {
+  if (!iso) return "";
+  const d = new Date(iso + "T00:00:00");
+  return d.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
+}
+
+function renderMilestone() {
+  const titleEl = document.getElementById("ms-title");
+  const dateEl = document.getElementById("ms-date");
+  const countEl = document.getElementById("ms-countdown");
+  const numEl = document.getElementById("ms-countdown-num");
+  const labelEl = document.getElementById("ms-countdown-label");
+  const descEl = document.getElementById("ms-desc");
+  const indexEl = document.getElementById("ms-index");
+  if (!titleEl || !dateEl || !countEl || !numEl || !labelEl) return;
+  const m = currentMilestone();
+  titleEl.value = m.title || "";
+  dateEl.textContent = formatMilestoneLabel(m.date) || "Date locked";
+  if (descEl) descEl.textContent = m.description || "";
+  if (indexEl) indexEl.textContent = `${milestoneIndex + 1} / ${MILESTONES.length}`;
+  const days = daysUntil(m.date);
+  countEl.classList.remove("urgent", "past");
+  if (days === null) {
+    numEl.textContent = "—";
+    labelEl.textContent = "set a date";
+  } else if (days > 1) {
+    numEl.textContent = String(days);
+    labelEl.textContent = "days left";
+    if (days <= 14) countEl.classList.add("urgent");
+  } else if (days === 1) {
+    numEl.textContent = "1";
+    labelEl.textContent = "day left";
+    countEl.classList.add("urgent");
+  } else if (days === 0) {
+    numEl.textContent = "0";
+    labelEl.textContent = "today";
+    countEl.classList.add("urgent");
+  } else {
+    numEl.textContent = String(Math.abs(days));
+    labelEl.textContent = Math.abs(days) === 1 ? "day past" : "days past";
+    countEl.classList.add("past");
+  }
+  // Overall launch banner always reflects Soft Launch (first milestone / persisted milestone)
+  const soft = MILESTONES.find(x => x.id === "soft-launch") || MILESTONES[0];
+  const banner = document.getElementById("launch-deadline");
+  if (banner) {
+    banner.innerHTML = `<span class="label">Overall launch deadline</span><strong>${formatMilestoneLabel(soft.date) || "Set a date"}</strong>`;
+  }
+}
+
+function shiftMilestone(delta) {
+  const n = MILESTONES.length;
+  if (!n) return;
+  milestoneIndex = (milestoneIndex + delta + n) % n;
+  renderMilestone();
+}
+
+function bindMilestoneEditors() {
+  const titleEl = document.getElementById("ms-title");
+  const prevBtn = document.getElementById("ms-prev");
+  const nextBtn = document.getElementById("ms-next");
+  if (prevBtn) prevBtn.addEventListener("click", () => shiftMilestone(-1));
+  if (nextBtn) nextBtn.addEventListener("click", () => shiftMilestone(1));
+  if (!titleEl) return;
+  const save = async () => {
+    const m = currentMilestone();
+    m.title = titleEl.value.trim() || m.title;
+    // Persist Soft Launch title/date to API milestone field
+    if (m.id === "soft-launch") {
+      milestone = { title: m.title, date: m.date || "2026-10-11" };
+    }
+    renderMilestone();
+    try { await persistAll(); } catch (err) { alert("Could not save milestone — retry."); console.error(err); }
+  };
+  titleEl.addEventListener("change", save);
+  titleEl.addEventListener("blur", save);
+}
+
+function formatLockedDate(iso) {
+  if (!iso) return "—";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return formatMilestoneLabel(iso);
+  return iso; // already a label like "Needs CD"
+}
+function dateFieldHTML(id) {
+  const val = cardDates[id] || "";
+  return `<div class="card-date-row" data-stop-nav="1" title="Dates are locked — only Grey Orchestrator can change them after a decision with Creative Director">
+    <label>Target</label>
+    <div class="card-date" id="date-${id}">${formatLockedDate(val)}</div>
+  </div>`;
+}
+function bindCardDates(root) {
+  // no-op: dates are read-only in the UI
+}
+
+
+const LS_KEY = "grey-os-state";
+/** null = unknown, true = Express /api/state reachable, false = use localStorage (Pages / offline) */
+let apiAvailable = null;
+
+function seedFallbackState() {
+  return {
+    edits: {},
+    taskEdits: {},
+    cardDates: {},
+    milestone: { title: "Soft Launch — Grey Objects", date: "2026-10-11" },
+    metrics: null,
+    collectionCommerce: {},
+    updated: null,
+    _source: "seed"
+  };
+}
+
+function readLocalState() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === "object") return parsed;
+  } catch (err) {
+    console.warn("localStorage read failed", err);
+  }
+  return null;
+}
+
+function writeLocalState(payload) {
+  const state = Object.assign({}, payload, { updated: new Date().toISOString(), _source: "localStorage" });
+  localStorage.setItem(LS_KEY, JSON.stringify(state));
+  return state;
+}
+
+function stampUpdated(iso) {
+  const el = document.getElementById("updated");
+  if (el && iso) el.textContent = new Date(iso).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
+}
+
+async function fetchState() {
+  try {
+    const res = await fetch(API, { cache: "no-store" });
+    if (!res.ok) throw new Error("state fetch failed");
+    apiAvailable = true;
+    return res.json();
+  } catch (err) {
+    apiAvailable = false;
+    // GitHub Pages / static: ship state.json beside index.html
+    try {
+      const staticRes = await fetch("./state.json", { cache: "no-store" });
+      if (staticRes.ok) {
+        const staticState = await staticRes.json();
+        console.warn("API unavailable — loaded ./state.json (static host)", err);
+        return staticState;
+      }
+    } catch (_) {}
+    const local = readLocalState();
+    if (local) {
+      console.warn("API unavailable — loaded grey-os-state from localStorage", err);
+      return local;
+    }
+    console.warn("API unavailable — seeding from embedded SEED (no localStorage yet)", err);
+    return seedFallbackState();
+  }
+}
+
+async function persistAll() {
+  const edits = {};
+  experiments.forEach(e => { edits[e.id] = { stage: e.stage, status: e.status }; });
+  const taskEdits = {};
+  tasks.forEach(t => { taskEdits[t.id] = { status: t.status }; });
+  const payload = { edits, taskEdits, cardDates, milestone, metrics, collectionCommerce, updatedBy: "utkarsh-dashboard" };
+
+  if (apiAvailable !== false) {
+    try {
+      const res = await fetch(API, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error("state save failed");
+      apiAvailable = true;
+      const saved = await res.json();
+      stampUpdated(saved.updated);
+      return;
+    } catch (err) {
+      apiAvailable = false;
+      console.warn("API save failed — falling back to localStorage", err);
+    }
+  }
+
+  const saved = writeLocalState(payload);
+  stampUpdated(saved.updated);
+}
+
+function ensureOptions(list, current) {
+  return list.includes(current) ? list : [current, ...list];
+}
+function labelClass(label) {
+  if (label === "permanent") return "permanent";
+  if (label === "temporal") return "temporal";
+  return "fluid";
+}
+function selectHTML(kind, id, value, options) {
+  const opts = ensureOptions(options, value).map(o =>
+    `<option value="${String(o).replace(/"/g, '&quot;')}" ${o === value ? "selected" : ""}>${o}</option>`
+  ).join("");
+  return `<select class="cell-select" data-kind="${kind}" data-id="${id}" aria-label="${kind}">${opts}</select>`;
+}
+
+function setView(view) {
+  currentView = view;
+  const idBtn = document.getElementById("view-identity-tab");
+  if (idBtn) idBtn.classList.toggle("active", view === "identity");
+  document.getElementById("view-exp").classList.toggle("active", view === "experiments");
+  const collBtn = document.getElementById("view-coll");
+  if (collBtn) collBtn.classList.toggle("active", view === "collections");
+  document.getElementById("view-launch").classList.toggle("active", view === "launch");
+  const bizBtn = document.getElementById("view-biz");
+  if (bizBtn) bizBtn.classList.toggle("active", view === "business");
+  const idView = document.getElementById("view-identity");
+  if (idView) idView.classList.toggle("hidden", view !== "identity");
+  document.getElementById("view-experiments").classList.toggle("hidden", view !== "experiments");
+  const collView = document.getElementById("view-collections");
+  if (collView) collView.classList.toggle("hidden", view !== "collections");
+  document.getElementById("view-launch-tasks").classList.toggle("hidden", view !== "launch");
+  const bizView = document.getElementById("view-business");
+  if (bizView) bizView.classList.toggle("hidden", view !== "business");
+  const expNext = document.getElementById("exp-next");
+  if (expNext) expNext.classList.toggle("hidden", view !== "experiments");
+}
+
+function collectionStats(collectionId) {
+  const rows = experiments.filter(e => e.collectionId === collectionId);
+  const total = rows.length;
+  const done = rows.filter(e => ["Done","Connected","Parked","Archive","Kill"].includes(e.status)).length;
+  const progress = rows.filter(e => !["Done","Connected","Parked","Archive","Kill","Not started","Idea","Open"].includes(e.status)).length;
+  const notStarted = total - done - progress;
+  return { total, done, progress, notStarted };
+}
+
+function progressHTML(stats) {
+  const pct = stats.total ? Math.round((stats.done / stats.total) * 100) : 0;
+  const mixed = stats.progress > 0 ? "mixed" : "";
+  return `<div class="stat">${stats.total} experiments · ${stats.done} done · ${stats.progress} in motion</div>
+    <div class="progress-track"><div class="progress-fill ${mixed}" style="width:${Math.max(pct, stats.total?4:0)}%"></div></div>`;
+}
+
+let collectionCommerce = {};
+let openCollectionId = null;
+
+function initCollectionCommerce(saved) {
+  const next = {};
+  SEED.collections.forEach(c => {
+    const prev = (saved && saved[c.id]) || {};
+    next[c.id] = {
+      products: prev.products != null ? prev.products : (c.products != null ? c.products : 0),
+      sold: prev.sold != null ? prev.sold : 0,
+      revenue: prev.revenue != null ? prev.revenue : 0,
+      notes: prev.notes != null ? prev.notes : ""
+    };
+  });
+  collectionCommerce = next;
+}
+
+function formatINR(n) {
+  const num = Number(n) || 0;
+  try {
+    return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(num);
+  } catch {
+    return "₹" + num;
+  }
+}
+
+function showCollectionGrid() {
+  openCollectionId = null;
+  const grid = document.getElementById("coll-grid-panel");
+  const detail = document.getElementById("coll-detail-panel");
+  if (grid) grid.classList.remove("hidden");
+  if (detail) detail.classList.add("hidden");
+}
+
+function showCollectionDetail(id) {
+  openCollectionId = id;
+  const grid = document.getElementById("coll-grid-panel");
+  const detail = document.getElementById("coll-detail-panel");
+  if (grid) grid.classList.add("hidden");
+  if (detail) detail.classList.remove("hidden");
+  renderCollectionDetail(id);
+}
+
+function bindCommerceInputs(root, onAfter) {
+  root.querySelectorAll("input[data-field], textarea[data-field]").forEach(inp => {
+    const save = async () => {
+      const id = inp.dataset.id;
+      const field = inp.dataset.field;
+      if (!collectionCommerce[id]) collectionCommerce[id] = { products: 0, sold: 0, revenue: 0, notes: "" };
+      if (field === "notes") {
+        collectionCommerce[id].notes = inp.value;
+      } else {
+        const n = Number(inp.value);
+        collectionCommerce[id][field] = Number.isFinite(n) ? n : 0;
+      }
+      try {
+        await persistAll();
+        if (onAfter) onAfter();
+      } catch (err) {
+        alert("Could not save — retry.");
+        console.error(err);
+      }
+    };
+    inp.addEventListener("click", e => e.stopPropagation());
+    inp.addEventListener("mousedown", e => e.stopPropagation());
+    inp.addEventListener("change", save);
+    inp.addEventListener("blur", save);
+  });
+}
+
+function renderCollectionCards() {
+  const el = document.getElementById("coll-grid");
+  if (!el) return;
+  document.getElementById("updated").textContent = SEED.updated;
+  if (openCollectionId) {
+    showCollectionDetail(openCollectionId);
+    return;
+  }
+  showCollectionGrid();
+  el.innerHTML = SEED.collections.map(c => {
+    const m = collectionCommerce[c.id] || { products: c.products || 0, sold: 0, revenue: 0, notes: "" };
+    return `<article class="coll-card glass" data-id="${c.id}" role="button" tabindex="0" aria-label="Open ${c.name}">
+      <div class="top" style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+        <h2 class="coll-name">${c.name}</h2>
+        <span class="badge ${labelClass(c.label)}">${c.label}</span>
+      </div>
+      <p class="coll-desc">${c.blurb}</p>
+      <div class="coll-metrics">
+        <div class="coll-metric">
+          <label>Products</label>
+          <div class="val">${m.products}</div>
+        </div>
+        <div class="coll-metric">
+          <label>Sold</label>
+          <input data-field="sold" data-id="${c.id}" type="number" min="0" step="1" value="${m.sold}" aria-label="${c.name} sold" />
+        </div>
+        <div class="coll-metric">
+          <label>Revenue (₹)</label>
+          <input data-field="revenue" data-id="${c.id}" type="number" min="0" step="1" value="${m.revenue}" aria-label="${c.name} revenue" />
+        </div>
+      </div>
+    </article>`;
+  }).join("");
+
+  bindCommerceInputs(el);
+
+  el.querySelectorAll(".coll-card").forEach(card => {
+    const open = () => showCollectionDetail(card.dataset.id);
+    card.addEventListener("click", e => {
+      if (e.target.closest("input, textarea, button, a, select, label")) return;
+      open();
+    });
+    card.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        open();
+      }
+    });
+  });
+}
+
+function renderCollectionDetail(id) {
+  const panel = document.getElementById("coll-detail");
+  if (!panel) return;
+  const c = SEED.collections.find(x => x.id === id);
+  if (!c) { showCollectionGrid(); return; }
+  document.getElementById("updated").textContent = SEED.updated;
+  const m = collectionCommerce[id] || { products: c.products || 0, sold: 0, revenue: 0, notes: "" };
+  const rows = experiments.filter(e => e.collectionId === id);
+  const notesEsc = String(m.notes || "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const table = rows.length ? `<div class="table-wrap"><table class="coll-exp-table">
+    <thead><tr><th>Product / experiment</th><th>Artifact</th><th>Stage</th><th>Status</th><th>Next</th></tr></thead>
+    <tbody>
+      ${rows.map(r => `<tr>
+        <td><strong>${r.name}</strong></td>
+        <td class="muted">${r.artifact}</td>
+        <td>${selectHTML("stage", r.id, r.stage, STAGES)}</td>
+        <td>${selectHTML("status", r.id, r.status, EXP_STATUSES)}</td>
+        <td class="muted">${r.next}</td>
+      </tr>`).join("")}
+    </tbody>
+  </table></div>` : `<p class="coll-exp-empty">No experiments linked to this collection yet.</p>`;
+
+  panel.innerHTML = `
+    <div class="coll-detail-head">
+      <div>
+        <button type="button" class="btn-ghost" id="btn-coll-back">← Collections</button>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap">
+          <h2 class="coll-name">${c.name}</h2>
+          <span class="badge ${labelClass(c.label)}">${c.label}</span>
+        </div>
+      </div>
+    </div>
+    <p class="coll-detail-desc">${c.description || c.blurb}</p>
+    <div class="coll-detail-metrics">
+      <div class="coll-metric">
+        <label>Products</label>
+        <div class="val">${m.products}</div>
+      </div>
+      <div class="coll-metric">
+        <label>Sold</label>
+        <input data-field="sold" data-id="${c.id}" type="number" min="0" step="1" value="${m.sold}" aria-label="Sold" />
+      </div>
+      <div class="coll-metric">
+        <label>Revenue (₹)</label>
+        <input data-field="revenue" data-id="${c.id}" type="number" min="0" step="1" value="${m.revenue}" aria-label="Revenue" />
+      </div>
+      <div class="coll-metric">
+        <label>Revenue shown</label>
+        <div class="val">${formatINR(m.revenue)}</div>
+      </div>
+    </div>
+    <div>
+      <h3 style="margin:0 0 10px">Inside this collection</h3>
+      ${table}
+    </div>
+    <div>
+      <h3 style="margin:0 0 10px">Notes</h3>
+      <textarea class="coll-notes" data-field="notes" data-id="${c.id}" placeholder="Operating notes for this collection…">${notesEsc}</textarea>
+    </div>`;
+
+  document.getElementById("btn-coll-back")?.addEventListener("click", () => {
+    openCollectionId = null;
+    renderCollectionCards();
+  });
+
+  bindCommerceInputs(panel, () => {
+    // refresh revenue shown label without leaving detail
+    const shown = panel.querySelector(".coll-detail-metrics .coll-metric:last-child .val");
+    const rev = collectionCommerce[id]?.revenue;
+    if (shown) shown.textContent = formatINR(rev);
+  });
+
+  panel.querySelectorAll("select.cell-select").forEach(sel => {
+    sel.addEventListener("change", async () => {
+      const row = experiments.find(e => e.id === sel.dataset.id);
+      if (!row) return;
+      row[sel.dataset.kind] = sel.value;
+      sel.disabled = true;
+      try { await persistAll(); }
+      catch (err) { alert("Could not save — retry."); console.error(err); }
+      finally { sel.disabled = false; }
+    });
+  });
+}
+
+function renderCollections() { /* legacy no-op — cards live under Collections tab */ }
+function renderLaunchAssets() { /* removed from Experiments */ }
+function renderOpsCards() { /* removed from Experiments */ }
+
+function renderDrill() {
+  const crumb = document.getElementById("drill-crumb");
+  const btn = document.getElementById("btn-all");
+  const heading = document.getElementById("exp-heading");
+  if (!crumb) return;
+  if (filter === "all" || filter === "decisions") {
+    crumb.innerHTML = `All experiments across Grey`;
+    btn.classList.add("hidden");
+    heading.textContent = "Experiments";
+  } else {
+    const col = SEED.collections.find(c => c.id === filter);
+    const asset = SEED.launchAssets.find(a => a.id === filter);
+    const ops = SEED.opsBuckets.find(c => c.id === filter);
+    const name = (col || asset || ops || {}).name || filter;
+    const kind = asset ? "Launch asset" : ops ? "Ops" : "Collection";
+    crumb.innerHTML = `${kind} · <strong>${name}</strong>`;
+    btn.classList.remove("hidden");
+    heading.textContent = `Inside · ${name}`;
+  }
+}
+function filteredExperiments() {
+  return experiments.filter(r => {
+    const byTab = filter === "all" || filter === "decisions" || r.collectionId === filter;
+    const q = query.trim().toLowerCase();
+    const byQ = !q || [r.collection, r.name, r.artifact, r.stage, r.status, r.owner, r.next, r.blocker].join(" ").toLowerCase().includes(q);
+    return byTab && byQ;
+  });
+}
+function renderExpRows() {
+  const rows = filteredExperiments();
+  const tbody = document.getElementById("rows");
+  const empty = document.getElementById("empty");
+  document.getElementById("count").textContent = `${rows.length} rows`;
+  if (!rows.length) { tbody.innerHTML = ""; empty.hidden = false; return; }
+  empty.hidden = true;
+  tbody.innerHTML = rows.map(r => `
+    <tr data-id="${r.id}">
+      <td><strong>${r.name}</strong></td>
+      <td class="muted">${r.artifact}</td>
+      <td>${r.collection}</td>
+      <td>${selectHTML("stage", r.id, r.stage, STAGES)}</td>
+      <td>${selectHTML("status", r.id, r.status, EXP_STATUSES)}</td>
+      <td class="muted">${r.owner}</td>
+      <td>${r.next}</td>
+      <td class="muted">${r.blocker}</td>
+      <td class="muted" title="Deadlines are locked">${r.deadline}</td>
+    </tr>`).join("");
+  tbody.querySelectorAll("select.cell-select").forEach(sel => {
+    sel.addEventListener("change", async () => {
+      const row = experiments.find(e => e.id === sel.dataset.id);
+      if (!row) return;
+      row[sel.dataset.kind] = sel.value;
+      sel.disabled = true;
+      try { await persistAll(); } catch (err) { alert("Could not save — retry."); console.error(err); }
+      finally { sel.disabled = false; }
+    });
+  });
+}
+function renderDecisions() {
+  document.getElementById("decisions").innerHTML = SEED.decisions.map((d,i) => `
+    <div class="decision"><div class="n">${i+1}</div><div><p>${d}</p><div class="who">Creative Director</div></div></div>`).join("");
+}
+function renderTeam() {
+  document.getElementById("team").innerHTML = SEED.team.map(p => `
+    <div class="person"><div><div class="name">${p.name}</div><div class="role">${p.role}</div></div><div class="own">${p.own}</div></div>`).join("");
+}
+function renderExperiments() {
+  document.getElementById("updated").textContent = SEED.updated;
+  renderDrill();
+  renderExpRows();
+  renderDecisions();
+  renderTeam();
+}
+
+function taskMatchesWorkstream(t, id) {
+  return id === "all" || t.workstreamId === id;
+}
+function countTasks(pred) {
+  return tasks.filter(pred).length;
+}
+function workstreamCount(id) {
+  return countTasks(t => taskMatchesWorkstream(t, id));
+}
+function renderChipRow(elId, tabs, activeId, countFn, onPick) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.innerHTML = tabs.map(t => {
+    const n = countFn(t.id);
+    return `<button class="tab ${activeId===t.id?"active":""}" data-id="${t.id}">${t.label}<span class="tab-count">(${n})</span></button>`;
+  }).join("");
+  el.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => onPick(btn.dataset.id)));
+}
+function renderTaskTabs() {
+  renderChipRow("task-tabs", taskTabs, taskFilter, workstreamCount, id => { taskFilter = id; renderLaunch(); });
+}
+function workstreamPill(t) {
+  const id = t.workstreamId || "";
+  const label = t.workstream || id;
+  return `<span class="ws-pill ws-${id}">${label}</span>`;
+}
+function priorityPill(t) {
+  const p = t.priority || "Medium";
+  return `<span class="prio-pill prio-${p.toLowerCase()}">${p}</span>`;
+}
+function renderWorkstreams() {
+  const el = document.getElementById("workstreams");
+  el.innerHTML = SEED.workstreams.map(w => {
+    const count = tasks.filter(t => t.workstreamId === w.id).length;
+    const done = tasks.filter(t => t.workstreamId === w.id && t.status === "Done").length;
+    const rank = w.rank ? `P${w.rank}` : "";
+    const wsClass = "ws-" + w.id;
+    return `<article class="card ${wsClass}" data-id="${w.id}">
+      <div class="top"><h2>${w.name}</h2><span class="badge fluid">${rank ? rank + " · " : ""}${done}/${count}</span></div>
+      <p>${w.blurb}</p>
+      <div class="stat">${w.owner}</div>
+    </article>`;
+  }).join("");
+  el.querySelectorAll(".card").forEach(card => card.addEventListener("click", () => { taskFilter = card.dataset.id; renderLaunch(); }));
+}
+function filteredTasks() {
+  return tasks.filter(t => {
+    const byWs = taskMatchesWorkstream(t, taskFilter);
+    const q = taskQuery.trim().toLowerCase();
+    const byQ = !q || [t.title, t.workstream, t.owner, t.status, t.priority, t.dependency, t.blocker].join(" ").toLowerCase().includes(q);
+    return byWs && byQ;
+  });
+}
+function renderTaskRows() {
+  const rows = filteredTasks();
+  const tbody = document.getElementById("task-rows");
+  const empty = document.getElementById("task-empty");
+  document.getElementById("task-count").textContent = `${rows.length} tasks`;
+  if (!rows.length) { tbody.innerHTML = ""; empty.hidden = false; return; }
+  empty.hidden = true;
+  const order = ["website", "film", "selection", "one-of-none", "objects", "evergray"];
+  let html = "";
+  order.forEach(ws => {
+    const prioRank = p => ({ High: 0, Medium: 1, Low: 2 }[p] ?? 3);
+    const seedIndex = id => SEED.tasks.findIndex(t => t.id === id);
+    const group = rows.filter(t => t.workstreamId === ws)
+      .slice()
+      .sort((a, b) => prioRank(a.priority) - prioRank(b.priority) || seedIndex(a.id) - seedIndex(b.id));
+    if (!group.length) return;
+    const wmeta = SEED.workstreams.find(w => w.id === ws);
+    const label = wmeta?.name || ws;
+    const rank = wmeta?.rank ? `P${wmeta.rank} · ` : "";
+    html += `<tr class="workstream-head"><td colspan="10">${rank}${label}</td></tr>`;
+    html += group.map(t => {
+      const due = formatTaskDue(t.due);
+      const collab = t.collaborators || t.dependency || "—";
+      const link = t.link || "";
+      const notes = t.notes || "";
+      const linkOpen = link
+        ? `<a class="task-link-open" href="${link}" target="_blank" rel="noopener" title="Open link">↗</a>`
+        : `<span class="task-link-open" aria-disabled="true">↗</span>`;
+      return `
+      <tr data-id="${t.id}">
+        <td><strong>${t.title}</strong></td>
+        <td>${workstreamPill(t)}</td>
+        <td>${priorityPill(t)}</td>
+        <td class="muted">${t.owner}</td>
+        <td class="muted">${collab}</td>
+        <td>${selectHTML("task-status", t.id, t.status, TASK_STATUSES)}</td>
+        <td><span class="${due.cls}" title="Due dates are locked">${due.text}</span></td>
+        <td class="task-link-cell">${linkOpen}</td>
+        <td class="muted">${notes || "—"}</td>
+        <td class="blocker-muted">${t.blocker || "—"}</td>
+      </tr>`;
+    }).join("");
+  });
+  tbody.innerHTML = html;
+  tbody.querySelectorAll("select.cell-select").forEach(sel => {
+    sel.addEventListener("change", async () => {
+      const row = tasks.find(t => t.id === sel.dataset.id);
+      if (!row) return;
+      row.status = sel.value;
+      sel.disabled = true;
+      try { await persistAll(); renderWorkstreams(); }
+      catch (err) { alert("Could not save — retry."); console.error(err); }
+      finally { sel.disabled = false; }
+    });
+  });
+}
+function renderLaunch() {
+  document.getElementById("updated").textContent = SEED.updated;
+  renderTaskTabs();
+  renderWorkstreams();
+  renderTaskRows();
+}
+
+document.querySelectorAll(".view-tab").forEach(btn => {
+  btn.addEventListener("click", () => {
+    setView(btn.dataset.view);
+    if (btn.dataset.view === "launch") renderLaunch();
+    else if (btn.dataset.view === "business") renderBusiness();
+    else if (btn.dataset.view === "collections") renderCollectionCards();
+    else renderExperiments();
+  });
+});
+document.getElementById("btn-add-metric")?.addEventListener("click", addMetric);
+document.getElementById("search").addEventListener("input", e => { query = e.target.value; renderExpRows(); });
+document.getElementById("task-search").addEventListener("input", e => { taskQuery = e.target.value; renderTaskRows(); });
+document.getElementById("btn-all").addEventListener("click", () => { filter = "all"; renderExperiments(); });
+
+
+let metrics = (SEED.businessMetrics || []).map(m => ({ ...m, history: [...(m.history || [0,0,0,0,0,0,0])] }));
+
+function applyMetricEdits(saved) {
+  if (!saved || !Array.isArray(saved) || !saved.length) {
+    return (SEED.businessMetrics || []).map(m => ({ ...m, history: [...(m.history || [0,0,0,0,0,0,0])] }));
+  }
+  return saved.map(m => ({ ...m, history: [...(m.history || [0,0,0,0,0,0,0])] }));
+}
+
+function sparkPoints(history) {
+  const vals = (history && history.length ? history : [0]).map(Number);
+  const w = 220, h = 36, pad = 2;
+  const min = Math.min(...vals), max = Math.max(...vals);
+  const span = max - min || 1;
+  return vals.map((v, i) => {
+    const x = pad + (i / Math.max(vals.length - 1, 1)) * (w - pad * 2);
+    const y = h - pad - ((v - min) / span) * (h - pad * 2);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ");
+}
+
+function metricProgress(m) {
+  const cur = parseFloat(String(m.current).replace(/[^0-9.-]/g, "")) || 0;
+  const tgt = parseFloat(String(m.target).replace(/[^0-9.-]/g, "")) || 0;
+  if (tgt <= 0) return 0;
+  return Math.max(0, Math.min(100, Math.round((cur / tgt) * 100)));
+}
+
+function renderBusiness() {
+  const grid = document.getElementById("metric-grid");
+  if (!grid) return;
+  document.getElementById("updated").textContent = SEED.updated;
+  grid.innerHTML = metrics.map(m => {
+    const pct = metricProgress(m);
+    const pts = sparkPoints(m.history);
+    const last = (m.history && m.history.length) ? m.history[m.history.length - 1] : 0;
+    return `<article class="metric-card glass" data-id="${m.id}">
+      <div class="m-owner">${m.owner || "Strategist"}</div>
+      <input class="m-name" data-field="name" data-id="${m.id}" value="${String(m.name).replace(/"/g, '&quot;')}" />
+      <div class="m-values">
+        <div class="m-field">
+          <label>Current ${m.unit ? '(' + m.unit + ')' : ''}</label>
+          <input data-field="current" data-id="${m.id}" value="${String(m.current).replace(/"/g, '&quot;')}" />
+        </div>
+        <div class="m-field">
+          <label>Target</label>
+          <input data-field="target" data-id="${m.id}" value="${String(m.target).replace(/"/g, '&quot;')}" />
+        </div>
+      </div>
+      <div class="m-pct">${pct}% of target · trend placeholder</div>
+      <div class="m-progress"><span style="width:${pct}%"></span></div>
+      <svg class="sparkline" viewBox="0 0 220 36" preserveAspectRatio="none" aria-hidden="true">
+        <polyline points="${pts}"></polyline>
+        <circle cx="${pts.split(' ').slice(-1)[0].split(',')[0]}" cy="${pts.split(' ').slice(-1)[0].split(',')[1]}" r="2.2"></circle>
+      </svg>
+    </article>`;
+  }).join("");
+
+  grid.querySelectorAll("input").forEach(inp => {
+    const save = async () => {
+      const row = metrics.find(x => x.id === inp.dataset.id);
+      if (!row) return;
+      row[inp.dataset.field] = inp.value;
+      // push current into history tail when current changes
+      if (inp.dataset.field === "current") {
+        const n = parseFloat(String(inp.value).replace(/[^0-9.-]/g, ""));
+        if (!Number.isNaN(n)) {
+          row.history = [...(row.history || []).slice(-6), n];
+        }
+      }
+      try { await persistAll(); renderBusiness(); }
+      catch (err) { alert("Could not save metric — retry."); console.error(err); }
+    };
+    inp.addEventListener("change", save);
+    inp.addEventListener("blur", save);
+  });
+}
+
+function addMetric() {
+  const id = "metric-" + Date.now().toString(36);
+  metrics.push({ id, name: "New metric", unit: "", current: "0", target: "0", history: [0,0,0,0,0,0,0], owner: "Strategist" });
+  persistAll().then(renderBusiness).catch(err => alert("Could not add metric"));
+}
+
+async function boot() {
+  try {
+    const state = await fetchState();
+    experiments = applyExpEdits(state.edits || {});
+    tasks = applyTaskEdits(state.taskEdits || {});
+    initCardDates(state.cardDates || {});
+    if (state.milestone && (state.milestone.title || state.milestone.date)) {
+      milestone = { title: state.milestone.title || MILESTONES[0].title, date: state.milestone.date || "2026-10-11" };
+      const soft = MILESTONES.find(x => x.id === "soft-launch") || MILESTONES[0];
+      if (state.milestone.title) soft.title = milestone.title;
+      if (state.milestone.date) soft.date = milestone.date;
+    }
+    metrics = applyMetricEdits(state.metrics);
+    initCollectionCommerce(state.collectionCommerce || {});
+    if (state.updated) SEED.updated = new Date(state.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
+  } catch (err) {
+    console.warn("Boot failed — using seed / localStorage", err);
+    const local = readLocalState();
+    if (local) {
+      experiments = applyExpEdits(local.edits || {});
+      tasks = applyTaskEdits(local.taskEdits || {});
+      initCardDates(local.cardDates || {});
+      if (local.milestone && (local.milestone.title || local.milestone.date)) {
+        milestone = { title: local.milestone.title || MILESTONES[0].title, date: local.milestone.date || "2026-10-11" };
+        const soft = MILESTONES.find(x => x.id === "soft-launch") || MILESTONES[0];
+        if (local.milestone.title) soft.title = milestone.title;
+        if (local.milestone.date) soft.date = milestone.date;
+      }
+      if (typeof applyMetricEdits === "function") metrics = applyMetricEdits(local.metrics);
+      initCollectionCommerce(local.collectionCommerce || {});
+      if (local.updated) SEED.updated = new Date(local.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
+    } else {
+      initCardDates({});
+      initCollectionCommerce({});
+    }
+  }
+  bindMilestoneEditors();
+  updateGreeting();
+  milestoneIndex = nearestMilestoneIndex();
+  renderMilestone();
+  setView("launch");
+  renderLaunch();
+  async function refreshFromServer(forceRender) {
+    try {
+      const state = await fetchState();
+      const nextExp = applyExpEdits(state.edits || {});
+      const nextTasks = applyTaskEdits(state.taskEdits || {});
+      const expChanged = JSON.stringify(nextExp.map(e => [e.id,e.stage,e.status])) !== JSON.stringify(experiments.map(e => [e.id,e.stage,e.status]));
+      const taskChanged = JSON.stringify(nextTasks.map(t => [t.id,t.status])) !== JSON.stringify(tasks.map(t => [t.id,t.status]));
+      const nextDates = state.cardDates || {};
+      const datesChanged = JSON.stringify(nextDates) !== JSON.stringify(cardDates);
+      const nextMs = state.milestone || milestone;
+      const msChanged = JSON.stringify(nextMs) !== JSON.stringify(milestone);
+      const nextMetrics = applyMetricEdits(state.metrics);
+      const metricsChanged = JSON.stringify(nextMetrics) !== JSON.stringify(metrics);
+      const prevCommerce = JSON.stringify(collectionCommerce);
+      const nextCommerceRaw = state.collectionCommerce || {};
+      // merge without losing local seeds when empty
+      const commerceChanged = JSON.stringify(nextCommerceRaw) !== prevCommerce && Object.keys(nextCommerceRaw).length > 0;
+      if (forceRender || expChanged || taskChanged || datesChanged || msChanged || metricsChanged || commerceChanged) {
+        experiments = nextExp;
+        tasks = nextTasks;
+        if (datesChanged || forceRender) initCardDates(nextDates);
+        if (msChanged || forceRender) {
+          milestone = { title: nextMs.title || milestone.title, date: nextMs.date || milestone.date };
+          const soft = MILESTONES.find(x => x.id === "soft-launch") || MILESTONES[0];
+          if (nextMs.title) soft.title = milestone.title;
+          if (nextMs.date) soft.date = milestone.date;
+          renderMilestone();
+        }
+        if (metricsChanged || forceRender) metrics = nextMetrics;
+        if (commerceChanged || forceRender) initCollectionCommerce(state.collectionCommerce || collectionCommerce);
+        if (state.updated) SEED.updated = new Date(state.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
+        if (currentView === "launch") renderLaunch();
+        else if (currentView === "business") renderBusiness();
+        else if (currentView === "collections") renderCollectionCards();
+        else renderExperiments();
+      }
+    } catch {}
+  }
+  // Live sync across devices (~8s) — free, no external cron
+  setInterval(() => refreshFromServer(false), 8000);
+  // Hourly full data refresh belt-and-suspenders (tasks, metrics, milestone)
+  setInterval(() => refreshFromServer(true), 3600000);
+}
+boot();
+// Flip calendar ticks once a minute so midnight day-change animates without reload
+setInterval(() => { updateGreeting(); renderMilestone(); }, 60000);
+</script>
+</body>
+</html>

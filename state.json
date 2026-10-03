@@ -1,0 +1,369 @@
+{
+  "edits": {
+    "sel-travel": {
+      "stage": "Concept",
+      "status": "Active"
+    },
+    "oon-lab": {
+      "stage": "Prototype mix",
+      "status": "Active"
+    },
+    "oon-bags": {
+      "stage": "Asset",
+      "status": "Made \u2014 needs photos"
+    },
+    "oon-hotwheels": {
+      "stage": "Concept",
+      "status": "Idea"
+    },
+    "oon-pencils": {
+      "stage": "Concept",
+      "status": "Idea"
+    },
+    "oon-lenticular": {
+      "stage": "Concept",
+      "status": "Parked"
+    },
+    "ev-shirts": {
+      "stage": "Prototype",
+      "status": "3 samples \u00b7 list open"
+    },
+    "cg-core": {
+      "stage": "Idea",
+      "status": "Likely temporal"
+    },
+    "lunar": {
+      "stage": "Idea",
+      "status": "Parked"
+    },
+    "ganjifa": {
+      "stage": "Concept",
+      "status": "Parked"
+    },
+    "film": {
+      "stage": "Concept",
+      "status": "Launch trio"
+    },
+    "site": {
+      "stage": "Build ~50%",
+      "status": "Styling gap"
+    },
+    "razorpay": {
+      "stage": "Live",
+      "status": "Needs Grey restyle"
+    },
+    "ship": {
+      "stage": "Live",
+      "status": "Connected"
+    },
+    "newsletter": {
+      "stage": "Not started",
+      "status": "Open"
+    },
+    "ig": {
+      "stage": "Not started",
+      "status": "Open"
+    },
+    "assistant": {
+      "stage": "Hiring",
+      "status": "Open"
+    },
+    "designer": {
+      "stage": "Sourcing",
+      "status": "Recommended"
+    }
+  },
+  "taskEdits": {
+    "web-host": {
+      "status": "In progress",
+      "priority": "High",
+      "due": "2026-10-02",
+      "notes": "2026-10-03: Claude confirms Hydrogen on Oxygen Preview (ephemeral URL). Production 404 until first deploy. Desired stack: GoDaddy \u2192 Oxygen, GitHub source, Shopify catalog, Razorpay checkout. Grey OS board moved to GitHub Pages (permanent).",
+      "blocker": "Oxygen Preview live (Private). Production never deployed \u2014 awaiting CD approval in Claude. GitHub grey0000-0000 empty for storefront; this Pages board is separate."
+    },
+    "web-newsletter": {
+      "status": "In progress",
+      "blocker": "From-address + verified domain (SPF/DKIM) before live \u00b7 list + logo CDN still open",
+      "notes": "Brevo Standard locked. API key + dry-run templates ready. Need CD: BREVO_FROM_EMAIL + verified sending domain before live. Then: list, SPF/DKIM, logo CDN.",
+      "priority": "Medium"
+    },
+    "film-script": {
+      "status": "Not started",
+      "due": "2026-10-04",
+      "priority": "High"
+    },
+    "film-higgs": {
+      "status": "Not started",
+      "due": "2026-10-06",
+      "priority": "High"
+    },
+    "film-reel": {
+      "status": "Not started",
+      "due": "2026-10-09",
+      "priority": "Medium"
+    },
+    "sel-logo": {
+      "status": "Not started",
+      "priority": "Low"
+    },
+    "sel-list": {
+      "status": "Not started",
+      "priority": "Medium"
+    },
+    "sel-photo-approach": {
+      "status": "Not started",
+      "priority": "Low"
+    },
+    "sel-photograph": {
+      "status": "Not started",
+      "priority": "Low"
+    },
+    "sel-shopify": {
+      "status": "Not started",
+      "priority": "Low"
+    },
+    "sel-site-fetch": {
+      "status": "Not started",
+      "priority": "Low"
+    },
+    "oon-bags-photo": {
+      "status": "Not started",
+      "priority": "Medium"
+    },
+    "oon-pencil-art": {
+      "status": "Not started",
+      "priority": "Low"
+    },
+    "oon-hotwheels": {
+      "status": "Not started",
+      "priority": "Low"
+    },
+    "oon-mystery": {
+      "status": "Not started",
+      "priority": "Low"
+    },
+    "web-design-spec": {
+      "status": "Not started",
+      "priority": "Medium"
+    },
+    "web-copy-review": {
+      "status": "Not started"
+    },
+    "web-seo": {
+      "status": "Not started"
+    },
+    "obj-lenticular": {
+      "status": "Parked",
+      "priority": "Low"
+    },
+    "ev-product-list": {
+      "status": "Not started",
+      "priority": "Low",
+      "due": "2026-10-04"
+    },
+    "ev-playing-cards": {
+      "status": "Not started",
+      "priority": "Low",
+      "due": "2026-10-10"
+    },
+    "web-site-align": {
+      "status": "Not started",
+      "priority": "High",
+      "due": "2026-10-04"
+    },
+    "web-asset-checklist": {
+      "status": "Not started",
+      "priority": "High",
+      "due": "2026-10-03"
+    },
+    "web-responsive": {
+      "status": "Not started",
+      "priority": "High",
+      "due": "2026-10-05"
+    },
+    "obj-lunar": {
+      "status": "Parked",
+      "priority": "Low"
+    }
+  },
+  "cardDates": {
+    "selection": "2026-10-11",
+    "one-of-none": "2026-10-11",
+    "evergray": "2026-10-11",
+    "cyber-gunk": "2026-10-11",
+    "film": "2026-10-11",
+    "infra": "2026-10-11",
+    "objects": "2026-10-11"
+  },
+  "cardDatesHistory": [],
+  "datesLocked": true,
+  "milestone": {
+    "title": "Grey Objects Launch",
+    "date": "2026-10-11",
+    "dateLocked": true
+  },
+  "milestoneDateHistory": [
+    {
+      "from": "2026-10-12",
+      "to": "2026-10-11",
+      "reason": "Restore locked Grey Objects Launch date to Sunday 11 October 2026 (soft-launch target). Prior state had drifted to 12 Oct; UI date editing is now disabled.",
+      "at": "2026-09-27T13:06:48.801Z"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "visitors",
+      "name": "Site visitors",
+      "unit": "count",
+      "current": "0",
+      "target": "2000",
+      "history": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "owner": "Strategist"
+    },
+    {
+      "id": "newsletter",
+      "name": "Newsletter signups",
+      "unit": "count",
+      "current": "0",
+      "target": "150",
+      "history": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "owner": "Strategist \u00b7 Communications"
+    },
+    {
+      "id": "ig",
+      "name": "Instagram followers",
+      "unit": "count",
+      "current": "0",
+      "target": "500",
+      "history": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "owner": "Strategist \u00b7 Distribution"
+    },
+    {
+      "id": "cvr",
+      "name": "Conversion rate",
+      "unit": "%",
+      "current": "0",
+      "target": "1.5",
+      "history": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "owner": "Strategist"
+    },
+    {
+      "id": "aov",
+      "name": "Average order value",
+      "unit": "\u20b9",
+      "current": "0",
+      "target": "3500",
+      "history": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "owner": "Strategist"
+    },
+    {
+      "id": "repeat",
+      "name": "Repeat purchase rate",
+      "unit": "%",
+      "current": "0",
+      "target": "10",
+      "history": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "owner": "Strategist"
+    },
+    {
+      "id": "reach",
+      "name": "Brand reach / content output",
+      "unit": "pieces",
+      "current": "0",
+      "target": "12",
+      "history": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "owner": "Strategist \u00b7 Communications"
+    }
+  ],
+  "collectionCommerce": {
+    "selection": {
+      "products": 0,
+      "sold": 0,
+      "revenue": 0,
+      "notes": ""
+    },
+    "one-of-none": {
+      "products": 2,
+      "sold": 0,
+      "revenue": 0,
+      "notes": ""
+    },
+    "evergray": {
+      "products": 3,
+      "sold": 0,
+      "revenue": 0,
+      "notes": ""
+    },
+    "cyber-gunk": {
+      "products": 0,
+      "sold": 0,
+      "revenue": 0,
+      "notes": ""
+    },
+    "objects": {
+      "products": 0,
+      "sold": 0,
+      "revenue": 0,
+      "notes": ""
+    }
+  },
+  "experiments": null,
+  "updated": "2026-10-03T04:55:14.820Z",
+  "updatedBy": "grey-orchestrator"
+}

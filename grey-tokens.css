@@ -1,0 +1,125 @@
+/* Grey tokens — mirrors client/src/index.css + Style Reference.
+   Components must use these variables; do not hardcode hex in UI. */
+:root {
+  /* Logo inversion greys (fixed — never theme-flip) */
+  --color-white: #FFFFFF;
+  --color-light-gray: #CDCDCD;
+  --color-dark-gray: #383838;
+  --color-black: #000000;
+  --grey-white: #FFFFFF;
+  --grey-light-gray: #CDCDCD;
+  --grey-dark-gray: #383838;
+  --grey-black: #000000;
+
+  /* Semantic — Wall gallery (light) */
+  --color-wall: #ECECE9;
+  --color-plinth: #F7F7F5;
+  --color-ink: #111110;
+  --color-graphite: #4A4A47;
+  --color-grey: #8C8C88;
+  --color-fog: #D4D4D0;
+  --color-red-dot: #D7261E;
+  --color-night: #121211;
+
+  /* Dual names matching client --grey-* */
+  --grey-wall: var(--color-wall);
+  --grey-plinth: var(--color-plinth);
+  --grey-ink: var(--color-ink);
+  --grey-graphite: var(--color-graphite);
+  --grey-grey: var(--color-grey);
+  --grey-fog: var(--color-fog);
+  --grey-red-dot: var(--color-red-dot);
+  --grey-night: var(--color-night);
+
+  /* Fonts (= Tailwind / Host Grotesk stack) */
+  --font-sans: "Host Grotesk", "Neue Haas Unica", "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Newsreader", "GT Sectra", Georgia, serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-logo: "Eurostile", "Microgramma D Extended", "Bank Gothic", "Helvetica Neue", "Arial Black", sans-serif;
+
+  /* Spacing — 8px base */
+  --space-1: 4px; --space-2: 8px; --space-3: 16px;
+  --space-4: 24px; --space-5: 32px; --space-6: 48px;
+  --space-7: 64px; --space-8: 96px; --space-9: 128px;
+
+  --radius: 0px;
+  --radius-dot: 9999px;
+
+  /* Shell bridges (legacy SPA) */
+  --bg: var(--color-wall);
+  --ink: var(--color-ink);
+  --ink-muted: var(--color-graphite);
+  --ink-faint: var(--color-grey);
+  --line: var(--color-fog);
+  --glass: color-mix(in srgb, var(--color-ink) 4%, transparent);
+  --glass-strong: color-mix(in srgb, var(--color-ink) 8%, transparent);
+  --glass-border: color-mix(in srgb, var(--color-ink) 12%, transparent);
+  --glass-highlight: color-mix(in srgb, var(--color-ink) 10%, transparent);
+  --chip: color-mix(in srgb, var(--color-ink) 6%, transparent);
+  --ok: var(--color-grey);
+  --warn: var(--color-graphite);
+  --danger: var(--color-red-dot);
+
+  /* ShadCN bridges → Grey tokens (rocker / shared maps) */
+  --background: var(--color-wall);
+  --foreground: var(--color-ink);
+  --card: var(--color-plinth);
+  --card-foreground: var(--color-ink);
+  --popover: var(--color-plinth);
+  --popover-foreground: var(--color-ink);
+  --primary: var(--color-ink);
+  --primary-foreground: var(--color-wall);
+  --secondary: var(--color-fog);
+  --secondary-foreground: var(--color-ink);
+  --muted: color-mix(in srgb, var(--color-ink) 6%, var(--color-wall));
+  --muted-foreground: var(--color-graphite);
+  --accent: color-mix(in srgb, var(--color-ink) 6%, var(--color-wall));
+  --accent-foreground: var(--color-ink);
+  --destructive: var(--color-red-dot);
+  --border: var(--color-fog);
+  --input: var(--color-fog);
+  --ring: var(--color-red-dot);
+}
+
+/* Night Gallery — data-theme (legacy) and .dark (client hook parity) */
+[data-theme="night"],
+.dark {
+  --color-wall: #121211;
+  --color-plinth: #1B1B1A;
+  --color-ink: #EAEAE6;
+  --color-graphite: #B4B4AF;
+  --color-grey: #85857F;
+  --color-fog: #2F2F2C;
+  --color-red-dot: #E8483F;
+  /* --color-night and logo greys stay absolute */
+
+  --bg: var(--color-night);
+  --ink: var(--color-ink);
+  --ink-muted: var(--color-graphite);
+  --ink-faint: var(--color-grey);
+  --line: var(--color-fog);
+  --glass: color-mix(in srgb, var(--color-ink) 6%, transparent);
+  --glass-strong: color-mix(in srgb, var(--color-ink) 10%, transparent);
+  --glass-border: color-mix(in srgb, var(--color-ink) 14%, transparent);
+  --glass-highlight: color-mix(in srgb, var(--color-ink) 16%, transparent);
+  --chip: color-mix(in srgb, var(--color-ink) 8%, transparent);
+
+  --background: var(--color-night);
+  --foreground: var(--color-ink);
+  --card: var(--color-plinth);
+  --card-foreground: var(--color-ink);
+  --popover: var(--color-plinth);
+  --popover-foreground: var(--color-ink);
+  --primary: var(--color-ink);
+  --primary-foreground: var(--color-night);
+  --secondary: var(--color-fog);
+  --secondary-foreground: var(--color-ink);
+  --muted: color-mix(in srgb, var(--color-ink) 8%, var(--color-night));
+  --muted-foreground: var(--color-graphite);
+  --accent: color-mix(in srgb, var(--color-ink) 8%, var(--color-night));
+  --accent-foreground: var(--color-ink);
+  --destructive: var(--color-red-dot);
+  --border: var(--color-fog);
+  --input: var(--color-fog);
+  --ring: var(--color-red-dot);
+}
