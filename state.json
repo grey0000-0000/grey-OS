@@ -80,7 +80,7 @@
       "status": "Done",
       "priority": "High",
       "due": "2026-10-02",
-      "notes": "2026-10-03: www.greyobjects.com is Primary under GREY (Hydrogen Production) on Shopify Oxygen. Production URL privacy set to Public. www.greyobjects.com and the Oxygen host return HTTP 200 Hydrogen HTML (powered-by Shopify, Oxygen, Hydrogen). Apex 301\u2192www. Hosting path is Oxygen/Hydrogen \u2014 not Vercel.",
+      "notes": "2026-10-04: Website hosted on Hydrogen / Oxygen, deploying and running through Claude \u2014 confirmed done. www.greyobjects.com is Primary under GREY (Hydrogen Production) on Shopify Oxygen. Oxygen host returns Hydrogen HTML (powered-by Shopify, Oxygen, Hydrogen). Apex 301\u2192www. Hosting path is Oxygen/Hydrogen \u2014 not Vercel. Production URL privacy has been flipping Private (401) again \u2014 tracked separately under SEO.",
       "blocker": ""
     },
     "web-newsletter": {
@@ -145,14 +145,19 @@
       "priority": "Low"
     },
     "web-design-spec": {
-      "status": "Not started",
-      "priority": "Medium"
+      "status": "Done",
+      "priority": "Medium",
+      "notes": "2026-10-04 CD: Grey design language / typography / button radius / visual foundations pretty much done for website readiness. Some website-era changes still need to be brought back into the Identity System later \u2014 not a priority now.",
+      "blocker": ""
     },
     "web-copy-review": {
-      "status": "Not started"
+      "status": "Not started",
+      "notes": "2026-10-04 CD: captions and copy still open \u2014 resume once all products are added."
     },
     "web-seo": {
-      "status": "Not started"
+      "status": "In progress",
+      "notes": "2026-10-04: Critical blocker \u2014 www.greyobjects.com returns 401/Private with x-robots-tag noindex. Sitemap.xml is live but only lists /products/test and skirt-tote-bag (not the launch catalog); homepage is missing from the sitemap; EN-CA/FR-CA hreflang look like skeleton markets. Missing or unverifiable behind the gate: Product+Offer JSON-LD, Organization/WebSite JSON-LD, llms.txt, meta/OG/canonicals, Search Console. Suggested order: (1) flip Production URL privacy to Public, (2) lock which products/collections are indexable for soft launch, (3) wire getSeoMeta, (4) add JSON-LD, (5) add llms.txt, (6) Search Console verification. GEO (generative engine optimization) is included in this task: llms.txt, entity clarity, and structured product data so Grey appears in AI-generated answers.",
+      "blocker": "www.greyobjects.com returns 401/Private with x-robots-tag noindex"
     },
     "obj-lenticular": {
       "status": "Parked",
@@ -169,25 +174,27 @@
       "due": "2026-10-10"
     },
     "web-site-align": {
-      "status": "In progress",
+      "status": "Done",
       "priority": "High",
       "due": "2026-10-03",
       "owner": "CD \u00b7 Claude",
-      "notes": "2026-10-03 today's plan: work with Claude to fully set up product pages and website structure. Storefront is already live on Oxygen/Hydrogen; this session is pages + structure.",
-      "blocker": "Product pages and website structure still need the Claude session"
+      "notes": "2026-10-04 CD: finish and align everything on the site \u2014 pretty much done.",
+      "blocker": ""
     },
     "web-asset-checklist": {
-      "status": "In progress",
+      "status": "Done",
       "priority": "High",
       "due": "2026-10-03",
       "owner": "CD \u00b7 Communications \u00b7 Distribution",
-      "notes": "2026-10-03 today's plan: produce the final soft-launch asset list. Make shoot-needed vs create-in-tool explicit for each item. Include Instagram assets.",
-      "blocker": "Final asset list not drafted \u2014 shoot-needed vs create-in-tool still open"
+      "notes": "2026-10-04 CD: soft-launch asset checklist exists (Utkarsh has it).",
+      "blocker": ""
     },
     "web-responsive": {
-      "status": "Not started",
+      "status": "Done",
       "priority": "High",
-      "due": "2026-10-05"
+      "due": "2026-10-05",
+      "notes": "2026-10-04 CD: phone-responsive experience done.",
+      "blocker": ""
     },
     "obj-lunar": {
       "status": "Parked",
@@ -379,6 +386,6 @@
     }
   },
   "experiments": null,
-  "updated": "2026-10-03T12:10:00+05:30",
+  "updated": "2026-10-04T15:30:00+05:30",
   "updatedBy": "orchestrator"
 }
