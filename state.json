@@ -10,23 +10,27 @@
     },
     "oon-bags": {
       "stage": "Asset",
-      "status": "Made \u2014 needs photos"
+      "status": "Made — needs photos"
     },
     "oon-hotwheels": {
       "stage": "Concept",
-      "status": "Idea"
+      "status": "Parked",
+      "notes": "CD 6 Oct — Hot Wheels deferred off soft launch."
     },
     "oon-pencils": {
       "stage": "Concept",
-      "status": "Idea"
+      "status": "Parked",
+      "notes": "CD 6 Oct — pencils deferred off soft launch."
     },
     "oon-lenticular": {
       "stage": "Concept",
-      "status": "Parked"
+      "status": "Parked",
+      "notes": "CD 6 Oct — lenticular deferred off soft launch."
     },
     "ev-shirts": {
       "stage": "Prototype",
-      "status": "3 samples \u00b7 list open"
+      "status": "3 samples · list open",
+      "notes": "CD 6 Oct — Evergray samples deferred off soft launch. Samples stay; list is not on the 11 Oct run."
     },
     "cg-core": {
       "stage": "Idea",
@@ -34,11 +38,13 @@
     },
     "lunar": {
       "stage": "Idea",
-      "status": "Parked"
+      "status": "Parked",
+      "notes": "Stays parked — not on the 11 Oct soft-launch run."
     },
     "ganjifa": {
       "stage": "Concept",
-      "status": "Parked"
+      "status": "Parked",
+      "notes": "CD 6 Oct — Ganjifa stays parked, deferred off soft launch."
     },
     "film": {
       "stage": "Concept",
@@ -51,7 +57,8 @@
     },
     "razorpay": {
       "stage": "Live",
-      "status": "Needs Grey restyle"
+      "status": "Needs Grey restyle",
+      "notes": "CD 6 Oct — tracked under web-last-mile."
     },
     "ship": {
       "stage": "Live",
@@ -80,45 +87,63 @@
       "status": "Done",
       "priority": "High",
       "due": "2026-10-02",
-      "notes": "2026-10-04: Website hosted on Hydrogen / Oxygen, deploying and running through Claude \u2014 confirmed done. www.greyobjects.com is Primary under GREY (Hydrogen Production) on Shopify Oxygen. Oxygen host returns Hydrogen HTML (powered-by Shopify, Oxygen, Hydrogen). Apex 301\u2192www. Hosting path is Oxygen/Hydrogen \u2014 not Vercel. Production URL privacy has been flipping Private (401) again \u2014 tracked separately under SEO.",
+      "notes": "2026-10-04: Website hosted on Hydrogen / Oxygen, deploying and running through Claude — confirmed done. www.greyobjects.com is Primary under GREY (Hydrogen Production) on Shopify Oxygen. Oxygen host returns Hydrogen HTML (powered-by Shopify, Oxygen, Hydrogen). Apex 301→www. Hosting path is Oxygen/Hydrogen — not Vercel. Production URL privacy has been flipping Private (401) again — tracked separately under SEO.",
       "blocker": ""
     },
     "web-newsletter": {
       "status": "Done",
       "blocker": "",
-      "notes": "2026-10-03 DONE. greyobjects.com verified + authenticated in Brevo. GoDaddy DNS: TXT @ brevo-code:a1fecd641f7f9a851e031128e6194edf; CNAME brevo1._domainkey \u2192 b1.greyobjects-com.dkim.brevo.com; CNAME brevo2._domainkey \u2192 b2.greyobjects-com.dkim.brevo.com. Existing _dmarc p=reject left untouched (no MX \u2014 DKIM records are CNAMEs). From hello@greyobjects.com, sender display name GRAY. Transactional tests to hello@greyobjects.com delivered today: (a) Test from Grey, messageId 202610030623.92472205153@smtp-relay.mailin.fr, delivered ~11:53 IST, opened ~11:54 IST; (b) Grey test \u2014 second send, messageId 202610030635.93790112495@smtp-relay.mailin.fr, ~12:05 IST. Newsletter welcome email base done (one welcome for signups). Gmail ops: hello@greyobjects.com inbox labeled Grey, Brevo, Shopify, Razorpay, GitHub, Google, Personal, Marketing \u2014 labeling only, no deletes or archives.",
+      "notes": "2026-10-03 DONE. greyobjects.com verified + authenticated in Brevo. GoDaddy DNS: TXT @ brevo-code:a1fecd641f7f9a851e031128e6194edf; CNAME brevo1._domainkey → b1.greyobjects-com.dkim.brevo.com; CNAME brevo2._domainkey → b2.greyobjects-com.dkim.brevo.com. Existing _dmarc p=reject left untouched (no MX — DKIM records are CNAMEs). From hello@greyobjects.com, sender display name GRAY. Transactional tests to hello@greyobjects.com delivered today: (a) Test from Grey, messageId 202610030623.92472205153@smtp-relay.mailin.fr, delivered ~11:53 IST, opened ~11:54 IST; (b) Grey test — second send, messageId 202610030635.93790112495@smtp-relay.mailin.fr, ~12:05 IST. Newsletter welcome email base done (one welcome for signups). Gmail ops: hello@greyobjects.com inbox labeled Grey, Brevo, Shopify, Razorpay, GitHub, Google, Personal, Marketing — labeling only, no deletes or archives.",
       "priority": "Medium"
     },
     "film-script": {
-      "status": "Not started",
-      "due": "2026-10-04",
-      "priority": "High"
+      "status": "In progress",
+      "due": "2026-10-06",
+      "priority": "Critical",
+      "blocker": "",
+      "notes": "CD 6 Oct — today's third focus is map the film base so exactly what's needed for the film is known; then finalize script. Execution layers: (1) infographic stills, (2) video treatment + video bank. Visual direction exists; execute, don't invent from scratch."
     },
     "film-higgs": {
       "status": "Not started",
-      "due": "2026-10-06",
-      "priority": "High"
+      "due": "2026-10-08",
+      "priority": "Critical",
+      "blocker": "",
+      "notes": "CD 6 Oct — video treatment + video bank / generate-shoot (Higgsfield or whatever CD uses). Not started until the film base and script are locked."
     },
     "film-reel": {
       "status": "Not started",
       "due": "2026-10-09",
-      "priority": "Medium"
+      "priority": "Critical",
+      "blocker": "",
+      "notes": "CD 6 Oct — Instagram reel cut FIRST, then Instagram product template. Folds the Instagram set. Not started until the video treatment / video bank path is ready."
     },
     "sel-logo": {
       "status": "Not started",
-      "priority": "Low"
+      "priority": "Low",
+      "due": "2026-10-12",
+      "blocker": "",
+      "notes": "CD 6 Oct — off today's soft-launch focus. Not part of the run to Sunday 11 Oct."
     },
     "sel-list": {
       "status": "Not started",
-      "priority": "Medium"
+      "priority": "Medium",
+      "due": "2026-10-12",
+      "blocker": "",
+      "notes": "CD 6 Oct — not today's focus. Trails the image pipeline; not on the three-item focus for 6 Oct."
     },
     "sel-photo-approach": {
-      "status": "Not started",
-      "priority": "Low"
+      "status": "In progress",
+      "priority": "Critical",
+      "due": "2026-10-06",
+      "blocker": "",
+      "notes": "CD 6 Oct — collect product image references onto a mood board; this is today's first focus. Photography approach is DIY + ComfyUI (not hire)."
     },
     "sel-photograph": {
       "status": "Not started",
-      "priority": "Low"
+      "priority": "Critical",
+      "due": "2026-10-07",
+      "blocker": "",
+      "notes": "CD 6 Oct — product stills and ComfyUI setup are one run. Batch shoot starts once the one-product proof locks the look (target 7 Oct); ComfyUI chain then makes website-ready assets. Bags shoot rides this same photography/ComfyUI run (oon-bags-photo)."
     },
     "sel-shopify": {
       "status": "Not started",
@@ -130,15 +155,24 @@
     },
     "oon-bags-photo": {
       "status": "Not started",
-      "priority": "Medium"
+      "priority": "Medium",
+      "due": "2026-10-07",
+      "blocker": "",
+      "notes": "CD 6 Oct — bags shoot rides the same photography/ComfyUI run as sel-photograph. Not started until the one-product pipeline proof locks the look."
     },
     "oon-pencil-art": {
-      "status": "Not started",
-      "priority": "Low"
+      "status": "Parked",
+      "priority": "Low",
+      "due": "2026-10-05",
+      "blocker": "",
+      "notes": "CD 6 Oct — pencils deferred off soft launch."
     },
     "oon-hotwheels": {
-      "status": "Not started",
-      "priority": "Low"
+      "status": "Parked",
+      "priority": "Low",
+      "due": "2026-10-06",
+      "blocker": "",
+      "notes": "CD 6 Oct — Hot Wheels deferred off soft launch."
     },
     "oon-mystery": {
       "status": "Not started",
@@ -147,45 +181,51 @@
     "web-design-spec": {
       "status": "Done",
       "priority": "Medium",
-      "notes": "2026-10-04 CD: Grey design language / typography / button radius / visual foundations pretty much done for website readiness. Some website-era changes still need to be brought back into the Identity System later \u2014 not a priority now.",
+      "notes": "2026-10-04 CD: Grey design language / typography / button radius / visual foundations pretty much done for website readiness. Some website-era changes still need to be brought back into the Identity System later — not a priority now.",
       "blocker": ""
     },
     "web-copy-review": {
       "status": "Not started",
-      "notes": "2026-10-04 CD: captions and copy still open \u2014 resume once all products are added."
+      "notes": "2026-10-04 CD: captions and copy still open — resume once all products are added. CD 6 Oct — waits on real products / website-ready assets."
     },
     "web-seo": {
       "status": "In progress",
-      "notes": "2026-10-04: Critical blocker \u2014 www.greyobjects.com returns 401/Private with x-robots-tag noindex. Sitemap.xml is live but only lists /products/test and skirt-tote-bag (not the launch catalog); homepage is missing from the sitemap; EN-CA/FR-CA hreflang look like skeleton markets. Missing or unverifiable behind the gate: Product+Offer JSON-LD, Organization/WebSite JSON-LD, llms.txt, meta/OG/canonicals, Search Console. Suggested order: (1) flip Production URL privacy to Public, (2) lock which products/collections are indexable for soft launch, (3) wire getSeoMeta, (4) add JSON-LD, (5) add llms.txt, (6) Search Console verification. GEO (generative engine optimization) is included in this task: llms.txt, entity clarity, and structured product data so Grey appears in AI-generated answers.",
+      "notes": "2026-10-04: Critical blocker — www.greyobjects.com returns 401/Private with x-robots-tag noindex. Sitemap.xml is live but only lists /products/test and skirt-tote-bag (not the launch catalog); homepage is missing from the sitemap; EN-CA/FR-CA hreflang look like skeleton markets. Missing or unverifiable behind the gate: Product+Offer JSON-LD, Organization/WebSite JSON-LD, llms.txt, meta/OG/canonicals, Search Console. Suggested order: (1) flip Production URL privacy to Public, (2) lock which products/collections are indexable for soft launch, (3) wire getSeoMeta, (4) add JSON-LD, (5) add llms.txt, (6) Search Console verification. GEO (generative engine optimization) is included in this task: llms.txt, entity clarity, and structured product data so Grey appears in AI-generated answers. CD 6 Oct — flipping Production URL privacy to Public remains a next action (SEO/GEO stays blocked until that privacy flip).",
       "blocker": "www.greyobjects.com returns 401/Private with x-robots-tag noindex"
     },
     "obj-lenticular": {
       "status": "Parked",
-      "priority": "Low"
+      "priority": "Low",
+      "blocker": "",
+      "notes": "CD 6 Oct — lenticular deferred off soft launch."
     },
     "ev-product-list": {
-      "status": "Not started",
+      "status": "Parked",
       "priority": "Low",
-      "due": "2026-10-04"
+      "due": "2026-10-04",
+      "blocker": "",
+      "notes": "CD 6 Oct — Evergray samples / product list deferred off soft launch."
     },
     "ev-playing-cards": {
-      "status": "Not started",
+      "status": "Parked",
       "priority": "Low",
-      "due": "2026-10-10"
+      "due": "2026-10-10",
+      "blocker": "",
+      "notes": "CD 6 Oct — Evergray playing cards deferred off soft launch."
     },
     "web-site-align": {
       "status": "Done",
       "priority": "High",
       "due": "2026-10-03",
-      "owner": "CD \u00b7 Claude",
-      "notes": "2026-10-04 CD: finish and align everything on the site \u2014 pretty much done.",
+      "owner": "CD · Claude",
+      "notes": "2026-10-04 CD: finish and align everything on the site — pretty much done.",
       "blocker": ""
     },
     "web-asset-checklist": {
       "status": "Done",
       "priority": "High",
       "due": "2026-10-03",
-      "owner": "CD \u00b7 Communications \u00b7 Distribution",
+      "owner": "CD · Communications · Distribution",
       "notes": "2026-10-04 CD: soft-launch asset checklist exists (Utkarsh has it).",
       "blocker": ""
     },
@@ -198,7 +238,9 @@
     },
     "obj-lunar": {
       "status": "Parked",
-      "priority": "Low"
+      "priority": "Low",
+      "blocker": "",
+      "notes": "Stays parked — not on the 11 Oct soft-launch run."
     },
     "os-board-host": {
       "status": "Done",
@@ -206,6 +248,30 @@
       "due": "2026-10-03",
       "notes": "2026-10-03: Still live at https://grey0000-0000.github.io/grey-OS/ (GitHub Pages, main / root). Cloudflare quick tunnels retired. Storefront host is a separate Done task (Oxygen/Hydrogen).",
       "blocker": ""
+    },
+    "img-pipeline-proof": {
+      "status": "In progress",
+      "priority": "Critical",
+      "due": "2026-10-06",
+      "blocker": "",
+      "owner": "Utkarsh + Operations",
+      "notes": "CD 6 Oct — today's second focus: one product end-to-end through the image pipeline to prove the look before tomorrow's batch shoot. Batch shoot waits on this proof."
+    },
+    "web-last-mile": {
+      "status": "Not started",
+      "priority": "High",
+      "due": "2026-10-11",
+      "blocker": "",
+      "owner": "Utkarsh + Communications",
+      "notes": "CD 6 Oct — checkup, Razorpay Grey restyle, and go live (window 10–11 Oct). Not started until website-ready assets, film, and the Instagram reel path are ready enough. Razorpay restyle is folded here. Flipping Production URL privacy to Public stays on web-seo and must clear before go-live."
+    },
+    "obj-arsenal-frame": {
+      "status": "In progress",
+      "priority": "High",
+      "due": "2026-10-06",
+      "blocker": "",
+      "owner": "Utkarsh",
+      "notes": "CD 6 Oct — hand off three Arsenal cards for framing today so they are ready for the weekend. One-off non-collection — not Selection, One of None, or Evergray."
     }
   },
   "cardDates": {
@@ -265,7 +331,7 @@
         0,
         0
       ],
-      "owner": "Strategist \u00b7 Communications"
+      "owner": "Strategist · Communications"
     },
     {
       "id": "ig",
@@ -282,7 +348,7 @@
         0,
         0
       ],
-      "owner": "Strategist \u00b7 Distribution"
+      "owner": "Strategist · Distribution"
     },
     {
       "id": "cvr",
@@ -304,7 +370,7 @@
     {
       "id": "aov",
       "name": "Average order value",
-      "unit": "\u20b9",
+      "unit": "₹",
       "current": "0",
       "target": "3500",
       "history": [
@@ -350,7 +416,7 @@
         0,
         0
       ],
-      "owner": "Strategist \u00b7 Communications"
+      "owner": "Strategist · Communications"
     }
   ],
   "collectionCommerce": {
@@ -386,6 +452,6 @@
     }
   },
   "experiments": null,
-  "updated": "2026-10-04T15:30:00+05:30",
+  "updated": "2026-10-06T09:20:00+05:30",
   "updatedBy": "orchestrator"
 }

@@ -162,6 +162,44 @@
   tr.urg-soon td:first-child { border-left: 3px solid #c4922e; }
   tr.urg-later td:first-child { border-left: 3px solid #2f6b3a; }
   tr.urg-done td:first-child { border-left: 3px solid transparent; }
+  /* Launch tasks: Done green, In progress orange, Blocked red.
+     Not started and Parked stay on the existing neutral / urgency treatment. */
+  #task-rows tr.task-status-done td:first-child { border-left: 3px solid #2f6b3a; }
+  #task-rows tr.task-status-progress td:first-child { border-left: 3px solid #c47d0e; }
+  #task-rows tr.task-status-blocked td:first-child { border-left: 3px solid #b33a3a; }
+  #task-rows tr.task-status-done td { background: color-mix(in srgb, #2f6b3a 9%, transparent); }
+  #task-rows tr.task-status-progress td { background: color-mix(in srgb, #f0a020 11%, transparent); }
+  #task-rows tr.task-status-blocked td { background: color-mix(in srgb, #b33a3a 8%, transparent); }
+  #task-rows tr.task-status-done:hover td { background: color-mix(in srgb, #2f6b3a 14%, transparent); }
+  #task-rows tr.task-status-progress:hover td { background: color-mix(in srgb, #f0a020 16%, transparent); }
+  #task-rows tr.task-status-blocked:hover td { background: color-mix(in srgb, #b33a3a 13%, transparent); }
+  #task-rows tr.task-status-done select.cell-select[data-kind="task-status"] {
+    color: #f4faf6;
+    background-color: #2f6b3a;
+    border-color: #245632;
+    font-weight: 600;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23f4faf6' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  }
+  #task-rows tr.task-status-progress select.cell-select[data-kind="task-status"] {
+    color: #1f1408;
+    background-color: #f0a020;
+    border-color: #c47d0e;
+    font-weight: 600;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%231f1408' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  }
+  #task-rows tr.task-status-blocked select.cell-select[data-kind="task-status"] {
+    color: #fff;
+    background-color: #b33a3a;
+    border-color: #8f2e2e;
+    font-weight: 600;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23ffffff' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  }
+  #task-rows td.blocker-live {
+    color: #8f2e2e;
+    font-weight: 600;
+    box-shadow: inset 3px 0 0 #b33a3a;
+  }
+  [data-theme="night"] #task-rows td.blocker-live { color: #f0b4b0; }
   .due-locked.soon { color: #8a5a12; font-weight: 600; }
   .due-locked.later { color: #2f6b3a; font-weight: 500; }
   .due-locked.overdue, .due-locked.critical { color: #9c3b3b; font-weight: 600; }
@@ -1177,14 +1215,15 @@
         <section class="next-move glass" id="critical-path">
           <div class="label">Soft-launch critical path</div>
           <ol class="critical-steps">
-            <li><span class="n">1</span><span>Storefront live on Oxygen/Hydrogen</span></li>
-            <li><span class="n">2</span><span>Finish and align everything on the site</span></li>
-            <li><span class="n">3</span><span>Checklist of all assets needed for the site</span></li>
-            <li><span class="n">4</span><span>Phone-responsive experience</span></li>
-            <li><span class="n">5</span><span>Film script</span></li>
-            <li><span class="n">6</span><span>Make the film</span></li>
+            <li><span class="n">1</span><span>Product image references → mood board</span></li>
+            <li><span class="n">2</span><span>Prove one product end-to-end through the image pipeline (look locked before batch shoot)</span></li>
+            <li><span class="n">3</span><span>Batch shoot</span></li>
+            <li><span class="n">4</span><span>ComfyUI chain → website-ready assets</span></li>
+            <li><span class="n">5</span><span>Film script finalize (infographic stills + video treatment / video bank)</span></li>
+            <li><span class="n">6</span><span>Instagram: cut reel first, then product template</span></li>
+            <li><span class="n">7</span><span>Last mile: checkup, Razorpay Grey restyle, go live</span></li>
           </ol>
-          <p class="path-note">Lunar / Ganjifa / lenticular and other non-launch items are parked or demoted. Order locked by CD, 30 Sep.</p>
+          <p class="path-note">CD 6 Oct — this is the soft-launch run to Sunday 11 Oct. Today's focus is mood-board refs + one pipeline proof + film base mapped. Evergray samples, Hot Wheels, pencils, lenticular, Ganjifa deferred off soft launch. SEO/GEO stays blocked until Production URL privacy is Public.</p>
         </section>
       </div>
       <div class="task-filters">
@@ -1667,50 +1706,52 @@ const SEED = {
   experiments: [
     { id: "sel-travel", collectionId: "selection", collection: "Selection Collection", name: "Travel finds", artifact: "Curated object assortment", stage: "Concept", status: "Active", owner: "CD · Communications", next: "Define first assortment criteria + 3–5 candidates", blocker: "Assortment undefined", deadline: "Needs CD" },
     { id: "oon-lab", collectionId: "one-of-none", collection: "One of None", name: "Lab wall", artifact: "Launch-wall piece set", stage: "Prototype mix", status: "Active", owner: "CD · Operations", next: "Lock launch-wall pieces vs lab-only", blocker: "Launch wall unlocked", deadline: "Needs CD" },
-    { id: "oon-bags", collectionId: "one-of-none", collection: "One of None", name: "Bags", artifact: "2 physical bags", stage: "Asset", status: "Made — needs photos", owner: "CD · Communications", next: "Shoot bag photos", blocker: "Photography not done", deadline: "ASAP" },
-    { id: "oon-hotwheels", collectionId: "one-of-none", collection: "One of None", name: "Hot Wheels cards", artifact: "Framed Hot Wheels installation / cards", stage: "Concept", status: "Idea", owner: "CD · Researcher", next: "Decide active vs parked", blocker: "No brief", deadline: "Needs CD" },
-    { id: "oon-pencils", collectionId: "one-of-none", collection: "One of None", name: "Hotel / resort pencils", artifact: "Pencil time-capsule object", stage: "Concept", status: "Idea", owner: "CD · Distribution", next: "Decide active vs parked; placement if active", blocker: "No decision", deadline: "Needs CD" },
-    { id: "oon-lenticular", collectionId: "objects", collection: "Objects (temporary)", name: "Lenticular chain — parked / later", artifact: "Lenticular print edition / chain", stage: "Concept", status: "Parked", owner: "CD · Operations", next: "Revisit later — not One of None launch-wall", blocker: "Deprioritized", deadline: "Later" },
-    { id: "ev-shirts", collectionId: "evergray", collection: "Evergrey", name: "Shirts / ties", artifact: "Evergrey garment SKUs", stage: "Prototype", status: "3 samples · list open", owner: "CD · Strategist · Operations", next: "Finalize first Evergrey list + economics", blocker: "Assortment fluid", deadline: "Needs CD" },
+    { id: "oon-bags", collectionId: "one-of-none", collection: "One of None", name: "Bags", artifact: "2 physical bags", stage: "Asset", status: "Made — needs photos", owner: "CD · Communications", next: "Shoot rides the same batch photography/ComfyUI run", blocker: "Waits on pipeline proof", deadline: "ASAP" },
+    { id: "oon-hotwheels", collectionId: "one-of-none", collection: "One of None", name: "Hot Wheels cards", artifact: "Framed Hot Wheels installation / cards", stage: "Concept", status: "Parked", owner: "CD · Researcher", next: "Deferred off soft launch", blocker: "Deferred off soft launch", deadline: "Later" },
+    { id: "oon-pencils", collectionId: "one-of-none", collection: "One of None", name: "Hotel / resort pencils", artifact: "Pencil time-capsule object", stage: "Concept", status: "Parked", owner: "CD · Distribution", next: "Deferred off soft launch", blocker: "Deferred off soft launch", deadline: "Later" },
+    { id: "oon-lenticular", collectionId: "objects", collection: "Objects (temporary)", name: "Lenticular chain — parked / later", artifact: "Lenticular print edition / chain", stage: "Concept", status: "Parked", owner: "CD · Operations", next: "Deferred off soft launch", blocker: "Deferred off soft launch", deadline: "Later" },
+    { id: "ev-shirts", collectionId: "evergray", collection: "Evergrey", name: "Shirts / ties", artifact: "Evergrey garment SKUs", stage: "Prototype", status: "3 samples · list open", owner: "CD · Strategist · Operations", next: "Deferred off soft launch — samples stay, list is not on the 11 Oct run", blocker: "Deferred off soft launch", deadline: "Later" },
     { id: "cg-core", collectionId: "cyber-gunk", collection: "Cyber Gunk", name: "Old tech + modern parts", artifact: "Hybrid tech object(s)", stage: "Idea", status: "Likely temporal", owner: "Creative Director", next: "Decide active vs parked; lock temporal label", blocker: "Label open", deadline: "Needs CD" },
     { id: "lunar", collectionId: "objects", collection: "Objects (temporary)", name: "Lunar Clock — parked / later", artifact: "Moon-phase clock object", stage: "Idea", status: "Parked", owner: "CD · Researcher · Operations", next: "Parked · Low — not soft-launch; Path A kit sourced but demoted", blocker: "Deprioritized — not launch path", deadline: "Later" },
-    { id: "ganjifa", collectionId: "one-of-none", collection: "One of None", name: "Ganjifa playing cards — parked / later", artifact: "Ganjifa card deck / system-test object", stage: "Concept", status: "Parked", owner: "CD · Researcher · Operations", next: "Parked · Low priority — not launch; Diwali 24 Oct 2026 possible future window (uncommitted)", blocker: "Deprioritized — not soft-launch", deadline: "Later · Diwali window optional" },
+    { id: "ganjifa", collectionId: "one-of-none", collection: "One of None", name: "Ganjifa playing cards — parked / later", artifact: "Ganjifa card deck / system-test object", stage: "Concept", status: "Parked", owner: "CD · Researcher · Operations", next: "Deferred off soft launch · Diwali 24 Oct 2026 possible future window (uncommitted)", blocker: "Deferred off soft launch", deadline: "Later · Diwali window optional" },
     { id: "film", collectionId: "film", collection: "Launch asset", name: "Gallery-tour film", artifact: "~60s cinematic / interactive film", stage: "Concept", status: "Launch trio", owner: "CD · Communications · Distribution", next: "Lock launch role + storyboard owner", blocker: "Storyboard / owner unset", deadline: "Needs CD" },
     { id: "site", collectionId: "infra", collection: "Infra", name: "Site / storefront", artifact: "GreyObjects.com experience", stage: "Live", status: "Soft-live", owner: "CD (Claude) · Visual designer", next: "Claude: product pages + website structure", blocker: "Pages and structure still open", deadline: "1–2 wk engagement" },
-    { id: "razorpay", collectionId: "infra", collection: "Infra", name: "Razorpay checkout UI", artifact: "Grey-styled checkout", stage: "Live", status: "Needs Grey restyle", owner: "CD · Visual designer", next: "Restyle checkout into Grey system", blocker: "Visual system unlocked", deadline: "With stylesheet" },
+    { id: "razorpay", collectionId: "infra", collection: "Infra", name: "Razorpay checkout UI", artifact: "Grey-styled checkout", stage: "Live", status: "Needs Grey restyle", owner: "CD · Visual designer", next: "Tracked under web-last-mile", blocker: "Folded into last mile", deadline: "With go-live" },
     { id: "ship", collectionId: "infra", collection: "Infra", name: "Shopify + Shiprocket", artifact: "Live commerce + India shipping", stage: "Live", status: "Connected", owner: "Operations", next: "Keep green; verify rates/weights if needed", blocker: "None known", deadline: "—" },
     { id: "newsletter", collectionId: "infra", collection: "GTM", name: "Newsletter", artifact: "Grey Dispatch list + welcome flow", stage: "Live", status: "Done", owner: "Communications · Operations", next: "Welcome base done — one welcome for signups", blocker: "—", deadline: "After soft-launch criteria" },
-    { id: "ig", collectionId: "infra", collection: "GTM", name: "Instagram", artifact: "IG presence (if launch needs it)", stage: "Not started", status: "Open", owner: "Communications · Distribution", next: "Decide if needed for launch trio or defer", blocker: "Not started", deadline: "After narrative" },
+    { id: "ig", collectionId: "infra", collection: "GTM", name: "Instagram", artifact: "IG presence (if launch needs it)", stage: "Not started", status: "Open", owner: "Communications · Distribution", next: "Cut reel first, then product template — tracked on film-reel", blocker: "Waits on video treatment", deadline: "After film base" },
     { id: "assistant", collectionId: "infra", collection: "Org", name: "Exec + Ops Assistant", artifact: "Hired operator (~₹30k/mo)", stage: "Hiring", status: "Open", owner: "CD · Operations", next: "Scorecard + search", blocker: "No hire yet", deadline: "Needs CD" },
     { id: "designer", collectionId: "infra", collection: "Org", name: "Visual systems designer", artifact: "Production stylesheet (logo/palette/glass)", stage: "Sourcing", status: "Recommended", owner: "CD · Orchestrator", next: "Approve brief + engage 1–2 weeks", blocker: "Not engaged", deadline: "ASAP" }
   ],
   workstreams: [
-    { id: "website", name: "Website / Infra", blurb: "Oxygen/Hydrogen storefront (live) · align site · asset checklist · phone responsive · Brevo done · SEO/copy", owner: "Utkarsh (Claude) + Orchestrator + Communications", rank: 1 },
-    { id: "film", name: "Film", blurb: "Script → Higgsfield (make the film) → Instagram reel", owner: "Utkarsh + Communications", rank: 2 },
-    { id: "selection", name: "Selection Collection", blurb: "After site + film — list · photo · Shopify", owner: "Utkarsh + Operations + Communications", rank: 3 },
-    { id: "one-of-none", name: "One of None", blurb: "After site + film — bags · pencils · Hot Wheels · mystery", owner: "Utkarsh + Operations", rank: 4 },
-    { id: "objects", name: "Objects (temporary)", blurb: "Parked / later — Lunar Clock + lenticular demoted off launch path", owner: "Utkarsh + Operations", rank: 5 },
-    { id: "evergray", name: "Evergrey", blurb: "Demoted vs site+film — product list + playing cards when capacity", owner: "Utkarsh + Operations", rank: 6 }
+    { id: "website", name: "Website / Infra", blurb: "Host live · last mile is checkup, Razorpay Grey restyle, go live · SEO/GEO blocked until Production URL is Public · copy waits on assets", owner: "Utkarsh (Claude) + Orchestrator + Communications", rank: 1 },
+    { id: "film", name: "Film", blurb: "Map film base → finalize script → video treatment + video bank → Instagram reel first, then product template", owner: "Utkarsh + Communications", rank: 2 },
+    { id: "selection", name: "Selection Collection", blurb: "Mood-board refs → one pipeline proof → batch shoot + ComfyUI → website-ready assets", owner: "Utkarsh + Operations + Communications", rank: 3 },
+    { id: "one-of-none", name: "One of None", blurb: "Bags ride the photo/ComfyUI run · pencils and Hot Wheels deferred off soft launch", owner: "Utkarsh + Operations", rank: 4 },
+    { id: "objects", name: "Objects (temporary)", blurb: "Today: frame three Arsenal cards (one-off) · Lunar and lenticular parked off soft launch", owner: "Utkarsh + Operations", rank: 5 },
+    { id: "evergray", name: "Evergrey", blurb: "Deferred off soft launch — product list and playing cards parked", owner: "Utkarsh + Operations", rank: 6 }
   ],
   tasks: [
-    { id: "film-script", workstreamId: "film", workstream: "Film", title: "Final film theme and script", owner: "Utkarsh + Communications", status: "Not started", dependency: "—", blocker: "—" , due: "2026-10-04" },
-    { id: "film-higgs", workstreamId: "film", workstream: "Film", title: "Generate / shoot in Higgsfield", owner: "Utkarsh + Communications", status: "Not started", dependency: "Final film theme and script", blocker: "Script not locked" , due: "2026-10-06" },
-    { id: "film-reel", workstreamId: "film", workstream: "Film", title: "Cut for Instagram reel", owner: "Utkarsh + Communications", status: "Not started", dependency: "Higgsfield generate / shoot", blocker: "—" , due: "2026-10-09" },
+    { id: "sel-photo-approach", workstreamId: "selection", workstream: "Selection Collection", title: "Mood-board product image references + DIY/ComfyUI look", owner: "Utkarsh + Operations", status: "In progress", dependency: "—", blocker: "—", priority: "Critical", due: "2026-10-06", notes: "CD 6 Oct — collect product image references onto a mood board; this is today's first focus. Photography approach is DIY + ComfyUI (not hire)." },
+    { id: "img-pipeline-proof", workstreamId: "selection", workstream: "Selection Collection", title: "Prove one product end-to-end through the image pipeline", owner: "Utkarsh + Operations", status: "In progress", dependency: "Mood-board product image references", blocker: "—", priority: "Critical", due: "2026-10-06", notes: "CD 6 Oct — today's second focus: one product end-to-end through the image pipeline to prove the look before tomorrow's batch shoot. Batch shoot waits on this proof." },
+    { id: "film-script", workstreamId: "film", workstream: "Film", title: "Map film base, then finalize script", owner: "Utkarsh + Communications", status: "In progress", dependency: "—", blocker: "—", priority: "Critical", due: "2026-10-06", notes: "CD 6 Oct — today's third focus is map the film base so exactly what's needed for the film is known; then finalize script. Execution layers: (1) infographic stills, (2) video treatment + video bank. Visual direction exists; execute, don't invent from scratch." },
+    { id: "film-higgs", workstreamId: "film", workstream: "Film", title: "Video treatment + video bank (generate / shoot)", owner: "Utkarsh + Communications", status: "Not started", dependency: "Film base mapped and script finalized", blocker: "—", priority: "Critical", due: "2026-10-08", notes: "CD 6 Oct — video treatment + video bank / generate-shoot (Higgsfield or whatever CD uses). Not started until the film base and script are locked." },
+    { id: "film-reel", workstreamId: "film", workstream: "Film", title: "Instagram: cut reel first, then product template", owner: "Utkarsh + Communications", status: "Not started", dependency: "Video treatment + video bank", blocker: "—", priority: "Critical", due: "2026-10-09", notes: "CD 6 Oct — Instagram reel cut FIRST, then Instagram product template. Folds the Instagram set. Not started until the video treatment / video bank path is ready." },
 
-    { id: "sel-logo", workstreamId: "selection", workstream: "Selection Collection", title: "Animated logo fitting Grey design system", owner: "Utkarsh + Communications", status: "Not started", dependency: "Design language spec (or interim tokens)", blocker: "Design system not finalized" , due: "2026-10-03" },
-    { id: "sel-list", workstreamId: "selection", workstream: "Selection Collection", title: "Finalize product list from collection", owner: "Utkarsh + Operations + Communications", status: "Not started", dependency: "—", blocker: "List unfinalized" , due: "2026-10-04" },
-    { id: "sel-photo-approach", workstreamId: "selection", workstream: "Selection Collection", title: "Decide photography approach (DIY house vs hire)", owner: "Utkarsh + Operations", status: "Not started", dependency: "Finalize product list", blocker: "Different products need different setups (shoes, shirts, etc.)" , due: "2026-10-05" },
-    { id: "sel-photograph", workstreamId: "selection", workstream: "Selection Collection", title: "Photograph Selection products", owner: "Utkarsh + Operations", status: "Not started", dependency: "Photography approach decision", blocker: "—" , due: "2026-10-07" },
-    { id: "sel-shopify", workstreamId: "selection", workstream: "Selection Collection", title: "Add to Shopify with captions / details", owner: "Utkarsh + Operations + Communications", status: "Not started", dependency: "Photograph Selection products", blocker: "—" , due: "2026-10-08" },
+    { id: "sel-logo", workstreamId: "selection", workstream: "Selection Collection", title: "Animated logo fitting Grey design system", owner: "Utkarsh + Communications", status: "Not started", dependency: "Design language spec (or interim tokens)", blocker: "—", priority: "Low", due: "2026-10-12", notes: "CD 6 Oct — off today's soft-launch focus. Not part of the run to Sunday 11 Oct." },
+    { id: "sel-list", workstreamId: "selection", workstream: "Selection Collection", title: "Finalize product list from collection", owner: "Utkarsh + Operations + Communications", status: "Not started", dependency: "—", blocker: "—", priority: "Medium", due: "2026-10-12", notes: "CD 6 Oct — not today's focus. Trails the image pipeline; not on the three-item focus for 6 Oct." },
+    { id: "sel-photograph", workstreamId: "selection", workstream: "Selection Collection", title: "Batch shoot + ComfyUI chain → website-ready assets", owner: "Utkarsh + Operations", status: "Not started", dependency: "One-product pipeline proof (img-pipeline-proof)", blocker: "—", priority: "Critical", due: "2026-10-07", notes: "CD 6 Oct — product stills and ComfyUI setup are one run. Batch shoot starts once the one-product proof locks the look (target 7 Oct); ComfyUI chain then makes website-ready assets. Bags shoot rides this same photography/ComfyUI run (oon-bags-photo)." },
+    { id: "sel-shopify", workstreamId: "selection", workstream: "Selection Collection", title: "Add to Shopify with captions / details", owner: "Utkarsh + Operations + Communications", status: "Not started", dependency: "Batch shoot + ComfyUI chain → website-ready assets", blocker: "—" , due: "2026-10-08" },
     { id: "sel-site-fetch", workstreamId: "selection", workstream: "Selection Collection", title: "Site fetches latest Selection products", owner: "Utkarsh (Claude)", status: "Not started", dependency: "Shopify listings live", blocker: "—" , due: "2026-10-09" },
 
-    { id: "oon-bags-photo", workstreamId: "one-of-none", workstream: "One of None", title: "Bags ×2 — photograph", owner: "Utkarsh + Operations", status: "Not started", dependency: "Same photography cycle as Selection Collection", blocker: "Photos needed" , due: "2026-10-04" },
-    { id: "oon-pencil-art", workstreamId: "one-of-none", workstream: "One of None", title: "Pencil artwork — create", owner: "Utkarsh + Operations", status: "Not started", dependency: "—", blocker: "Not started · needs creation" , due: "2026-10-05" },
-    { id: "oon-hotwheels", workstreamId: "one-of-none", workstream: "One of None", title: "Hot Wheels cards", owner: "Utkarsh + Operations", status: "Not started", dependency: "Can follow after launch", blocker: "Post-launch OK" , due: "2026-10-06" },
+    { id: "oon-bags-photo", workstreamId: "one-of-none", workstream: "One of None", title: "Bags ×2 — same batch shoot + ComfyUI run", owner: "Utkarsh + Operations", status: "Not started", dependency: "Pipeline proof, then batch shoot (sel-photograph)", blocker: "—", priority: "Medium", due: "2026-10-07", notes: "CD 6 Oct — bags shoot rides the same photography/ComfyUI run as sel-photograph. Not started until the one-product pipeline proof locks the look." },
+    { id: "oon-pencil-art", workstreamId: "one-of-none", workstream: "One of None", title: "Pencil artwork — deferred off soft launch", owner: "Utkarsh + Operations", status: "Parked", dependency: "—", blocker: "—", priority: "Low", due: "2026-10-05", notes: "CD 6 Oct — pencils deferred off soft launch." },
+    { id: "oon-hotwheels", workstreamId: "one-of-none", workstream: "One of None", title: "Hot Wheels cards — deferred off soft launch", owner: "Utkarsh + Operations", status: "Parked", dependency: "—", blocker: "—", priority: "Low", due: "2026-10-06", notes: "CD 6 Oct — Hot Wheels deferred off soft launch." },
     { id: "oon-mystery", workstreamId: "one-of-none", workstream: "One of None", title: "1 mystery product — TBD", owner: "Utkarsh + Operations", status: "Not started", dependency: "CD defines product", blocker: "TBD" , due: "2026-10-10" },
-    { id: "obj-lenticular", workstreamId: "objects", workstream: "Objects (temporary)", title: "Lenticular chain — parked / later", owner: "Utkarsh + Operations", status: "Parked", dependency: "—", blocker: "Not near-term — out of One of None launch", priority: "Low" },
-    { id: "ev-product-list", workstreamId: "evergray", workstream: "Evergrey", title: "Come up with the list of products in the Evergrey collection", owner: "Utkarsh + Operations", status: "Not started", dependency: "—", blocker: "—", priority: "Low", due: "2026-10-04" },
-    { id: "ev-playing-cards", workstreamId: "evergray", workstream: "Evergrey", title: "Design a set of normal playing cards", owner: "Utkarsh + Operations", status: "Not started", dependency: "—", blocker: "—", priority: "Low", due: "2026-10-10" },
+    { id: "obj-arsenal-frame", workstreamId: "objects", workstream: "Objects (temporary)", title: "Frame three Arsenal cards", owner: "Utkarsh", status: "In progress", dependency: "—", blocker: "—", priority: "High", due: "2026-10-06", notes: "CD 6 Oct — hand off three Arsenal cards for framing today so they are ready for the weekend. One-off non-collection — not Selection, One of None, or Evergray." },
+    { id: "obj-lenticular", workstreamId: "objects", workstream: "Objects (temporary)", title: "Lenticular chain — deferred off soft launch", owner: "Utkarsh + Operations", status: "Parked", dependency: "—", blocker: "—", priority: "Low", notes: "CD 6 Oct — lenticular deferred off soft launch." },
+    { id: "ev-product-list", workstreamId: "evergray", workstream: "Evergrey", title: "Evergrey product list — deferred off soft launch", owner: "Utkarsh + Operations", status: "Parked", dependency: "—", blocker: "—", priority: "Low", due: "2026-10-04", notes: "CD 6 Oct — Evergray samples / product list deferred off soft launch." },
+    { id: "ev-playing-cards", workstreamId: "evergray", workstream: "Evergrey", title: "Playing cards — deferred off soft launch", owner: "Utkarsh + Operations", status: "Parked", dependency: "—", blocker: "—", priority: "Low", due: "2026-10-10", notes: "CD 6 Oct — Evergray playing cards deferred off soft launch." },
 
         { id: "os-board-host", workstreamId: "website", workstream: "Website / Infra", title: "Grey OS board on GitHub Pages", owner: "Orchestrator", status: "Done", dependency: "—", blocker: "—", due: "2026-10-03", notes: "2026-10-03: Still live at https://grey0000-0000.github.io/grey-OS/ (GitHub Pages, main / root). Cloudflare quick tunnels retired. Storefront host is a separate Done task (Oxygen/Hydrogen)." },
     { id: "web-host", workstreamId: "website", workstream: "Website / Infra", title: "Host storefront on Oxygen/Hydrogen", owner: "Utkarsh (Claude) + Orchestrator", status: "Done", dependency: "Shopify Oxygen · GREY Hydrogen Production", blocker: "—", due: "2026-10-02", notes: "2026-10-03: www.greyobjects.com is Primary under GREY (Hydrogen Production) on Shopify Oxygen. Production URL privacy set to Public. www.greyobjects.com and the Oxygen host return HTTP 200 Hydrogen HTML (powered-by Shopify, Oxygen, Hydrogen). Apex 301→www. Hosting path is Oxygen/Hydrogen — not Vercel." },
@@ -1719,9 +1760,10 @@ const SEED = {
     { id: "web-responsive", workstreamId: "website", workstream: "Website / Infra", title: "Make the experience responsive on the phone", owner: "Utkarsh (Claude) + Communications", status: "Not started", dependency: "Site pages largely in place", blocker: "Mobile pass not done" , due: "2026-10-05" },
     { id: "web-design-spec", workstreamId: "website", workstream: "Website / Infra", title: "Finalize Grey design language spec (typography, button radius, shadows, visual foundations)", owner: "Utkarsh + visual systems designer + Communications", status: "Not started", dependency: "Designer engagement or CD lock", blocker: "Spec incomplete · styling gap — needs type, radius, shadows, foundations locked" , due: "2026-10-03" },
     { id: "web-newsletter", workstreamId: "website", workstream: "Website / Infra", title: "Set up newsletter with Brevo", owner: "Utkarsh + Communications", status: "Done", dependency: "Storefront live on Oxygen/Hydrogen", blocker: "—", due: "2026-10-05", notes: "2026-10-03 DONE. greyobjects.com verified + authenticated in Brevo. GoDaddy DNS: TXT @ brevo-code:a1fecd641f7f9a851e031128e6194edf; CNAME brevo1._domainkey → b1.greyobjects-com.dkim.brevo.com; CNAME brevo2._domainkey → b2.greyobjects-com.dkim.brevo.com. Existing _dmarc p=reject left untouched (no MX — DKIM records are CNAMEs). From hello@greyobjects.com, sender display name GRAY. Transactional tests to hello@greyobjects.com delivered today: (a) Test from Grey, messageId 202610030623.92472205153@smtp-relay.mailin.fr, delivered ~11:53 IST, opened ~11:54 IST; (b) Grey test — second send, messageId 202610030635.93790112495@smtp-relay.mailin.fr, ~12:05 IST. Newsletter welcome email base done (one welcome for signups). Gmail ops: hello@greyobjects.com inbox labeled Grey, Brevo, Shopify, Razorpay, GitHub, Google, Personal, Marketing — labeling only, no deletes or archives." },
-    { id: "web-copy-review", workstreamId: "website", workstream: "Website / Infra", title: "Review all captions and copy", owner: "Utkarsh + Communications", status: "Not started", dependency: "Product lists + photography captions drafted", blocker: "—" , due: "2026-10-07" },
-    { id: "web-seo", workstreamId: "website", workstream: "Website / Infra", title: "SEO and AI search optimization", owner: "Utkarsh (Claude) + Communications", status: "Not started", dependency: "Core pages / product URLs exist", blocker: "—" , due: "2026-10-09" },
-    { id: "obj-lunar", workstreamId: "objects", workstream: "Objects (temporary)", title: "Lunar Clock Path A — parked / later", owner: "Utkarsh + Operations + Researcher", status: "Parked", dependency: "—", blocker: "Deprioritized — not soft-launch", priority: "Low" }
+    { id: "web-copy-review", workstreamId: "website", workstream: "Website / Infra", title: "Review all captions and copy", owner: "Utkarsh + Communications", status: "Not started", dependency: "Product lists + photography captions drafted", blocker: "—", due: "2026-10-07", notes: "CD 6 Oct — waits on real products / website-ready assets." },
+    { id: "web-seo", workstreamId: "website", workstream: "Website / Infra", title: "SEO and AI search optimization", owner: "Utkarsh (Claude) + Communications", status: "In progress", dependency: "Core pages / product URLs exist", blocker: "www.greyobjects.com returns 401/Private with x-robots-tag noindex", due: "2026-10-09", notes: "2026-10-04: Critical blocker — www.greyobjects.com returns 401/Private with x-robots-tag noindex. Sitemap.xml is live but only lists /products/test and skirt-tote-bag (not the launch catalog); homepage is missing from the sitemap; EN-CA/FR-CA hreflang look like skeleton markets. Missing or unverifiable behind the gate: Product+Offer JSON-LD, Organization/WebSite JSON-LD, llms.txt, meta/OG/canonicals, Search Console. Suggested order: (1) flip Production URL privacy to Public, (2) lock which products/collections are indexable for soft launch, (3) wire getSeoMeta, (4) add JSON-LD, (5) add llms.txt, (6) Search Console verification. GEO (generative engine optimization) is included in this task: llms.txt, entity clarity, and structured product data so Grey appears in AI-generated answers. CD 6 Oct — flipping Production URL privacy to Public remains a next action (SEO/GEO stays blocked until that privacy flip)." },
+    { id: "web-last-mile", workstreamId: "website", workstream: "Website / Infra", title: "Last mile: checkup, Razorpay Grey restyle, go live", owner: "Utkarsh + Communications", status: "Not started", dependency: "Website-ready assets + film + Instagram reel", blocker: "—", priority: "High", due: "2026-10-11", notes: "CD 6 Oct — checkup, Razorpay Grey restyle, and go live (window 10–11 Oct). Not started until website-ready assets, film, and the Instagram reel path are ready enough. Razorpay restyle is folded here. Flipping Production URL privacy to Public stays on web-seo and must clear before go-live." },
+    { id: "obj-lunar", workstreamId: "objects", workstream: "Objects (temporary)", title: "Lunar Clock Path A — parked / later", owner: "Utkarsh + Operations + Researcher", status: "Parked", dependency: "—", blocker: "—", priority: "Low", notes: "Stays parked — not on the 11 Oct soft-launch run." }
   ],
 
   businessMetrics: [
@@ -1734,16 +1776,16 @@ const SEED = {
     { id: "reach", name: "Brand reach / content output", unit: "pieces", current: "0", target: "12", history: [0,0,0,0,0,0,0], owner: "Strategist · Communications" }
   ],
   decisions: [
-    "CD priority (30 Sep): 1) GitHub/Vercel host live 2) Finish + align site 3) Site asset checklist 4) Phone responsive 5) Film script 6) Make the film. Selection / One of None trail after. Lunar / Ganjifa / lenticular parked or demoted.",
+    "CD 6 Oct — soft-launch run to Sunday 11 Oct: 1) Product image references → mood board 2) Prove one product end-to-end through the image pipeline (look locked before batch shoot) 3) Batch shoot 4) ComfyUI chain → website-ready assets 5) Film script finalize (infographic stills + video treatment / video bank) 6) Instagram: cut reel first, then product template 7) Last mile: checkup, Razorpay Grey restyle, go live. Today's focus is mood-board refs + one pipeline proof + film base mapped. Evergray samples, Hot Wheels, pencils, lenticular, Ganjifa deferred off soft launch. SEO/GEO stays blocked until Production URL privacy is Public.",
 
-    "Parked / later: Lunar Clock Path A, Ganjifa, lenticular — not soft-launch blockers.",
+    "Deferred off soft launch: Evergray samples, Hot Wheels, pencils, lenticular, Ganjifa. Lunar Clock stays parked.",
     "Collection labels: locked five-name set — One of None; Selection Collection; Cyber Gunk; Evergrey; Objects (temporary title). Dialects TBD.",
-    "Objects: Lunar Clock parked under Objects until CD reopens.",
-    "One of None launch wall: which pieces ship with Film + Selection Collection (bags need photos; lenticular / others)?",
-    "Evergrey first list: which of the 3 samples + shirts/ties open the assortment?",
+    "Objects: Lunar Clock parked under Objects until CD reopens. Today’s one-off: frame three Arsenal cards.",
+    "One of None: bags ride the batch photography/ComfyUI run. Hot Wheels, pencils, and lenticular are deferred off soft launch.",
+    "Evergrey first list: deferred off soft launch — samples stay, list is not on the 11 Oct run.",
     "Visual systems designer: approve 1–2 week engagement to refine existing logo / palette / liquid-glass?",
     "Assistant hire: authorize search at ~₹30k/mo now or after launch trio soft criteria?",
-    "Photography: DIY house setup vs hire — and per-category setups (shoes, shirts, bags, etc.)?"
+    "Photography locked 6 Oct: DIY + ComfyUI (not hire). Sequence is mood-board refs, one pipeline proof, then batch shoot and the ComfyUI chain."
   ],
   team: [
     { name: "Utkarsh", role: "Creative Director", own: "Taste, locks, Higgsfield, Claude site, photography call" },
@@ -1763,14 +1805,14 @@ let experiments = SEED.experiments.map(e => ({ ...e }));
 const TASK_PRIORITY_SEED = {
   "web-host": "Critical", "web-site-align": "Critical", "web-asset-checklist": "Critical", "web-responsive": "Critical",
   "web-design-spec": "Medium", "web-newsletter": "Medium",
-  "web-copy-review": "Low", "web-seo": "Low",
+  "web-copy-review": "Low", "web-seo": "Low", "web-last-mile": "High",
   "film-script": "Critical", "film-higgs": "Critical",
-  "film-reel": "Medium",
-  "sel-logo": "Low", "sel-list": "Medium", "sel-photo-approach": "Low", "sel-photograph": "Low",
+  "film-reel": "Critical",
+  "sel-logo": "Low", "sel-list": "Medium", "sel-photo-approach": "Critical", "img-pipeline-proof": "Critical", "sel-photograph": "Critical",
   "sel-shopify": "Low", "sel-site-fetch": "Low",
   "oon-bags-photo": "Medium", "oon-pencil-art": "Low", "oon-hotwheels": "Low",
   "oon-mystery": "Low",
-  "obj-lenticular": "Low", "obj-lunar": "Low",
+  "obj-arsenal-frame": "High", "obj-lenticular": "Low", "obj-lunar": "Low",
   "ev-product-list": "Low", "ev-playing-cards": "Low"
 };
 let tasks = SEED.tasks.map(t => ({ ...t, priority: t.priority || TASK_PRIORITY_SEED[t.id] || "Medium" }));
@@ -2481,6 +2523,24 @@ function priorityPill(t) {
   const cls = String(p).toLowerCase().replace(/\s+/g, "-");
   return `<span class="prio-pill prio-${cls}">${p}</span>`;
 }
+function taskStatusClass(status) {
+  if (status === "Done") return " task-status-done";
+  if (status === "In progress") return " task-status-progress";
+  if (status === "Blocked") return " task-status-blocked";
+  return "";
+}
+function blockerIsLive(text) {
+  const v = String(text || "").replace(/\s+/g, " ").trim();
+  if (!v) return false;
+  return !/^(—|–|-|none|none known|n\/a|na)$/i.test(v);
+}
+function syncTaskRowChrome(tr, row) {
+  if (!tr || !row) return;
+  ["urg-overdue", "urg-critical", "urg-soon", "urg-later", "urg-done", "task-status-done", "task-status-progress", "task-status-blocked"].forEach(c => tr.classList.remove(c));
+  tr.classList.add("urg-" + taskUrgency(row));
+  const sc = taskStatusClass(row.status).trim();
+  if (sc) tr.classList.add(sc);
+}
 function renderNextThree() {
   const el = document.getElementById("next-three-list");
   if (!el) return;
@@ -2557,8 +2617,9 @@ function renderTaskRows() {
       const linkOpen = link
         ? `<a class="task-link-open" href="${link}" target="_blank" rel="noopener" title="Open link">↗</a>`
         : `<span class="task-link-open" aria-disabled="true">↗</span>`;
+      const blockerCls = blockerIsLive(t.blocker) ? "blocker-muted blocker-live" : "blocker-muted";
       return `
-      <tr class="urg-${u}${majorRow}" data-id="${t.id}">
+      <tr class="urg-${u}${majorRow}${taskStatusClass(t.status)}" data-id="${t.id}">
         <td><strong>${t.title}</strong></td>
         <td>${workstreamPill(t)}</td>
         <td>${priorityPill(t)}</td>
@@ -2568,7 +2629,7 @@ function renderTaskRows() {
         <td><span class="${due.cls}" title="Due dates are locked">${due.text}</span></td>
         <td class="task-link-cell">${linkOpen}</td>
         <td class="muted">${notes || "—"}</td>
-        <td class="blocker-muted">${t.blocker || "—"}</td>
+        <td class="${blockerCls}">${t.blocker || "—"}</td>
       </tr>`;
     }).join("");
   });
@@ -2578,6 +2639,7 @@ function renderTaskRows() {
       const row = tasks.find(t => t.id === sel.dataset.id);
       if (!row) return;
       row.status = sel.value;
+      syncTaskRowChrome(sel.closest("tr"), row);
       sel.disabled = true;
       try { await persistAll(); renderWorkstreams(); renderNextThree(); }
       catch (err) { alert("Could not save — retry."); console.error(err); }
