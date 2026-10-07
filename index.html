@@ -823,6 +823,14 @@
   td .cell-select { min-width: 110px; }
 
   #view-products .table-wrap table { min-width: 1760px; }
+  #view-products .source-wrap table { min-width: 0; }
+  .source-list { margin: 12px 0 0; padding: 0; list-style: none; display: grid; }
+  .source-list li {
+    display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: baseline;
+    padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px;
+  }
+  .source-list li:last-child { border-bottom: none; }
+  .source-list .n { color: var(--ink-faint); font-variant-numeric: tabular-nums; font-size: 12px; }
   #view-products textarea.task-cell-input {
     min-width: 220px; min-height: 68px; resize: vertical; font-weight: 400;
   }
@@ -1314,6 +1322,11 @@
           <div class="empty" id="product-empty" hidden>No products yet. Add a row to start a listing.</div>
         </div>
         <p class="save-note">Same save path as the rest of the board: live <code>/api/state</code> when it is up, otherwise this browser. Weight is variant weight in grams. Image Src and Image Alt Text are the listing image.</p>
+      </section>
+      <section class="panel glass" id="product-source-panel" style="margin-top:14px">
+        <h3 style="margin:0">Source list</h3>
+        <p class="biz-note" style="margin-top:8px">CD-named source items awaiting Shopify fill. Names only — not copied into the listing table above.</p>
+        <ol class="source-list" id="product-source-list"></ol>
       </section>
     </div>
 
@@ -2126,6 +2139,7 @@ function seedFallbackState() {
     metrics: null,
     collectionCommerce: {},
     products: null,
+    productSources: null,
     updated: null,
     _source: "seed"
   };
@@ -2186,7 +2200,7 @@ async function persistAll() {
   experiments.forEach(e => { edits[e.id] = { stage: e.stage, status: e.status }; });
   const taskEdits = {};
   tasks.forEach(t => { taskEdits[t.id] = { status: t.status }; });
-  const payload = { edits, taskEdits, cardDates, milestone, metrics, collectionCommerce, products, updatedBy: "utkarsh-dashboard" };
+  const payload = { edits, taskEdits, cardDates, milestone, metrics, collectionCommerce, products, productSources, updatedBy: "utkarsh-dashboard" };
 
   if (apiAvailable !== false) {
     try {
@@ -2910,6 +2924,52 @@ function renderProducts(focusId) {
     const el = tbody.querySelector(`[data-id="${CSS.escape(focusId)}"] [data-product-field="title"]`);
     if (el) el.focus();
   }
+  renderProductSources();
+}
+
+const PRODUCT_SOURCE_NOTE = "CD-named source item awaiting Shopify fill";
+const PRODUCT_SOURCE_SEED = [
+  "French postcard",
+  "Eastpak cap",
+  "Second Amendment cap",
+  "Dali — Life of, work of Salvador Dali, book",
+  "jacket tote",
+  "skirt tote",
+  "limited edition onra vinyl",
+  "Beethoven vinyl",
+  "Kanye vinyl",
+  "Arsenal cards",
+  "Ricoh and X Dick Doc Martens shoes",
+  "Nike X A Cold Wall shoes",
+  "Cortese X Boy Better Know jacket",
+  "YSL jacket"
+].map(name => ({ name, note: PRODUCT_SOURCE_NOTE }));
+
+let productSources = PRODUCT_SOURCE_SEED.map(item => ({ ...item }));
+
+function normalizeProductSources(list) {
+  if (!Array.isArray(list)) return null;
+  return list.map(item => ({
+    name: item && item.name != null ? String(item.name) : "",
+    note: item && item.note != null ? String(item.note) : PRODUCT_SOURCE_NOTE
+  })).filter(item => item.name);
+}
+
+function resolveProductSources(state) {
+  const remote = state && Array.isArray(state.productSources) ? normalizeProductSources(state.productSources) : null;
+  if (remote && remote.length) return remote;
+  const local = readLocalState();
+  const fromLocal = local && Array.isArray(local.productSources) ? normalizeProductSources(local.productSources) : null;
+  if (fromLocal && fromLocal.length) return fromLocal;
+  return PRODUCT_SOURCE_SEED.map(item => ({ ...item }));
+}
+
+function renderProductSources() {
+  const list = document.getElementById("product-source-list");
+  if (!list) return;
+  list.innerHTML = productSources.map((item, i) =>
+    `<li><span class="n">${i + 1}</span><span>${escHtml(item.name)}</span></li>`
+  ).join("");
 }
 
 function addProduct() {
@@ -2938,6 +2998,7 @@ async function boot() {
     metrics = applyMetricEdits(state.metrics);
     initCollectionCommerce(state.collectionCommerce || {});
     products = resolveProducts(state);
+    productSources = resolveProductSources(state);
     if (state.updated) SEED.updated = new Date(state.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
   } catch (err) {
     console.warn("Boot failed — using seed / localStorage", err);
@@ -2955,11 +3016,13 @@ async function boot() {
       if (typeof applyMetricEdits === "function") metrics = applyMetricEdits(local.metrics);
       initCollectionCommerce(local.collectionCommerce || {});
       products = resolveProducts(local);
+      productSources = resolveProductSources(local);
       if (local.updated) SEED.updated = new Date(local.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
     } else {
       initCardDates({});
       initCollectionCommerce({});
       products = STARTER_PRODUCTS.map(p => ({ ...p }));
+      productSources = PRODUCT_SOURCE_SEED.map(item => ({ ...item }));
     }
   }
   bindMilestoneEditors();
@@ -2987,7 +3050,9 @@ async function boot() {
       const commerceChanged = JSON.stringify(nextCommerceRaw) !== prevCommerce && Object.keys(nextCommerceRaw).length > 0;
       const nextProducts = resolveProducts(state);
       const productsChanged = JSON.stringify(nextProducts) !== JSON.stringify(products);
-      if (forceRender || expChanged || taskChanged || datesChanged || msChanged || metricsChanged || commerceChanged || productsChanged) {
+      const nextSources = resolveProductSources(state);
+      const sourcesChanged = JSON.stringify(nextSources) !== JSON.stringify(productSources);
+      if (forceRender || expChanged || taskChanged || datesChanged || msChanged || metricsChanged || commerceChanged || productsChanged || sourcesChanged) {
         experiments = nextExp;
         tasks = nextTasks;
         if (datesChanged || forceRender) initCardDates(nextDates);
@@ -3001,6 +3066,7 @@ async function boot() {
         if (metricsChanged || forceRender) metrics = nextMetrics;
         if (commerceChanged || forceRender) initCollectionCommerce(state.collectionCommerce || collectionCommerce);
         if (productsChanged || forceRender) products = nextProducts;
+        if (sourcesChanged || forceRender) productSources = nextSources;
         if (state.updated) SEED.updated = new Date(state.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
         if (currentView === "launch") renderLaunch();
         else if (currentView === "products") renderProducts();

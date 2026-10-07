@@ -501,6 +501,22 @@
       "imageAlt": ""
     }
   ],
+  "productSources": [
+    { "name": "French postcard", "note": "CD-named source item awaiting Shopify fill" },
+    { "name": "Eastpak cap", "note": "CD-named source item awaiting Shopify fill" },
+    { "name": "Second Amendment cap", "note": "CD-named source item awaiting Shopify fill" },
+    { "name": "Dali — Life of, work of Salvador Dali, book", "note": "CD-named source item awaiting Shopify fill" },
+    { "name": "jacket tote", "note": "CD-named source item awaiting Shopify fill" },
+    { "name": "skirt tote", "note": "CD-named source item awaiting Shopify fill" },
+    { "name": "limited edition onra vinyl", "note": "CD-named source item awaiting Shopify fill" },
+    { "name": "Beethoven vinyl", "note": "CD-named source item awaiting Shopify fill" },
+    { "name": "Kanye vinyl", "note": "CD-named source item awaiting Shopify fill" },
+    { "name": "Arsenal cards", "note": "CD-named source item awaiting Shopify fill" },
+    { "name": "Ricoh and X Dick Doc Martens shoes", "note": "CD-named source item awaiting Shopify fill" },
+    { "name": "Nike X A Cold Wall shoes", "note": "CD-named source item awaiting Shopify fill" },
+    { "name": "Cortese X Boy Better Know jacket", "note": "CD-named source item awaiting Shopify fill" },
+    { "name": "YSL jacket", "note": "CD-named source item awaiting Shopify fill" }
+  ],
   "experiments": null,
   "updated": "2026-10-06T09:20:00+05:30",
   "updatedBy": "orchestrator"
