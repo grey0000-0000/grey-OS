@@ -878,6 +878,8 @@
     min-height: 68px; resize: vertical; font-weight: 400;
   }
   #view-products .product-num { min-width: 88px; font-variant-numeric: tabular-nums; }
+  #view-products .product-ready-cell { text-align: center; vertical-align: middle; }
+  #view-products .product-ready { width: 16px; height: 16px; accent-color: #cfcfc8; cursor: pointer; }
   #view-products .product-actions { width: 72px; text-align: right; }
   .product-remove {
     appearance: none; cursor: pointer;
@@ -1333,7 +1335,7 @@
         <div class="biz-toolbar">
           <div>
             <h3 style="margin:0">Products</h3>
-            <p class="biz-note" style="margin-top:8px;margin-bottom:0">Shopify listing fields. Fourteen rows are filled — title, description, vendor, collection, tags, SKU, and barcode. Other columns stay empty.</p>
+            <p class="biz-note" style="margin-top:8px;margin-bottom:0">Shopify listing fields. Collection is selection or one of none. Product type keeps the former collection name. Product Ready and Quantity are set on each row.</p>
           </div>
           <button type="button" class="btn-add" id="btn-add-product">Add product</button>
         </div>
@@ -1349,12 +1351,13 @@
                 <th data-w="96">Vendor</th>
                 <th data-w="120">Collection</th>
                 <th data-w="130">Product type</th>
+                <th data-w="120">Product Ready</th>
                 <th data-w="200">Tags</th>
                 <th data-w="90">Price</th>
                 <th data-w="140">Compare-at price</th>
                 <th data-w="140">SKU</th>
                 <th data-w="150">Barcode</th>
-                <th data-w="140">Inventory quantity</th>
+                <th data-w="110">Quantity</th>
                 <th data-w="96">Weight</th>
                 <th data-w="180">Image Src</th>
                 <th data-w="160">Image Alt Text</th>
@@ -2873,12 +2876,13 @@ const PRODUCT_FIELDS = [
   { key: "vendor", label: "Vendor" },
   { key: "collection", label: "Collection" },
   { key: "productType", label: "Product type" },
+  { key: "productReady", label: "Product Ready", bool: true },
   { key: "tags", label: "Tags", placeholder: "comma-separated" },
   { key: "price", label: "Price", inputmode: "decimal", placeholder: "0.00", numeric: true },
   { key: "compareAtPrice", label: "Compare-at price", inputmode: "decimal", placeholder: "0.00", numeric: true },
   { key: "sku", label: "SKU" },
   { key: "barcode", label: "Barcode" },
-  { key: "inventoryQty", label: "Inventory quantity", inputmode: "numeric", placeholder: "0", numeric: true },
+  { key: "inventoryQty", label: "Quantity", inputmode: "numeric", placeholder: "0", numeric: true },
   { key: "weight", label: "Weight", inputmode: "decimal", placeholder: "grams", numeric: true },
   { key: "imageSrc", label: "Image Src", placeholder: "https://" },
   { key: "imageAlt", label: "Image Alt Text" }
@@ -2886,25 +2890,28 @@ const PRODUCT_FIELDS = [
 
 function blankProduct(id) {
   const row = { id: id || ("product-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)) };
-  PRODUCT_FIELDS.forEach(f => { row[f.key] = ""; });
+  PRODUCT_FIELDS.forEach(f => { row[f.key] = f.bool ? false : ""; });
   return row;
 }
 
 const LISTING_SEED = [
-  { id: "product-1", title: "French postcard", description: "A postcard from another France.", vendor: "GREY", collection: "postcards", tags: "french, postcard, collectible", sku: "GREY-OBJ-001", barcode: "2000000000015" },
-  { id: "product-2", title: "Eastpak cap", description: "Street-ready, always.", vendor: "GREY", collection: "caps", tags: "eastpak, cap, streetwear", sku: "GREY-OBJ-002", barcode: "2000000000022" },
-  { id: "product-3", title: "Second Amendment cap", description: "A quiet mark of stance.", vendor: "GREY", collection: "caps", tags: "second-amendment, cap, collectible", sku: "GREY-OBJ-003", barcode: "2000000000039" },
-  { id: "product-4", title: "Dali — Life of, work of Salvador Dali, book", description: "The life and work, in one spine.", vendor: "GREY", collection: "books", tags: "dali, book, art", sku: "GREY-OBJ-004", barcode: "2000000000046" },
-  { id: "product-5", title: "jacket tote", description: "A tote cut like a jacket.", vendor: "GREY", collection: "totes", tags: "jacket, tote, carry", sku: "GREY-OBJ-005", barcode: "2000000000053" },
-  { id: "product-6", title: "skirt tote", description: "Soft structure, hard to put down.", vendor: "GREY", collection: "totes", tags: "skirt, tote, soft", sku: "GREY-OBJ-006", barcode: "2000000000060" },
-  { id: "product-7", title: "limited edition onra vinyl", description: "Limited press, with the room still in it.", vendor: "GREY", collection: "vinyl", tags: "onra, vinyl, limited", sku: "GREY-OBJ-007", barcode: "2000000000077" },
-  { id: "product-8", title: "Beethoven vinyl", description: "Hornies seven, choral, eight — Japanese press.", vendor: "GREY", collection: "vinyl", tags: "beethoven, vinyl, japanese-press", sku: "GREY-OBJ-008", barcode: "2000000000084" },
-  { id: "product-9", title: "Kanye vinyl", description: "My Beautiful Dark Twisted Fantasy, limited.", vendor: "GREY", collection: "vinyl", tags: "kanye, vinyl, mbdtf", sku: "GREY-OBJ-009", barcode: "2000000000091" },
-  { id: "product-10", title: "Arsenal cards", description: "Three cards, ready for the wall.", vendor: "GREY", collection: "cards", tags: "arsenal, cards, framed", sku: "GREY-OBJ-010", barcode: "2000000000107" },
-  { id: "product-11", title: "Ricoh and X Dick Doc Martens shoes", description: "Ricoh × Dick Doc Martens.", vendor: "GREY", collection: "shoes", tags: "ricoh, doc-martens, shoes", sku: "GREY-OBJ-011", barcode: "2000000000114" },
-  { id: "product-12", title: "Nike X A Cold Wall shoes", description: "Nike × A-Cold-Wall*.", vendor: "GREY", collection: "shoes", tags: "nike, a-cold-wall, shoes", sku: "GREY-OBJ-012", barcode: "2000000000121" },
-  { id: "product-13", title: "Cortese X Boy Better Know jacket", description: "Cortese × Boy Better Know.", vendor: "GREY", collection: "jackets", tags: "cortese, boy-better-know, jacket", sku: "GREY-OBJ-013", barcode: "2000000000138" },
-  { id: "product-14", title: "YSL jacket", description: "Quiet luxury, sharp edge.", vendor: "GREY", collection: "jackets", tags: "ysl, luxury, outerwear", sku: "GREY-OBJ-014", barcode: "2000000000145" }
+  { id: "product-1", title: "French Postcards", description: "A postcard from another France.", vendor: "GREY", collection: "selection", productType: "postcards", productReady: true, tags: "french, postcard, collectible", sku: "GREY-OBJ-001", barcode: "2000000000015", inventoryQty: "1" },
+  { id: "product-2", title: "Eastpak cap", description: "Street-ready, always.", vendor: "GREY", collection: "selection", productType: "caps", productReady: true, tags: "eastpak, cap, streetwear", sku: "GREY-OBJ-002", barcode: "2000000000022", inventoryQty: "1" },
+  { id: "product-3", title: "Second Amendment cap", description: "A quiet mark of stance.", vendor: "GREY", collection: "selection", productType: "caps", productReady: true, tags: "second-amendment, cap, collectible", sku: "GREY-OBJ-003", barcode: "2000000000039", inventoryQty: "1" },
+  { id: "product-4", title: "The Life and Works of Dali", description: "The life and work, in one spine.", vendor: "GREY", collection: "selection", productType: "books", productReady: true, tags: "dali, book, art", sku: "GREY-OBJ-004", barcode: "2000000000046", inventoryQty: "1" },
+  { id: "product-5", title: "Jacket Tote", description: "A tote cut like a jacket.", vendor: "GREY", collection: "one of none", productType: "totes", productReady: true, tags: "jacket, tote, carry", sku: "GREY-OBJ-005", barcode: "2000000000053", inventoryQty: "1" },
+  { id: "product-6", title: "Skirt Tote", description: "Soft structure, hard to put down.", vendor: "GREY", collection: "one of none", productType: "totes", productReady: true, tags: "skirt, tote, soft", sku: "GREY-OBJ-006", barcode: "2000000000060", inventoryQty: "1" },
+  { id: "product-7", title: "Onra Vinyl Set", description: "Limited press, with the room still in it.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "onra, vinyl, limited", sku: "GREY-OBJ-007", barcode: "2000000000077", inventoryQty: "1" },
+  { id: "product-8", title: "Beethoven Vinyl", description: "Hornies seven, choral, eight — Japanese press.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "beethoven, vinyl, japanese-press", sku: "GREY-OBJ-008", barcode: "2000000000084", inventoryQty: "1" },
+  { id: "product-9", title: "Kanye Vinyl", description: "My Beautiful Dark Twisted Fantasy, limited.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "kanye, vinyl, mbdtf", sku: "GREY-OBJ-009", barcode: "2000000000091", inventoryQty: "1" },
+  { id: "product-10", title: "Arsenal Cards", description: "Three cards, ready for the wall.", vendor: "GREY", collection: "one of none", productType: "cards", productReady: false, tags: "arsenal, cards, framed", sku: "GREY-OBJ-010", barcode: "2000000000107", inventoryQty: "1" },
+  { id: "product-11", title: "Rick Owens x Doc Martens Shoes", description: "Ricoh × Dick Doc Martens.", vendor: "GREY", collection: "selection", productType: "shoes", productReady: true, tags: "ricoh, doc-martens, shoes", sku: "GREY-OBJ-011", barcode: "2000000000114", inventoryQty: "1" },
+  { id: "product-12", title: "A Cold Wall x Nike shoes", description: "Nike × A-Cold-Wall*.", vendor: "GREY", collection: "selection", productType: "shoes", productReady: true, tags: "nike, a-cold-wall, shoes", sku: "GREY-OBJ-012", barcode: "2000000000121", inventoryQty: "1" },
+  { id: "product-13", title: "Cortiezx", description: "Cortese × Boy Better Know.", vendor: "GREY", collection: "selection", productType: "jackets", productReady: true, tags: "cortese, boy-better-know, jacket", sku: "GREY-OBJ-013", barcode: "2000000000138", inventoryQty: "1" },
+  { id: "product-14", title: "YSL reversible jacket", description: "Quiet luxury, sharp edge.", vendor: "GREY", collection: "selection", productType: "jackets", productReady: true, tags: "ysl, luxury, outerwear", sku: "GREY-OBJ-014", barcode: "2000000000145", inventoryQty: "1" },
+  { id: "product-15", title: "Nils Frahm vinyl", description: "Felt piano, held close.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "nils-frahm, vinyl, piano", sku: "GREY-OBJ-015", barcode: "2000000000152", inventoryQty: "1" },
+  { id: "product-16", title: "MF Doom vinyl", description: "Metal face, on wax.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "mf-doom, vinyl, hip-hop", sku: "GREY-OBJ-016", barcode: "2000000000169", inventoryQty: "1" },
+  { id: "product-17", title: "Sampha vinyl", description: "Process, pressed quiet.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "sampha, vinyl, soul", sku: "GREY-OBJ-017", barcode: "2000000000176", inventoryQty: "1" }
 ];
 const STARTER_PRODUCTS = LISTING_SEED.map(seed => Object.assign(blankProduct(seed.id), seed));
 let products = STARTER_PRODUCTS.map(p => ({ ...p }));
@@ -2923,7 +2930,9 @@ function normalizeProducts(list) {
     const row = blankProduct(p && p.id ? String(p.id) : ("product-" + (i + 1)));
     if (p && typeof p === "object") {
       PRODUCT_FIELDS.forEach(f => {
-        if (p[f.key] != null) row[f.key] = String(p[f.key]);
+        if (p[f.key] == null) return;
+        if (f.bool) row[f.key] = p[f.key] === true || p[f.key] === "true";
+        else row[f.key] = String(p[f.key]);
       });
     }
     return row;
@@ -2948,6 +2957,10 @@ function renderProducts(focusId) {
   if (empty) empty.hidden = products.length > 0;
   tbody.innerHTML = products.map(p => {
     const cells = PRODUCT_FIELDS.map(f => {
+      if (f.bool) {
+        const on = p[f.key] === true ? " checked" : "";
+        return `<td class="product-ready-cell"><input type="checkbox" class="product-ready" data-product-field="${f.key}" data-id="${escHtml(p.id)}" aria-label="${escHtml(f.label)}"${on} /></td>`;
+      }
       const val = escHtml(p[f.key]);
       const ph = f.placeholder ? ` placeholder="${escHtml(f.placeholder)}"` : "";
       const mode = f.inputmode ? ` inputmode="${f.inputmode}"` : "";
@@ -2964,8 +2977,9 @@ function renderProducts(focusId) {
     const save = async () => {
       const row = products.find(x => x.id === el.dataset.id);
       if (!row) return;
-      if (row[el.dataset.productField] === el.value) return;
-      row[el.dataset.productField] = el.value;
+      const next = el.type === "checkbox" ? el.checked : el.value;
+      if (row[el.dataset.productField] === next) return;
+      row[el.dataset.productField] = next;
       try { await persistAll(); }
       catch (err) { alert("Could not save product — retry."); console.error(err); }
     };
