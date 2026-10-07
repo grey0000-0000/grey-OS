@@ -640,6 +640,20 @@
     padding: 8px 14px; font: 500 12px/1 var(--font); letter-spacing: 0.04em;
   }
   .btn-add:hover { border-color: var(--glass-highlight); }
+  .writeback-bar {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    margin-top: 10px;
+  }
+  .writeback-bar label {
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint);
+  }
+  .writeback-bar input {
+    min-width: 220px; flex: 1 1 220px;
+    background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+    border-radius: 8px; color: var(--ink); font: 12px/1.2 var(--font); padding: 8px 10px;
+  }
+  .writeback-bar input:focus { outline: none; border-color: var(--glass-highlight); }
+  #github-writeback-status { font-size: 11px; color: var(--ink-muted); line-height: 1.4; }
 
 
   /* Vertical Wall/Night rocker — mirrors client ThemeLightSwitch */
@@ -1335,7 +1349,7 @@
         <div class="biz-toolbar">
           <div>
             <h3 style="margin:0">Products</h3>
-            <p class="biz-note" style="margin-top:8px;margin-bottom:0">Shopify listing fields. Collection is selection or one of none. Product type keeps the former collection name. Product Ready and Quantity are set on each row.</p>
+            <p class="biz-note" style="margin-top:8px;margin-bottom:0">Shopify listing fields. Price is INR. Weight is grams. For sale is off, with quantity 0 and an empty price, when a row is not for sale.</p>
           </div>
           <button type="button" class="btn-add" id="btn-add-product">Add product</button>
         </div>
@@ -1353,12 +1367,13 @@
                 <th data-w="130">Product type</th>
                 <th data-w="120">Product Ready</th>
                 <th data-w="200">Tags</th>
-                <th data-w="90">Price</th>
+                <th data-w="110">Price (INR)</th>
                 <th data-w="140">Compare-at price</th>
                 <th data-w="140">SKU</th>
                 <th data-w="150">Barcode</th>
                 <th data-w="110">Quantity</th>
-                <th data-w="96">Weight</th>
+                <th data-w="110">For sale</th>
+                <th data-w="110">Weight (g)</th>
                 <th data-w="180">Image Src</th>
                 <th data-w="160">Image Alt Text</th>
                 <th data-w="88"></th>
@@ -1368,7 +1383,14 @@
           </table>
           <div class="empty" id="product-empty" hidden>No products yet. Add a row to start a listing.</div>
         </div>
-        <p class="save-note">Same save path as the rest of the board: live <code>/api/state</code> when it is up, otherwise this browser. Weight is variant weight in grams. Image Src and Image Alt Text are the listing image. Drag a column edge to resize it.</p>
+        <div class="writeback-bar">
+          <label for="github-token">GitHub write-back</label>
+          <input id="github-token" type="password" autocomplete="off" spellcheck="false" placeholder="Fine-grained PAT — contents write on grey-OS only" />
+          <button type="button" class="btn-add" id="github-token-save">Save in this browser</button>
+          <button type="button" class="btn-add" id="github-token-forget">Forget</button>
+          <span id="github-writeback-status" role="status"></span>
+        </div>
+        <p class="save-note">Product edits commit to <code>state.json</code> on <code>main</code> when a token is saved in this browser. The token is not stored in the repo. Without one, edits stay in this browser. Weight is variant weight in grams. Image Src and Image Alt Text are the listing image. Drag a column edge to resize it.</p>
       </section>
     </div>
 
@@ -2781,6 +2803,7 @@ document.querySelectorAll(".view-tab").forEach(btn => {
 });
 document.getElementById("btn-add-metric")?.addEventListener("click", addMetric);
 document.getElementById("btn-add-product")?.addEventListener("click", addProduct);
+bindProductWriteback();
 document.getElementById("search").addEventListener("input", e => { query = e.target.value; renderExpRows(); });
 document.getElementById("task-search").addEventListener("input", e => { taskQuery = e.target.value; renderTaskRows(); });
 document.getElementById("btn-all").addEventListener("click", () => { filter = "all"; renderExperiments(); });
@@ -2878,12 +2901,13 @@ const PRODUCT_FIELDS = [
   { key: "productType", label: "Product type" },
   { key: "productReady", label: "Product Ready", bool: true },
   { key: "tags", label: "Tags", placeholder: "comma-separated" },
-  { key: "price", label: "Price", inputmode: "decimal", placeholder: "0.00", numeric: true },
+  { key: "price", label: "Price (INR)", inputmode: "decimal", placeholder: "0.00", numeric: true },
   { key: "compareAtPrice", label: "Compare-at price", inputmode: "decimal", placeholder: "0.00", numeric: true },
   { key: "sku", label: "SKU" },
   { key: "barcode", label: "Barcode" },
   { key: "inventoryQty", label: "Quantity", inputmode: "numeric", placeholder: "0", numeric: true },
-  { key: "weight", label: "Weight", inputmode: "decimal", placeholder: "grams", numeric: true },
+  { key: "availableForSale", label: "For sale", bool: true },
+  { key: "weight", label: "Weight (g)", inputmode: "decimal", placeholder: "grams", numeric: true },
   { key: "imageSrc", label: "Image Src", placeholder: "https://" },
   { key: "imageAlt", label: "Image Alt Text" }
 ];
@@ -2895,23 +2919,23 @@ function blankProduct(id) {
 }
 
 const LISTING_SEED = [
-  { id: "product-1", title: "French Postcards", description: "A postcard from another France.", vendor: "GREY", collection: "selection", productType: "postcards", productReady: true, tags: "french, postcard, collectible", sku: "GREY-OBJ-001", barcode: "2000000000015", inventoryQty: "1" },
-  { id: "product-2", title: "Eastpak cap", description: "Street-ready, always.", vendor: "GREY", collection: "selection", productType: "caps", productReady: true, tags: "eastpak, cap, streetwear", sku: "GREY-OBJ-002", barcode: "2000000000022", inventoryQty: "1" },
-  { id: "product-3", title: "Second Amendment cap", description: "A quiet mark of stance.", vendor: "GREY", collection: "selection", productType: "caps", productReady: true, tags: "second-amendment, cap, collectible", sku: "GREY-OBJ-003", barcode: "2000000000039", inventoryQty: "1" },
-  { id: "product-4", title: "The Life and Works of Dali", description: "The life and work, in one spine.", vendor: "GREY", collection: "selection", productType: "books", productReady: true, tags: "dali, book, art", sku: "GREY-OBJ-004", barcode: "2000000000046", inventoryQty: "1" },
-  { id: "product-5", title: "Jacket Tote", description: "A tote cut like a jacket.", vendor: "GREY", collection: "one of none", productType: "totes", productReady: true, tags: "jacket, tote, carry", sku: "GREY-OBJ-005", barcode: "2000000000053", inventoryQty: "1" },
-  { id: "product-6", title: "Skirt Tote", description: "Soft structure, hard to put down.", vendor: "GREY", collection: "one of none", productType: "totes", productReady: true, tags: "skirt, tote, soft", sku: "GREY-OBJ-006", barcode: "2000000000060", inventoryQty: "1" },
-  { id: "product-7", title: "Onra Vinyl Set", description: "Limited press, with the room still in it.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "onra, vinyl, limited", sku: "GREY-OBJ-007", barcode: "2000000000077", inventoryQty: "1" },
-  { id: "product-8", title: "Beethoven Vinyl", description: "Hornies seven, choral, eight — Japanese press.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "beethoven, vinyl, japanese-press", sku: "GREY-OBJ-008", barcode: "2000000000084", inventoryQty: "1" },
-  { id: "product-9", title: "Kanye Vinyl", description: "My Beautiful Dark Twisted Fantasy, limited.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "kanye, vinyl, mbdtf", sku: "GREY-OBJ-009", barcode: "2000000000091", inventoryQty: "1" },
-  { id: "product-10", title: "Arsenal Cards", description: "Three cards, ready for the wall.", vendor: "GREY", collection: "one of none", productType: "cards", productReady: false, tags: "arsenal, cards, framed", sku: "GREY-OBJ-010", barcode: "2000000000107", inventoryQty: "1" },
-  { id: "product-11", title: "Rick Owens x Doc Martens Shoes", description: "Ricoh × Dick Doc Martens.", vendor: "GREY", collection: "selection", productType: "shoes", productReady: true, tags: "ricoh, doc-martens, shoes", sku: "GREY-OBJ-011", barcode: "2000000000114", inventoryQty: "1" },
-  { id: "product-12", title: "A Cold Wall x Nike shoes", description: "Nike × A-Cold-Wall*.", vendor: "GREY", collection: "selection", productType: "shoes", productReady: true, tags: "nike, a-cold-wall, shoes", sku: "GREY-OBJ-012", barcode: "2000000000121", inventoryQty: "1" },
-  { id: "product-13", title: "Cortiezx", description: "Cortese × Boy Better Know.", vendor: "GREY", collection: "selection", productType: "jackets", productReady: true, tags: "cortese, boy-better-know, jacket", sku: "GREY-OBJ-013", barcode: "2000000000138", inventoryQty: "1" },
-  { id: "product-14", title: "YSL reversible jacket", description: "Quiet luxury, sharp edge.", vendor: "GREY", collection: "selection", productType: "jackets", productReady: true, tags: "ysl, luxury, outerwear", sku: "GREY-OBJ-014", barcode: "2000000000145", inventoryQty: "1" },
-  { id: "product-15", title: "Nils Frahm vinyl", description: "Felt piano, held close.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "nils-frahm, vinyl, piano", sku: "GREY-OBJ-015", barcode: "2000000000152", inventoryQty: "1" },
-  { id: "product-16", title: "MF Doom vinyl", description: "Metal face, on wax.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "mf-doom, vinyl, hip-hop", sku: "GREY-OBJ-016", barcode: "2000000000169", inventoryQty: "1" },
-  { id: "product-17", title: "Sampha vinyl", description: "Process, pressed quiet.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "sampha, vinyl, soul", sku: "GREY-OBJ-017", barcode: "2000000000176", inventoryQty: "1" }
+  { id: "product-1", title: "French Postcards", description: "A postcard from another France.", vendor: "GREY", collection: "selection", productType: "postcards", productReady: true, tags: "french, postcard, collectible", price: "18.99", sku: "GREY-OBJ-001", barcode: "2000000000015", inventoryQty: "1", availableForSale: true, weight: "20" },
+  { id: "product-2", title: "Eastpak cap", description: "Street-ready, always.", vendor: "GREY", collection: "selection", productType: "caps", productReady: true, tags: "eastpak, cap, streetwear", price: "15.99", sku: "GREY-OBJ-002", barcode: "2000000000022", inventoryQty: "1", availableForSale: true, weight: "120" },
+  { id: "product-3", title: "Second Amendment cap", description: "A quiet mark of stance.", vendor: "GREY", collection: "selection", productType: "caps", productReady: true, tags: "second-amendment, cap, collectible", price: "200", sku: "GREY-OBJ-003", barcode: "2000000000039", inventoryQty: "1", availableForSale: true, weight: "130" },
+  { id: "product-4", title: "The Life and Works of Dali", description: "The life and work, in one spine.", vendor: "GREY", collection: "selection", productType: "books", productReady: true, tags: "dali, book, art", price: "11.99", sku: "GREY-OBJ-004", barcode: "2000000000046", inventoryQty: "1", availableForSale: true, weight: "500" },
+  { id: "product-5", title: "Jacket Tote", description: "A tote cut like a jacket.", vendor: "GREY", collection: "one of none", productType: "totes", productReady: true, tags: "jacket, tote, carry", price: "64.99", sku: "GREY-OBJ-005", barcode: "2000000000053", inventoryQty: "1", availableForSale: true, weight: "400" },
+  { id: "product-6", title: "Skirt Tote", description: "Soft structure, hard to put down.", vendor: "GREY", collection: "one of none", productType: "totes", productReady: true, tags: "skirt, tote, soft", price: "42.99", sku: "GREY-OBJ-006", barcode: "2000000000060", inventoryQty: "1", availableForSale: true, weight: "350" },
+  { id: "product-7", title: "Onra Vinyl Set", description: "Limited press, with the room still in it.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "onra, vinyl, limited", price: "", sku: "GREY-OBJ-007", barcode: "2000000000077", inventoryQty: "0", availableForSale: false, weight: "500" },
+  { id: "product-8", title: "Beethoven Vinyl", description: "Hornies seven, choral, eight — Japanese press.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "beethoven, vinyl, japanese-press", price: "8999", sku: "GREY-OBJ-008", barcode: "2000000000084", inventoryQty: "1", availableForSale: true, weight: "200" },
+  { id: "product-9", title: "Kanye Vinyl", description: "My Beautiful Dark Twisted Fantasy, limited.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "kanye, vinyl, mbdtf", price: "14999", sku: "GREY-OBJ-009", barcode: "2000000000091", inventoryQty: "1", availableForSale: true, weight: "200" },
+  { id: "product-10", title: "Arsenal Cards", description: "Three cards, ready for the wall.", vendor: "GREY", collection: "one of none", productType: "cards", productReady: false, tags: "arsenal, cards, framed", price: "6999", sku: "GREY-OBJ-010", barcode: "2000000000107", inventoryQty: "1", availableForSale: true, weight: "100" },
+  { id: "product-11", title: "Rick Owens x Doc Martens Shoes", description: "Ricoh × Dick Doc Martens.", vendor: "GREY", collection: "selection", productType: "shoes", productReady: true, tags: "ricoh, doc-martens, shoes", price: "4899", sku: "GREY-OBJ-011", barcode: "2000000000114", inventoryQty: "1", availableForSale: true, weight: "1200" },
+  { id: "product-12", title: "A Cold Wall x Nike shoes", description: "Nike × A-Cold-Wall*.", vendor: "GREY", collection: "selection", productType: "shoes", productReady: true, tags: "nike, a-cold-wall, shoes", price: "", sku: "GREY-OBJ-012", barcode: "2000000000121", inventoryQty: "0", availableForSale: false, weight: "900" },
+  { id: "product-13", title: "Cortiezx", description: "Cortese × Boy Better Know.", vendor: "GREY", collection: "selection", productType: "jackets", productReady: true, tags: "cortese, boy-better-know, jacket", price: "", sku: "GREY-OBJ-013", barcode: "2000000000138", inventoryQty: "0", availableForSale: false, weight: "800" },
+  { id: "product-14", title: "YSL reversible jacket", description: "Quiet luxury, sharp edge.", vendor: "GREY", collection: "selection", productType: "jackets", productReady: true, tags: "ysl, luxury, outerwear", price: "21999", sku: "GREY-OBJ-014", barcode: "2000000000145", inventoryQty: "1", availableForSale: true, weight: "900" },
+  { id: "product-15", title: "Nils Frahm vinyl", description: "Felt piano, held close.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "nils-frahm, vinyl, piano", price: "6999", sku: "GREY-OBJ-015", barcode: "2000000000152", inventoryQty: "1", availableForSale: true, weight: "200" },
+  { id: "product-16", title: "MF Doom vinyl", description: "Metal face, on wax.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "mf-doom, vinyl, hip-hop", price: "6999", sku: "GREY-OBJ-016", barcode: "2000000000169", inventoryQty: "1", availableForSale: true, weight: "200" },
+  { id: "product-17", title: "Sampha vinyl", description: "Process, pressed quiet.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "sampha, vinyl, soul", price: "5999", sku: "GREY-OBJ-017", barcode: "2000000000176", inventoryQty: "1", availableForSale: true, weight: "200" }
 ];
 const STARTER_PRODUCTS = LISTING_SEED.map(seed => Object.assign(blankProduct(seed.id), seed));
 let products = STARTER_PRODUCTS.map(p => ({ ...p }));
@@ -2977,11 +3001,14 @@ function renderProducts(focusId) {
     const save = async () => {
       const row = products.find(x => x.id === el.dataset.id);
       if (!row) return;
+      const field = el.dataset.productField;
       const next = el.type === "checkbox" ? el.checked : el.value;
-      if (row[el.dataset.productField] === next) return;
-      row[el.dataset.productField] = next;
+      if (row[field] === next) return;
+      const previous = row[field];
+      row[field] = next;
       try { await persistAll(); }
-      catch (err) { alert("Could not save product — retry."); console.error(err); }
+      catch (err) { alert("Could not save product in this browser — retry."); console.error(err); }
+      queueProductWrite({ op: "field", id: row.id, field, value: next, previous, product: { ...row } });
     };
     el.addEventListener("change", save);
     el.addEventListener("blur", save);
@@ -2998,12 +3025,198 @@ function renderProducts(focusId) {
 function addProduct() {
   const row = blankProduct();
   products.push(row);
-  persistAll().then(() => renderProducts(row.id)).catch(() => alert("Could not add product"));
+  persistAll().then(() => {
+    renderProducts(row.id);
+    queueProductWrite({ op: "add", id: row.id, product: { ...row } });
+  }).catch(() => alert("Could not add product"));
 }
 
 function removeProduct(id) {
+  const existing = products.find(p => p.id === id);
   products = products.filter(p => p.id !== id);
-  persistAll().then(() => renderProducts()).catch(() => alert("Could not remove product"));
+  persistAll().then(() => {
+    renderProducts();
+    queueProductWrite({ op: "remove", id, product: existing ? { ...existing } : { id } });
+  }).catch(() => alert("Could not remove product"));
+}
+
+const GH_REPO = "grey0000-0000/grey-OS";
+const GH_BRANCH = "main";
+const GH_FILE = "state.json";
+const GH_TOKEN_KEY = "grey-os-github-token";
+let productWriteQueue = Promise.resolve();
+
+function readWritebackToken() {
+  try { return String(localStorage.getItem(GH_TOKEN_KEY) || "").trim(); }
+  catch (_) { return ""; }
+}
+
+function setWritebackStatus(text) {
+  const el = document.getElementById("github-writeback-status");
+  if (el) el.textContent = text || "";
+}
+
+function refreshWritebackStatus() {
+  if (readWritebackToken()) setWritebackStatus("Token saved in this browser. Product edits commit to main.");
+  else setWritebackStatus("No token yet. Edits stay in this browser until you save a fine-grained PAT.");
+}
+
+function bindProductWriteback() {
+  const input = document.getElementById("github-token");
+  const saveBtn = document.getElementById("github-token-save");
+  const forgetBtn = document.getElementById("github-token-forget");
+  if (!input || !saveBtn || !forgetBtn || saveBtn.dataset.bound === "1") return;
+  saveBtn.dataset.bound = "1";
+  saveBtn.addEventListener("click", () => {
+    const token = input.value.trim();
+    if (!token) {
+      setWritebackStatus("Paste a token first.");
+      return;
+    }
+    try { localStorage.setItem(GH_TOKEN_KEY, token); }
+    catch (err) {
+      setWritebackStatus("Could not store the token in this browser.");
+      return;
+    }
+    input.value = "";
+    refreshWritebackStatus();
+  });
+  forgetBtn.addEventListener("click", () => {
+    try { localStorage.removeItem(GH_TOKEN_KEY); } catch (_) {}
+    input.value = "";
+    refreshWritebackStatus();
+  });
+  refreshWritebackStatus();
+}
+
+function istStamp(date) {
+  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+    hourCycle: "h23"
+  }).formatToParts(date || new Date()).map(part => [part.type, part.value]));
+  return parts.year + "-" + parts.month + "-" + parts.day + "T" + parts.hour + ":" + parts.minute + ":" + parts.second + "+05:30";
+}
+
+function bytesToBase64(bytes) {
+  let bin = "";
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+
+function base64ToBytes(b64) {
+  const bin = atob(String(b64 || "").replace(/\s/g, ""));
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
+function githubHeaders(token) {
+  return {
+    Accept: "application/vnd.github+json",
+    Authorization: "Bearer " + token,
+    "X-GitHub-Api-Version": "2022-11-28",
+    "Content-Type": "application/json"
+  };
+}
+
+function quoteValue(value) {
+  const text = typeof value === "string" ? JSON.stringify(value) : JSON.stringify(value);
+  return text.length > 120 ? text.slice(0, 117) + "..." : text;
+}
+
+function applyProductEdit(list, edit) {
+  const next = (Array.isArray(list) ? list : []).map(row => ({ ...row }));
+  if (edit.op === "remove") return next.filter(row => row.id !== edit.id);
+  if (edit.op === "add") {
+    if (!next.some(row => row.id === edit.id)) next.push({ ...(edit.product || { id: edit.id }) });
+    return next;
+  }
+  const row = next.find(item => item.id === edit.id);
+  if (!row) {
+    next.push({ ...(edit.product || { id: edit.id }), [edit.field]: edit.value });
+    return next;
+  }
+  row[edit.field] = edit.value;
+  return next;
+}
+
+function productEditNote(before, after, edit) {
+  const prev = (Array.isArray(before) ? before : []).find(row => row.id === edit.id);
+  const next = (Array.isArray(after) ? after : []).find(row => row.id === edit.id);
+  const who = (prev && prev.sku) || (next && next.sku) || edit.id;
+  if (edit.op === "remove") return "remove " + who + " " + quoteValue(prev ? prev.title : edit.id);
+  if (edit.op === "add") return "add " + who + " " + quoteValue(next ? next.title : "");
+  return who + " " + edit.field + ": " + quoteValue(prev ? prev[edit.field] : edit.previous) + " → " + quoteValue(edit.value);
+}
+
+async function commitProductEdit(edit) {
+  const token = readWritebackToken();
+  if (!token) {
+    setWritebackStatus("Saved in this browser only. Save a fine-grained PAT to commit product edits to main.");
+    return;
+  }
+  const url = "https://api.github.com/repos/" + GH_REPO + "/contents/" + GH_FILE;
+  const readFile = async () => {
+    const res = await fetch(url + "?ref=" + encodeURIComponent(GH_BRANCH), {
+      headers: githubHeaders(token),
+      cache: "no-store"
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(body.message || ("GitHub read failed (" + res.status + ")"));
+    const text = new TextDecoder().decode(base64ToBytes(body.content));
+    return { sha: body.sha, state: JSON.parse(text) };
+  };
+  const writeFile = async (sha, state, message) => {
+    const content = JSON.stringify(state, null, 2) + "\n";
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: githubHeaders(token),
+      body: JSON.stringify({
+        message: "Products: " + message,
+        content: bytesToBase64(new TextEncoder().encode(content)),
+        sha: sha,
+        branch: GH_BRANCH
+      })
+    });
+    const body = await res.json().catch(() => ({}));
+    return { res, body };
+  };
+
+  let file = await readFile();
+  let products = applyProductEdit(file.state.products, edit);
+  let note = productEditNote(file.state.products, products, edit);
+  if (JSON.stringify(file.state.products) === JSON.stringify(products)) {
+    setWritebackStatus("Already on main.");
+    return;
+  }
+  file.state.products = products;
+  file.state.updated = istStamp();
+  file.state.updatedBy = "products-writeback";
+  let saved = await writeFile(file.sha, file.state, note);
+  if (saved.res.status === 409) {
+    file = await readFile();
+    products = applyProductEdit(file.state.products, edit);
+    note = productEditNote(file.state.products, products, edit);
+    file.state.products = products;
+    file.state.updated = istStamp();
+    file.state.updatedBy = "products-writeback";
+    saved = await writeFile(file.sha, file.state, note);
+  }
+  if (!saved.res.ok) throw new Error(saved.body.message || ("GitHub commit failed (" + saved.res.status + ")"));
+  const sha = saved.body.commit && saved.body.commit.sha;
+  setWritebackStatus(sha ? ("Committed " + sha.slice(0, 7) + " to main. " + note) : ("Committed to main. " + note));
+}
+
+function queueProductWrite(edit) {
+  productWriteQueue = productWriteQueue.then(() => commitProductEdit(edit)).catch(err => {
+    console.error(err);
+    const message = (err && err.message) ? err.message : "GitHub write-back failed";
+    setWritebackStatus(message);
+    alert("Saved in this browser, but GitHub write-back failed: " + message);
+  });
+  return productWriteQueue;
 }
 
 async function boot() {
