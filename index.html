@@ -99,7 +99,7 @@
     border-radius: var(--radius);
     box-shadow: inset 0 1px 0 var(--glass-highlight), 0 12px 40px color-mix(in srgb, var(--color-ink) 10%, transparent);
   }
-  .view-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+  .view-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
   .view-tab {
     appearance: none; cursor: pointer;
     background: var(--chip); color: var(--ink-muted);
@@ -822,6 +822,28 @@
   .table-wrap table { min-width: 1180px; }
   td .cell-select { min-width: 110px; }
 
+  #view-products .table-wrap table { min-width: 1760px; }
+  #view-products .source-wrap table { min-width: 0; }
+  .source-list { margin: 12px 0 0; padding: 0; list-style: none; display: grid; }
+  .source-list li {
+    display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: baseline;
+    padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px;
+  }
+  .source-list li:last-child { border-bottom: none; }
+  .source-list .n { color: var(--ink-faint); font-variant-numeric: tabular-nums; font-size: 12px; }
+  #view-products textarea.task-cell-input {
+    min-width: 220px; min-height: 68px; resize: vertical; font-weight: 400;
+  }
+  #view-products .product-num { min-width: 88px; font-variant-numeric: tabular-nums; }
+  #view-products .product-actions { width: 72px; text-align: right; }
+  .product-remove {
+    appearance: none; cursor: pointer;
+    background: transparent; color: var(--ink-faint);
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: 6px 10px; font: 500 11px/1 var(--font); letter-spacing: 0.04em;
+  }
+  .product-remove:hover { color: var(--ink); border-color: var(--glass-highlight); }
+
 
   /* Identity System — Wall gallery language (scoped) */
   #view-identity {
@@ -1141,6 +1163,7 @@
 
     <div class="view-tabs">
       <button class="view-tab active" data-view="launch" id="view-launch">Tasks</button>
+      <button class="view-tab" data-view="products" id="view-products-tab">Products</button>
       <button class="view-tab" data-view="collections" id="view-coll">Collections</button>
       <button class="view-tab" data-view="business" id="view-biz">Business</button>
       <button class="view-tab" data-view="experiments" id="view-exp">Experiments</button>
@@ -1259,6 +1282,51 @@
           <div class="empty" id="task-empty" hidden>No tasks in this view.</div>
         </div>
         <p class="save-note">Task fields sync across devices. Due dates are locked (display only). Grouped by workstream.</p>
+      </section>
+    </div>
+
+    <div id="view-products" class="hidden">
+      <section class="panel glass">
+        <div class="biz-toolbar">
+          <div>
+            <h3 style="margin:0">Products</h3>
+            <p class="biz-note" style="margin-top:8px;margin-bottom:0">Shopify listing fields only. Rows start blank — fill them in here; no catalog is seeded.</p>
+          </div>
+          <button type="button" class="btn-add" id="btn-add-product">Add product</button>
+        </div>
+        <div class="toolbar">
+          <span class="count" id="product-count"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Vendor</th>
+                <th>Product type</th>
+                <th>Tags</th>
+                <th>Price</th>
+                <th>Compare-at price</th>
+                <th>SKU</th>
+                <th>Barcode</th>
+                <th>Inventory quantity</th>
+                <th>Weight</th>
+                <th>Image Src</th>
+                <th>Image Alt Text</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="product-rows"></tbody>
+          </table>
+          <div class="empty" id="product-empty" hidden>No products yet. Add a row to start a listing.</div>
+        </div>
+        <p class="save-note">Same save path as the rest of the board: live <code>/api/state</code> when it is up, otherwise this browser. Weight is variant weight in grams. Image Src and Image Alt Text are the listing image.</p>
+      </section>
+      <section class="panel glass" id="product-source-panel" style="margin-top:14px">
+        <h3 style="margin:0">Source list</h3>
+        <p class="biz-note" style="margin-top:8px">CD-named source items awaiting Shopify fill. Names only — not copied into the listing table above.</p>
+        <ol class="source-list" id="product-source-list"></ol>
       </section>
     </div>
 
@@ -2070,6 +2138,8 @@ function seedFallbackState() {
     milestone: { title: "Soft Launch — Grey Objects", date: "2026-10-11" },
     metrics: null,
     collectionCommerce: {},
+    products: null,
+    productSources: null,
     updated: null,
     _source: "seed"
   };
@@ -2130,7 +2200,7 @@ async function persistAll() {
   experiments.forEach(e => { edits[e.id] = { stage: e.stage, status: e.status }; });
   const taskEdits = {};
   tasks.forEach(t => { taskEdits[t.id] = { status: t.status }; });
-  const payload = { edits, taskEdits, cardDates, milestone, metrics, collectionCommerce, updatedBy: "utkarsh-dashboard" };
+  const payload = { edits, taskEdits, cardDates, milestone, metrics, collectionCommerce, products, productSources, updatedBy: "utkarsh-dashboard" };
 
   if (apiAvailable !== false) {
     try {
@@ -2179,6 +2249,8 @@ function setView(view) {
   document.getElementById("view-launch").classList.toggle("active", view === "launch");
   const bizBtn = document.getElementById("view-biz");
   if (bizBtn) bizBtn.classList.toggle("active", view === "business");
+  const productsBtn = document.getElementById("view-products-tab");
+  if (productsBtn) productsBtn.classList.toggle("active", view === "products");
   const idView = document.getElementById("view-identity");
   if (idView) idView.classList.toggle("hidden", view !== "identity");
   document.getElementById("view-experiments").classList.toggle("hidden", view !== "experiments");
@@ -2187,6 +2259,8 @@ function setView(view) {
   document.getElementById("view-launch-tasks").classList.toggle("hidden", view !== "launch");
   const bizView = document.getElementById("view-business");
   if (bizView) bizView.classList.toggle("hidden", view !== "business");
+  const productsView = document.getElementById("view-products");
+  if (productsView) productsView.classList.toggle("hidden", view !== "products");
   const expNext = document.getElementById("exp-next");
   if (expNext) expNext.classList.toggle("hidden", view !== "experiments");
 }
@@ -2658,12 +2732,14 @@ document.querySelectorAll(".view-tab").forEach(btn => {
   btn.addEventListener("click", () => {
     setView(btn.dataset.view);
     if (btn.dataset.view === "launch") renderLaunch();
+    else if (btn.dataset.view === "products") renderProducts();
     else if (btn.dataset.view === "business") renderBusiness();
     else if (btn.dataset.view === "collections") renderCollectionCards();
     else renderExperiments();
   });
 });
 document.getElementById("btn-add-metric")?.addEventListener("click", addMetric);
+document.getElementById("btn-add-product")?.addEventListener("click", addProduct);
 document.getElementById("search").addEventListener("input", e => { query = e.target.value; renderExpRows(); });
 document.getElementById("task-search").addEventListener("input", e => { taskQuery = e.target.value; renderTaskRows(); });
 document.getElementById("btn-all").addEventListener("click", () => { filter = "all"; renderExperiments(); });
@@ -2753,6 +2829,160 @@ function addMetric() {
   persistAll().then(renderBusiness).catch(err => alert("Could not add metric"));
 }
 
+const PRODUCT_FIELDS = [
+  { key: "title", label: "Title" },
+  { key: "description", label: "Description", area: true },
+  { key: "vendor", label: "Vendor" },
+  { key: "productType", label: "Product type" },
+  { key: "tags", label: "Tags", placeholder: "comma-separated" },
+  { key: "price", label: "Price", inputmode: "decimal", placeholder: "0.00", numeric: true },
+  { key: "compareAtPrice", label: "Compare-at price", inputmode: "decimal", placeholder: "0.00", numeric: true },
+  { key: "sku", label: "SKU" },
+  { key: "barcode", label: "Barcode" },
+  { key: "inventoryQty", label: "Inventory quantity", inputmode: "numeric", placeholder: "0", numeric: true },
+  { key: "weight", label: "Weight", inputmode: "decimal", placeholder: "grams", numeric: true },
+  { key: "imageSrc", label: "Image Src", placeholder: "https://" },
+  { key: "imageAlt", label: "Image Alt Text" }
+];
+
+function blankProduct(id) {
+  const row = { id: id || ("product-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)) };
+  PRODUCT_FIELDS.forEach(f => { row[f.key] = ""; });
+  return row;
+}
+
+const STARTER_PRODUCTS = [blankProduct("product-1"), blankProduct("product-2"), blankProduct("product-3")];
+let products = STARTER_PRODUCTS.map(p => ({ ...p }));
+
+function escHtml(s) {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function normalizeProducts(list) {
+  if (!Array.isArray(list)) return null;
+  return list.map((p, i) => {
+    const row = blankProduct(p && p.id ? String(p.id) : ("product-" + (i + 1)));
+    if (p && typeof p === "object") {
+      PRODUCT_FIELDS.forEach(f => {
+        if (p[f.key] != null) row[f.key] = String(p[f.key]);
+      });
+    }
+    return row;
+  });
+}
+
+function resolveProducts(state) {
+  const remote = state && Array.isArray(state.products) ? normalizeProducts(state.products) : null;
+  if (apiAvailable === true && remote) return remote;
+  const local = readLocalState();
+  if (local && Array.isArray(local.products)) return normalizeProducts(local.products);
+  if (remote) return remote;
+  return STARTER_PRODUCTS.map(p => ({ ...p }));
+}
+
+function renderProducts(focusId) {
+  const tbody = document.getElementById("product-rows");
+  const empty = document.getElementById("product-empty");
+  const count = document.getElementById("product-count");
+  if (!tbody) return;
+  if (count) count.textContent = products.length === 1 ? "1 row" : products.length + " rows";
+  if (empty) empty.hidden = products.length > 0;
+  tbody.innerHTML = products.map(p => {
+    const cells = PRODUCT_FIELDS.map(f => {
+      const val = escHtml(p[f.key]);
+      const ph = f.placeholder ? ` placeholder="${escHtml(f.placeholder)}"` : "";
+      const mode = f.inputmode ? ` inputmode="${f.inputmode}"` : "";
+      const num = f.numeric ? " product-num" : "";
+      if (f.area) {
+        return `<td><textarea class="task-cell-input" data-product-field="${f.key}" data-id="${escHtml(p.id)}" aria-label="${escHtml(f.label)}" rows="3">${val}</textarea></td>`;
+      }
+      return `<td><input class="task-cell-input${num}" data-product-field="${f.key}" data-id="${escHtml(p.id)}" aria-label="${escHtml(f.label)}" value="${val}"${ph}${mode} /></td>`;
+    }).join("");
+    return `<tr data-id="${escHtml(p.id)}">${cells}<td class="product-actions"><button type="button" class="product-remove" data-remove-product="${escHtml(p.id)}" aria-label="Remove product row">Remove</button></td></tr>`;
+  }).join("");
+
+  tbody.querySelectorAll("[data-product-field]").forEach(el => {
+    const save = async () => {
+      const row = products.find(x => x.id === el.dataset.id);
+      if (!row) return;
+      if (row[el.dataset.productField] === el.value) return;
+      row[el.dataset.productField] = el.value;
+      try { await persistAll(); }
+      catch (err) { alert("Could not save product — retry."); console.error(err); }
+    };
+    el.addEventListener("change", save);
+    el.addEventListener("blur", save);
+  });
+  tbody.querySelectorAll("[data-remove-product]").forEach(btn => {
+    btn.addEventListener("click", () => removeProduct(btn.dataset.removeProduct));
+  });
+  if (focusId) {
+    const el = tbody.querySelector(`[data-id="${CSS.escape(focusId)}"] [data-product-field="title"]`);
+    if (el) el.focus();
+  }
+  renderProductSources();
+}
+
+const PRODUCT_SOURCE_NOTE = "CD-named source item awaiting Shopify fill";
+const PRODUCT_SOURCE_SEED = [
+  "French postcard",
+  "Eastpak cap",
+  "Second Amendment cap",
+  "Dali — Life of, work of Salvador Dali, book",
+  "jacket tote",
+  "skirt tote",
+  "limited edition onra vinyl",
+  "Beethoven vinyl",
+  "Kanye vinyl",
+  "Arsenal cards",
+  "Ricoh and X Dick Doc Martens shoes",
+  "Nike X A Cold Wall shoes",
+  "Cortese X Boy Better Know jacket",
+  "YSL jacket"
+].map(name => ({ name, note: PRODUCT_SOURCE_NOTE }));
+
+let productSources = PRODUCT_SOURCE_SEED.map(item => ({ ...item }));
+
+function normalizeProductSources(list) {
+  if (!Array.isArray(list)) return null;
+  return list.map(item => ({
+    name: item && item.name != null ? String(item.name) : "",
+    note: item && item.note != null ? String(item.note) : PRODUCT_SOURCE_NOTE
+  })).filter(item => item.name);
+}
+
+function resolveProductSources(state) {
+  const remote = state && Array.isArray(state.productSources) ? normalizeProductSources(state.productSources) : null;
+  if (remote && remote.length) return remote;
+  const local = readLocalState();
+  const fromLocal = local && Array.isArray(local.productSources) ? normalizeProductSources(local.productSources) : null;
+  if (fromLocal && fromLocal.length) return fromLocal;
+  return PRODUCT_SOURCE_SEED.map(item => ({ ...item }));
+}
+
+function renderProductSources() {
+  const list = document.getElementById("product-source-list");
+  if (!list) return;
+  list.innerHTML = productSources.map((item, i) =>
+    `<li><span class="n">${i + 1}</span><span>${escHtml(item.name)}</span></li>`
+  ).join("");
+}
+
+function addProduct() {
+  const row = blankProduct();
+  products.push(row);
+  persistAll().then(() => renderProducts(row.id)).catch(() => alert("Could not add product"));
+}
+
+function removeProduct(id) {
+  products = products.filter(p => p.id !== id);
+  persistAll().then(() => renderProducts()).catch(() => alert("Could not remove product"));
+}
+
 async function boot() {
   try {
     const state = await fetchState();
@@ -2767,6 +2997,8 @@ async function boot() {
     }
     metrics = applyMetricEdits(state.metrics);
     initCollectionCommerce(state.collectionCommerce || {});
+    products = resolveProducts(state);
+    productSources = resolveProductSources(state);
     if (state.updated) SEED.updated = new Date(state.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
   } catch (err) {
     console.warn("Boot failed — using seed / localStorage", err);
@@ -2783,10 +3015,14 @@ async function boot() {
       }
       if (typeof applyMetricEdits === "function") metrics = applyMetricEdits(local.metrics);
       initCollectionCommerce(local.collectionCommerce || {});
+      products = resolveProducts(local);
+      productSources = resolveProductSources(local);
       if (local.updated) SEED.updated = new Date(local.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
     } else {
       initCardDates({});
       initCollectionCommerce({});
+      products = STARTER_PRODUCTS.map(p => ({ ...p }));
+      productSources = PRODUCT_SOURCE_SEED.map(item => ({ ...item }));
     }
   }
   bindMilestoneEditors();
@@ -2812,7 +3048,11 @@ async function boot() {
       const nextCommerceRaw = state.collectionCommerce || {};
       // merge without losing local seeds when empty
       const commerceChanged = JSON.stringify(nextCommerceRaw) !== prevCommerce && Object.keys(nextCommerceRaw).length > 0;
-      if (forceRender || expChanged || taskChanged || datesChanged || msChanged || metricsChanged || commerceChanged) {
+      const nextProducts = resolveProducts(state);
+      const productsChanged = JSON.stringify(nextProducts) !== JSON.stringify(products);
+      const nextSources = resolveProductSources(state);
+      const sourcesChanged = JSON.stringify(nextSources) !== JSON.stringify(productSources);
+      if (forceRender || expChanged || taskChanged || datesChanged || msChanged || metricsChanged || commerceChanged || productsChanged || sourcesChanged) {
         experiments = nextExp;
         tasks = nextTasks;
         if (datesChanged || forceRender) initCardDates(nextDates);
@@ -2825,8 +3065,11 @@ async function boot() {
         }
         if (metricsChanged || forceRender) metrics = nextMetrics;
         if (commerceChanged || forceRender) initCollectionCommerce(state.collectionCommerce || collectionCommerce);
+        if (productsChanged || forceRender) products = nextProducts;
+        if (sourcesChanged || forceRender) productSources = nextSources;
         if (state.updated) SEED.updated = new Date(state.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
         if (currentView === "launch") renderLaunch();
+        else if (currentView === "products") renderProducts();
         else if (currentView === "business") renderBusiness();
         else if (currentView === "collections") renderCollectionCards();
         else renderExperiments();
