@@ -822,7 +822,7 @@
   .table-wrap table { min-width: 1180px; }
   td .cell-select { min-width: 110px; }
 
-  #view-products .table-wrap table { min-width: 1760px; }
+  #view-products .table-wrap table { min-width: 1900px; }
   #view-products .source-wrap table { min-width: 0; }
   .source-list { margin: 12px 0 0; padding: 0; list-style: none; display: grid; }
   .source-list li {
@@ -1290,7 +1290,7 @@
         <div class="biz-toolbar">
           <div>
             <h3 style="margin:0">Products</h3>
-            <p class="biz-note" style="margin-top:8px;margin-bottom:0">Shopify listing fields only. Rows start blank — fill them in here; no catalog is seeded.</p>
+            <p class="biz-note" style="margin-top:8px;margin-bottom:0">Shopify listing fields. Fourteen rows are filled — title, description, vendor, collection, tags, SKU, and barcode. Other columns stay empty.</p>
           </div>
           <button type="button" class="btn-add" id="btn-add-product">Add product</button>
         </div>
@@ -1304,6 +1304,7 @@
                 <th>Title</th>
                 <th>Description</th>
                 <th>Vendor</th>
+                <th>Collection</th>
                 <th>Product type</th>
                 <th>Tags</th>
                 <th>Price</th>
@@ -1325,7 +1326,7 @@
       </section>
       <section class="panel glass" id="product-source-panel" style="margin-top:14px">
         <h3 style="margin:0">Source list</h3>
-        <p class="biz-note" style="margin-top:8px">CD-named source items awaiting Shopify fill. Names only — not copied into the listing table above.</p>
+        <p class="biz-note" style="margin-top:8px">CD-named source items. Names stay on this list; the Shopify table above holds the filled listings.</p>
         <ol class="source-list" id="product-source-list"></ol>
       </section>
     </div>
@@ -2833,6 +2834,7 @@ const PRODUCT_FIELDS = [
   { key: "title", label: "Title" },
   { key: "description", label: "Description", area: true },
   { key: "vendor", label: "Vendor" },
+  { key: "collection", label: "Collection" },
   { key: "productType", label: "Product type" },
   { key: "tags", label: "Tags", placeholder: "comma-separated" },
   { key: "price", label: "Price", inputmode: "decimal", placeholder: "0.00", numeric: true },
@@ -2851,7 +2853,23 @@ function blankProduct(id) {
   return row;
 }
 
-const STARTER_PRODUCTS = [blankProduct("product-1"), blankProduct("product-2"), blankProduct("product-3")];
+const LISTING_SEED = [
+  { id: "product-1", title: "French postcard", description: "A postcard from another France.", vendor: "Gray", collection: "postcards", tags: "french, postcard, collectible", sku: "GREY-FR-001", barcode: "2000000000015" },
+  { id: "product-2", title: "Eastpak cap", description: "Street-ready, always.", vendor: "Gray", collection: "caps", tags: "eastpak, cap, streetwear", sku: "GREY-EP-001", barcode: "2000000000022" },
+  { id: "product-3", title: "Second Amendment cap", description: "A quiet mark of stance.", vendor: "Gray", collection: "caps", tags: "second-amendment, cap, collectible", sku: "GREY-SA-001", barcode: "2000000000039" },
+  { id: "product-4", title: "Dali — Life of, work of Salvador Dali, book", description: "The life and work, in one spine.", vendor: "Gray", collection: "books", tags: "dali, book, art", sku: "GREY-DL-001", barcode: "2000000000046" },
+  { id: "product-5", title: "jacket tote", description: "A tote cut like a jacket.", vendor: "Gray", collection: "totes", tags: "jacket, tote, carry", sku: "GREY-JT-001", barcode: "2000000000053" },
+  { id: "product-6", title: "skirt tote", description: "Soft structure, hard to put down.", vendor: "Gray", collection: "totes", tags: "skirt, tote, soft", sku: "GREY-ST-001", barcode: "2000000000060" },
+  { id: "product-7", title: "limited edition onra vinyl", description: "Limited press, with the room still in it.", vendor: "Gray", collection: "vinyl", tags: "onra, vinyl, limited", sku: "GREY-OV-001", barcode: "2000000000077" },
+  { id: "product-8", title: "Beethoven vinyl", description: "Hornies seven, choral, eight — Japanese press.", vendor: "Gray", collection: "vinyl", tags: "beethoven, vinyl, japanese-press", sku: "GREY-BV-001", barcode: "2000000000084" },
+  { id: "product-9", title: "Kanye vinyl", description: "My Beautiful Dark Twisted Fantasy, limited.", vendor: "Gray", collection: "vinyl", tags: "kanye, vinyl, mbdtf", sku: "GREY-KV-001", barcode: "2000000000091" },
+  { id: "product-10", title: "Arsenal cards", description: "Three cards, ready for the wall.", vendor: "Gray", collection: "cards", tags: "arsenal, cards, framed", sku: "GREY-AC-001", barcode: "2000000000107" },
+  { id: "product-11", title: "Ricoh and X Dick Doc Martens shoes", description: "Ricoh × Dick Doc Martens.", vendor: "Gray", collection: "shoes", tags: "ricoh, doc-martens, shoes", sku: "GREY-RD-001", barcode: "2000000000114" },
+  { id: "product-12", title: "Nike X A Cold Wall shoes", description: "Nike × A-Cold-Wall*.", vendor: "Gray", collection: "shoes", tags: "nike, a-cold-wall, shoes", sku: "GREY-NA-001", barcode: "2000000000121" },
+  { id: "product-13", title: "Cortese X Boy Better Know jacket", description: "Cortese × Boy Better Know.", vendor: "Gray", collection: "jackets", tags: "cortese, boy-better-know, jacket", sku: "GREY-CB-001", barcode: "2000000000138" },
+  { id: "product-14", title: "YSL jacket", description: "Quiet luxury, sharp edge.", vendor: "Gray", collection: "jackets", tags: "ysl, luxury, outerwear", sku: "GREY-YJ-001", barcode: "2000000000145" }
+];
+const STARTER_PRODUCTS = LISTING_SEED.map(seed => Object.assign(blankProduct(seed.id), seed));
 let products = STARTER_PRODUCTS.map(p => ({ ...p }));
 
 function escHtml(s) {
