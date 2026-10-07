@@ -451,6 +451,56 @@
       "notes": ""
     }
   },
+  "products": [
+    {
+      "id": "product-1",
+      "title": "",
+      "description": "",
+      "vendor": "",
+      "productType": "",
+      "tags": "",
+      "price": "",
+      "compareAtPrice": "",
+      "sku": "",
+      "barcode": "",
+      "inventoryQty": "",
+      "weight": "",
+      "imageSrc": "",
+      "imageAlt": ""
+    },
+    {
+      "id": "product-2",
+      "title": "",
+      "description": "",
+      "vendor": "",
+      "productType": "",
+      "tags": "",
+      "price": "",
+      "compareAtPrice": "",
+      "sku": "",
+      "barcode": "",
+      "inventoryQty": "",
+      "weight": "",
+      "imageSrc": "",
+      "imageAlt": ""
+    },
+    {
+      "id": "product-3",
+      "title": "",
+      "description": "",
+      "vendor": "",
+      "productType": "",
+      "tags": "",
+      "price": "",
+      "compareAtPrice": "",
+      "sku": "",
+      "barcode": "",
+      "inventoryQty": "",
+      "weight": "",
+      "imageSrc": "",
+      "imageAlt": ""
+    }
+  ],
   "experiments": null,
   "updated": "2026-10-06T09:20:00+05:30",
   "updatedBy": "orchestrator"
