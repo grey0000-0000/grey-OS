@@ -823,16 +823,59 @@
   td .cell-select { min-width: 110px; }
 
   #view-products .table-wrap table { min-width: 1900px; }
-  #view-products .source-wrap table { min-width: 0; }
-  .source-list { margin: 12px 0 0; padding: 0; list-style: none; display: grid; }
-  .source-list li {
-    display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: baseline;
-    padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px;
+  table.col-resize {
+    table-layout: fixed;
   }
-  .source-list li:last-child { border-bottom: none; }
-  .source-list .n { color: var(--ink-faint); font-variant-numeric: tabular-nums; font-size: 12px; }
+  #view-launch-tasks .table-wrap table.col-resize,
+  #view-products .table-wrap table.col-resize {
+    min-width: 0;
+    width: auto;
+  }
+  table.col-resize th {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 14px;
+  }
+  table.col-resize td { overflow: hidden; overflow-wrap: anywhere; }
+  table.col-resize td .cell-select,
+  table.col-resize td .task-cell-input,
+  #view-products table.col-resize textarea.task-cell-input {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  table.col-resize .task-link-cell { min-width: 0; }
+  .col-resize-handle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 5;
+    touch-action: none;
+  }
+  .col-resize-handle::after {
+    content: "";
+    position: absolute;
+    top: 18%;
+    bottom: 18%;
+    right: 3px;
+    width: 2px;
+    border-radius: 1px;
+    background: rgba(255,255,255,0.28);
+  }
+  .col-resize-handle:hover::after,
+  .col-resize-handle.is-dragging::after { background: rgba(255,255,255,0.88); }
+  body.col-resizing,
+  body.col-resizing * {
+    cursor: col-resize !important;
+    user-select: none !important;
+  }
   #view-products textarea.task-cell-input {
-    min-width: 220px; min-height: 68px; resize: vertical; font-weight: 400;
+    min-height: 68px; resize: vertical; font-weight: 400;
   }
   #view-products .product-num { min-width: 88px; font-variant-numeric: tabular-nums; }
   #view-products .product-actions { width: 72px; text-align: right; }
@@ -1262,26 +1305,26 @@
           <span class="count" id="task-count"></span>
         </div>
         <div class="table-wrap">
-          <table>
+          <table id="task-table" class="col-resize">
             <thead>
               <tr>
-                <th>Task</th>
-                <th>Workstream</th>
-                <th>Priority</th>
-                <th>Owner</th>
-                <th>Collaborators</th>
-                <th>Status</th>
-                <th>Due</th>
-                <th>Link</th>
-                <th>Notes</th>
-                <th>Blocker</th>
+                <th data-w="240">Task</th>
+                <th data-w="150">Workstream</th>
+                <th data-w="110">Priority</th>
+                <th data-w="180">Owner</th>
+                <th data-w="170">Collaborators</th>
+                <th data-w="140">Status</th>
+                <th data-w="120">Due</th>
+                <th data-w="72">Link</th>
+                <th data-w="260">Notes</th>
+                <th data-w="200">Blocker</th>
               </tr>
             </thead>
             <tbody id="task-rows"></tbody>
           </table>
           <div class="empty" id="task-empty" hidden>No tasks in this view.</div>
         </div>
-        <p class="save-note">Task fields sync across devices. Due dates are locked (display only). Grouped by workstream.</p>
+        <p class="save-note">Task fields sync across devices. Due dates are locked (display only). Grouped by workstream. Drag a column edge to resize it.</p>
       </section>
     </div>
 
@@ -1298,36 +1341,31 @@
           <span class="count" id="product-count"></span>
         </div>
         <div class="table-wrap">
-          <table>
+          <table id="product-table" class="col-resize">
             <thead>
               <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Vendor</th>
-                <th>Collection</th>
-                <th>Product type</th>
-                <th>Tags</th>
-                <th>Price</th>
-                <th>Compare-at price</th>
-                <th>SKU</th>
-                <th>Barcode</th>
-                <th>Inventory quantity</th>
-                <th>Weight</th>
-                <th>Image Src</th>
-                <th>Image Alt Text</th>
-                <th></th>
+                <th data-w="180">Title</th>
+                <th data-w="260">Description</th>
+                <th data-w="96">Vendor</th>
+                <th data-w="120">Collection</th>
+                <th data-w="130">Product type</th>
+                <th data-w="200">Tags</th>
+                <th data-w="90">Price</th>
+                <th data-w="140">Compare-at price</th>
+                <th data-w="140">SKU</th>
+                <th data-w="150">Barcode</th>
+                <th data-w="140">Inventory quantity</th>
+                <th data-w="96">Weight</th>
+                <th data-w="180">Image Src</th>
+                <th data-w="160">Image Alt Text</th>
+                <th data-w="88"></th>
               </tr>
             </thead>
             <tbody id="product-rows"></tbody>
           </table>
           <div class="empty" id="product-empty" hidden>No products yet. Add a row to start a listing.</div>
         </div>
-        <p class="save-note">Same save path as the rest of the board: live <code>/api/state</code> when it is up, otherwise this browser. Weight is variant weight in grams. Image Src and Image Alt Text are the listing image.</p>
-      </section>
-      <section class="panel glass" id="product-source-panel" style="margin-top:14px">
-        <h3 style="margin:0">Source list</h3>
-        <p class="biz-note" style="margin-top:8px">CD-named source items. Names stay on this list; the Shopify table above holds the filled listings.</p>
-        <ol class="source-list" id="product-source-list"></ol>
+        <p class="save-note">Same save path as the rest of the board: live <code>/api/state</code> when it is up, otherwise this browser. Weight is variant weight in grams. Image Src and Image Alt Text are the listing image. Drag a column edge to resize it.</p>
       </section>
     </div>
 
@@ -2140,7 +2178,6 @@ function seedFallbackState() {
     metrics: null,
     collectionCommerce: {},
     products: null,
-    productSources: null,
     updated: null,
     _source: "seed"
   };
@@ -2201,7 +2238,7 @@ async function persistAll() {
   experiments.forEach(e => { edits[e.id] = { stage: e.stage, status: e.status }; });
   const taskEdits = {};
   tasks.forEach(t => { taskEdits[t.id] = { status: t.status }; });
-  const payload = { edits, taskEdits, cardDates, milestone, metrics, collectionCommerce, products, productSources, updatedBy: "utkarsh-dashboard" };
+  const payload = { edits, taskEdits, cardDates, milestone, metrics, collectionCommerce, products, updatedBy: "utkarsh-dashboard" };
 
   if (apiAvailable !== false) {
     try {
@@ -2854,20 +2891,20 @@ function blankProduct(id) {
 }
 
 const LISTING_SEED = [
-  { id: "product-1", title: "French postcard", description: "A postcard from another France.", vendor: "Gray", collection: "postcards", tags: "french, postcard, collectible", sku: "GREY-FR-001", barcode: "2000000000015" },
-  { id: "product-2", title: "Eastpak cap", description: "Street-ready, always.", vendor: "Gray", collection: "caps", tags: "eastpak, cap, streetwear", sku: "GREY-EP-001", barcode: "2000000000022" },
-  { id: "product-3", title: "Second Amendment cap", description: "A quiet mark of stance.", vendor: "Gray", collection: "caps", tags: "second-amendment, cap, collectible", sku: "GREY-SA-001", barcode: "2000000000039" },
-  { id: "product-4", title: "Dali — Life of, work of Salvador Dali, book", description: "The life and work, in one spine.", vendor: "Gray", collection: "books", tags: "dali, book, art", sku: "GREY-DL-001", barcode: "2000000000046" },
-  { id: "product-5", title: "jacket tote", description: "A tote cut like a jacket.", vendor: "Gray", collection: "totes", tags: "jacket, tote, carry", sku: "GREY-JT-001", barcode: "2000000000053" },
-  { id: "product-6", title: "skirt tote", description: "Soft structure, hard to put down.", vendor: "Gray", collection: "totes", tags: "skirt, tote, soft", sku: "GREY-ST-001", barcode: "2000000000060" },
-  { id: "product-7", title: "limited edition onra vinyl", description: "Limited press, with the room still in it.", vendor: "Gray", collection: "vinyl", tags: "onra, vinyl, limited", sku: "GREY-OV-001", barcode: "2000000000077" },
-  { id: "product-8", title: "Beethoven vinyl", description: "Hornies seven, choral, eight — Japanese press.", vendor: "Gray", collection: "vinyl", tags: "beethoven, vinyl, japanese-press", sku: "GREY-BV-001", barcode: "2000000000084" },
-  { id: "product-9", title: "Kanye vinyl", description: "My Beautiful Dark Twisted Fantasy, limited.", vendor: "Gray", collection: "vinyl", tags: "kanye, vinyl, mbdtf", sku: "GREY-KV-001", barcode: "2000000000091" },
-  { id: "product-10", title: "Arsenal cards", description: "Three cards, ready for the wall.", vendor: "Gray", collection: "cards", tags: "arsenal, cards, framed", sku: "GREY-AC-001", barcode: "2000000000107" },
-  { id: "product-11", title: "Ricoh and X Dick Doc Martens shoes", description: "Ricoh × Dick Doc Martens.", vendor: "Gray", collection: "shoes", tags: "ricoh, doc-martens, shoes", sku: "GREY-RD-001", barcode: "2000000000114" },
-  { id: "product-12", title: "Nike X A Cold Wall shoes", description: "Nike × A-Cold-Wall*.", vendor: "Gray", collection: "shoes", tags: "nike, a-cold-wall, shoes", sku: "GREY-NA-001", barcode: "2000000000121" },
-  { id: "product-13", title: "Cortese X Boy Better Know jacket", description: "Cortese × Boy Better Know.", vendor: "Gray", collection: "jackets", tags: "cortese, boy-better-know, jacket", sku: "GREY-CB-001", barcode: "2000000000138" },
-  { id: "product-14", title: "YSL jacket", description: "Quiet luxury, sharp edge.", vendor: "Gray", collection: "jackets", tags: "ysl, luxury, outerwear", sku: "GREY-YJ-001", barcode: "2000000000145" }
+  { id: "product-1", title: "French postcard", description: "A postcard from another France.", vendor: "GREY", collection: "postcards", tags: "french, postcard, collectible", sku: "GREY-OBJ-001", barcode: "2000000000015" },
+  { id: "product-2", title: "Eastpak cap", description: "Street-ready, always.", vendor: "GREY", collection: "caps", tags: "eastpak, cap, streetwear", sku: "GREY-OBJ-002", barcode: "2000000000022" },
+  { id: "product-3", title: "Second Amendment cap", description: "A quiet mark of stance.", vendor: "GREY", collection: "caps", tags: "second-amendment, cap, collectible", sku: "GREY-OBJ-003", barcode: "2000000000039" },
+  { id: "product-4", title: "Dali — Life of, work of Salvador Dali, book", description: "The life and work, in one spine.", vendor: "GREY", collection: "books", tags: "dali, book, art", sku: "GREY-OBJ-004", barcode: "2000000000046" },
+  { id: "product-5", title: "jacket tote", description: "A tote cut like a jacket.", vendor: "GREY", collection: "totes", tags: "jacket, tote, carry", sku: "GREY-OBJ-005", barcode: "2000000000053" },
+  { id: "product-6", title: "skirt tote", description: "Soft structure, hard to put down.", vendor: "GREY", collection: "totes", tags: "skirt, tote, soft", sku: "GREY-OBJ-006", barcode: "2000000000060" },
+  { id: "product-7", title: "limited edition onra vinyl", description: "Limited press, with the room still in it.", vendor: "GREY", collection: "vinyl", tags: "onra, vinyl, limited", sku: "GREY-OBJ-007", barcode: "2000000000077" },
+  { id: "product-8", title: "Beethoven vinyl", description: "Hornies seven, choral, eight — Japanese press.", vendor: "GREY", collection: "vinyl", tags: "beethoven, vinyl, japanese-press", sku: "GREY-OBJ-008", barcode: "2000000000084" },
+  { id: "product-9", title: "Kanye vinyl", description: "My Beautiful Dark Twisted Fantasy, limited.", vendor: "GREY", collection: "vinyl", tags: "kanye, vinyl, mbdtf", sku: "GREY-OBJ-009", barcode: "2000000000091" },
+  { id: "product-10", title: "Arsenal cards", description: "Three cards, ready for the wall.", vendor: "GREY", collection: "cards", tags: "arsenal, cards, framed", sku: "GREY-OBJ-010", barcode: "2000000000107" },
+  { id: "product-11", title: "Ricoh and X Dick Doc Martens shoes", description: "Ricoh × Dick Doc Martens.", vendor: "GREY", collection: "shoes", tags: "ricoh, doc-martens, shoes", sku: "GREY-OBJ-011", barcode: "2000000000114" },
+  { id: "product-12", title: "Nike X A Cold Wall shoes", description: "Nike × A-Cold-Wall*.", vendor: "GREY", collection: "shoes", tags: "nike, a-cold-wall, shoes", sku: "GREY-OBJ-012", barcode: "2000000000121" },
+  { id: "product-13", title: "Cortese X Boy Better Know jacket", description: "Cortese × Boy Better Know.", vendor: "GREY", collection: "jackets", tags: "cortese, boy-better-know, jacket", sku: "GREY-OBJ-013", barcode: "2000000000138" },
+  { id: "product-14", title: "YSL jacket", description: "Quiet luxury, sharp edge.", vendor: "GREY", collection: "jackets", tags: "ysl, luxury, outerwear", sku: "GREY-OBJ-014", barcode: "2000000000145" }
 ];
 const STARTER_PRODUCTS = LISTING_SEED.map(seed => Object.assign(blankProduct(seed.id), seed));
 let products = STARTER_PRODUCTS.map(p => ({ ...p }));
@@ -2942,52 +2979,6 @@ function renderProducts(focusId) {
     const el = tbody.querySelector(`[data-id="${CSS.escape(focusId)}"] [data-product-field="title"]`);
     if (el) el.focus();
   }
-  renderProductSources();
-}
-
-const PRODUCT_SOURCE_NOTE = "CD-named source item awaiting Shopify fill";
-const PRODUCT_SOURCE_SEED = [
-  "French postcard",
-  "Eastpak cap",
-  "Second Amendment cap",
-  "Dali — Life of, work of Salvador Dali, book",
-  "jacket tote",
-  "skirt tote",
-  "limited edition onra vinyl",
-  "Beethoven vinyl",
-  "Kanye vinyl",
-  "Arsenal cards",
-  "Ricoh and X Dick Doc Martens shoes",
-  "Nike X A Cold Wall shoes",
-  "Cortese X Boy Better Know jacket",
-  "YSL jacket"
-].map(name => ({ name, note: PRODUCT_SOURCE_NOTE }));
-
-let productSources = PRODUCT_SOURCE_SEED.map(item => ({ ...item }));
-
-function normalizeProductSources(list) {
-  if (!Array.isArray(list)) return null;
-  return list.map(item => ({
-    name: item && item.name != null ? String(item.name) : "",
-    note: item && item.note != null ? String(item.note) : PRODUCT_SOURCE_NOTE
-  })).filter(item => item.name);
-}
-
-function resolveProductSources(state) {
-  const remote = state && Array.isArray(state.productSources) ? normalizeProductSources(state.productSources) : null;
-  if (remote && remote.length) return remote;
-  const local = readLocalState();
-  const fromLocal = local && Array.isArray(local.productSources) ? normalizeProductSources(local.productSources) : null;
-  if (fromLocal && fromLocal.length) return fromLocal;
-  return PRODUCT_SOURCE_SEED.map(item => ({ ...item }));
-}
-
-function renderProductSources() {
-  const list = document.getElementById("product-source-list");
-  if (!list) return;
-  list.innerHTML = productSources.map((item, i) =>
-    `<li><span class="n">${i + 1}</span><span>${escHtml(item.name)}</span></li>`
-  ).join("");
 }
 
 function addProduct() {
@@ -3016,7 +3007,6 @@ async function boot() {
     metrics = applyMetricEdits(state.metrics);
     initCollectionCommerce(state.collectionCommerce || {});
     products = resolveProducts(state);
-    productSources = resolveProductSources(state);
     if (state.updated) SEED.updated = new Date(state.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
   } catch (err) {
     console.warn("Boot failed — using seed / localStorage", err);
@@ -3034,13 +3024,11 @@ async function boot() {
       if (typeof applyMetricEdits === "function") metrics = applyMetricEdits(local.metrics);
       initCollectionCommerce(local.collectionCommerce || {});
       products = resolveProducts(local);
-      productSources = resolveProductSources(local);
       if (local.updated) SEED.updated = new Date(local.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
     } else {
       initCardDates({});
       initCollectionCommerce({});
       products = STARTER_PRODUCTS.map(p => ({ ...p }));
-      productSources = PRODUCT_SOURCE_SEED.map(item => ({ ...item }));
     }
   }
   bindMilestoneEditors();
@@ -3068,9 +3056,7 @@ async function boot() {
       const commerceChanged = JSON.stringify(nextCommerceRaw) !== prevCommerce && Object.keys(nextCommerceRaw).length > 0;
       const nextProducts = resolveProducts(state);
       const productsChanged = JSON.stringify(nextProducts) !== JSON.stringify(products);
-      const nextSources = resolveProductSources(state);
-      const sourcesChanged = JSON.stringify(nextSources) !== JSON.stringify(productSources);
-      if (forceRender || expChanged || taskChanged || datesChanged || msChanged || metricsChanged || commerceChanged || productsChanged || sourcesChanged) {
+      if (forceRender || expChanged || taskChanged || datesChanged || msChanged || metricsChanged || commerceChanged || productsChanged) {
         experiments = nextExp;
         tasks = nextTasks;
         if (datesChanged || forceRender) initCardDates(nextDates);
@@ -3084,7 +3070,6 @@ async function boot() {
         if (metricsChanged || forceRender) metrics = nextMetrics;
         if (commerceChanged || forceRender) initCollectionCommerce(state.collectionCommerce || collectionCommerce);
         if (productsChanged || forceRender) products = nextProducts;
-        if (sourcesChanged || forceRender) productSources = nextSources;
         if (state.updated) SEED.updated = new Date(state.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
         if (currentView === "launch") renderLaunch();
         else if (currentView === "products") renderProducts();
@@ -3099,6 +3084,100 @@ async function boot() {
   // Hourly full data refresh belt-and-suspenders (tasks, metrics, milestone)
   setInterval(() => refreshFromServer(true), 3600000);
 }
+const COL_WIDTHS_KEY = "grey-os-col-widths";
+
+function readColWidths() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(COL_WIDTHS_KEY) || "{}");
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch (_) {
+    return {};
+  }
+}
+
+function bindResizableTable(table) {
+  if (!table || table.dataset.colResizeBound === "1") return;
+  const headers = [...table.querySelectorAll(":scope > thead > tr:first-child > th")];
+  if (!headers.length) return;
+  table.dataset.colResizeBound = "1";
+  const key = table.id || "table";
+
+  let colgroup = table.querySelector(":scope > colgroup");
+  if (!colgroup) {
+    colgroup = document.createElement("colgroup");
+    headers.forEach(() => colgroup.appendChild(document.createElement("col")));
+    table.insertBefore(colgroup, table.firstChild);
+  }
+  const cols = [...colgroup.children];
+  const stored = readColWidths();
+  const saved = Array.isArray(stored[key]) ? stored[key] : [];
+
+  const applyWidth = (index, px) => {
+    const width = Math.max(56, Math.round(px));
+    if (cols[index]) cols[index].style.width = width + "px";
+    headers[index].style.width = width + "px";
+    return width;
+  };
+  const syncTableWidth = () => {
+    const total = cols.reduce((sum, col) => sum + (parseInt(col.style.width, 10) || 0), 0);
+    if (total > 0) table.style.width = total + "px";
+  };
+
+  headers.forEach((th, i) => {
+    const initial = Number(saved[i]) || Number(th.dataset.w) || 120;
+    applyWidth(i, initial);
+    if (th.querySelector(".col-resize-handle")) return;
+    const handle = document.createElement("span");
+    handle.className = "col-resize-handle";
+    handle.setAttribute("role", "separator");
+    handle.setAttribute("aria-orientation", "vertical");
+    const label = (th.childNodes[0] && th.childNodes[0].textContent || th.textContent || "column").trim() || "column";
+    handle.setAttribute("aria-label", "Resize " + label + " column");
+    handle.title = "Drag to resize";
+    th.appendChild(handle);
+
+    handle.addEventListener("pointerdown", (ev) => {
+      if (ev.button != null && ev.button !== 0) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      const startX = ev.clientX;
+      const startW = headers[i].getBoundingClientRect().width || initial;
+      handle.classList.add("is-dragging");
+      document.body.classList.add("col-resizing");
+      if (handle.setPointerCapture) handle.setPointerCapture(ev.pointerId);
+
+      const onMove = (e) => {
+        applyWidth(i, startW + (e.clientX - startX));
+        syncTableWidth();
+      };
+      const onUp = (e) => {
+        handle.classList.remove("is-dragging");
+        document.body.classList.remove("col-resizing");
+        if (handle.releasePointerCapture) {
+          try { handle.releasePointerCapture(e.pointerId); } catch (_) {}
+        }
+        window.removeEventListener("pointermove", onMove);
+        window.removeEventListener("pointerup", onUp);
+        const next = readColWidths();
+        next[key] = cols.map((col, idx) => {
+          const n = parseInt(col.style.width, 10);
+          return Number.isFinite(n) ? n : (Number(headers[idx].dataset.w) || 120);
+        });
+        try { localStorage.setItem(COL_WIDTHS_KEY, JSON.stringify(next)); } catch (_) {}
+      };
+      window.addEventListener("pointermove", onMove);
+      window.addEventListener("pointerup", onUp);
+    });
+  });
+  syncTableWidth();
+}
+
+function bindResizableTables() {
+  bindResizableTable(document.getElementById("task-table"));
+  bindResizableTable(document.getElementById("product-table"));
+}
+
+bindResizableTables();
 boot();
 // Flip calendar ticks once a minute so midnight day-change animates without reload
 setInterval(() => { updateGreeting(); renderMilestone(); }, 60000);
