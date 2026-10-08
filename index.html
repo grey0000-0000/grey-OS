@@ -429,6 +429,13 @@
   .empty { padding: 28px; text-align: center; color: var(--ink-faint); font-size: 13px; }
   footer { margin-top: 22px; font-size: 11px; color: var(--ink-faint); letter-spacing: 0.04em; }
   .save-note { font-size: 11px; color: var(--ink-faint); margin: 10px 0 0; }
+  .save-status {
+    font-size: 13px; line-height: 1.45; color: var(--ink);
+    margin: 10px 0 0; padding: 8px 12px;
+    border: 1px solid var(--glass-highlight); background: var(--glass-strong);
+  }
+  .save-status[hidden] { display: none !important; }
+  .save-status.is-error { color: var(--danger); }
 
   .section-label {
     font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
@@ -1261,7 +1268,8 @@
             </table>
             <div class="empty" id="empty" hidden>No experiments in this view.</div>
           </div>
-          <p class="save-note">Stage / Status dropdowns sync to the live board.</p>
+          <p id="exp-save-status" class="save-status" role="status" hidden></p>
+          <p class="save-note">Stage and status commit to state.json on main when a GitHub token is saved under Products → Settings → GitHub write-back. Without a token the change stays in this browser.</p>
         </section>
         <div style="display:flex; flex-direction:column; gap:14px;">
           <section class="panel glass">
@@ -1340,7 +1348,8 @@
           </table>
           <div class="empty" id="task-empty" hidden>No tasks in this view.</div>
         </div>
-        <p class="save-note">Task fields sync across devices. Due dates are locked (display only). Grouped by workstream. Drag a column edge to resize it.</p>
+        <p id="task-save-status" class="save-status" role="status" hidden></p>
+        <p class="save-note">Status commits to state.json on main when a GitHub token is saved under Products → Settings → GitHub write-back. Without a token the change stays in this browser. Due dates are locked (display only). Grouped by workstream. Drag a column edge to resize it.</p>
       </section>
     </div>
 
@@ -1383,14 +1392,17 @@
           </table>
           <div class="empty" id="product-empty" hidden>No products yet. Add a row to start a listing.</div>
         </div>
-        <div class="writeback-bar">
-          <label for="github-token">GitHub write-back</label>
-          <input id="github-token" type="password" autocomplete="off" spellcheck="false" placeholder="Fine-grained PAT — contents write on grey-OS only" />
-          <button type="button" class="btn-add" id="github-token-save">Save in this browser</button>
-          <button type="button" class="btn-add" id="github-token-forget">Forget</button>
-          <span id="github-writeback-status" role="status"></span>
+        <div class="writeback-settings" id="settings-github-writeback">
+          <div class="section-label">Settings</div>
+          <div class="writeback-bar">
+            <label for="github-token">GitHub write-back</label>
+            <input id="github-token" type="password" autocomplete="off" spellcheck="false" placeholder="Fine-grained PAT — contents write on grey-OS only" />
+            <button type="button" class="btn-add" id="github-token-save">Save in this browser</button>
+            <button type="button" class="btn-add" id="github-token-forget">Forget</button>
+            <span id="github-writeback-status" role="status"></span>
+          </div>
         </div>
-        <p class="save-note">Product edits commit to <code>state.json</code> on <code>main</code> when a token is saved in this browser. The token is not stored in the repo. Without one, edits stay in this browser. Weight is variant weight in grams. Image Src and Image Alt Text are the listing image. Drag a column edge to resize it.</p>
+        <p class="save-note">Product edits, task status, and experiment stage/status commit to <code>state.json</code> on <code>main</code> when a token is saved in this browser. The token is not stored in the repo. Without one, edits stay in this browser. Weight is variant weight in grams. Image Src and Image Alt Text are the listing image. Drag a column edge to resize it.</p>
       </section>
     </div>
 
@@ -2195,8 +2207,12 @@ function bindCardDates(root) {
 
 
 const LS_KEY = "grey-os-state";
+const BROWSER_ONLY_STATUS = "Saved in this browser only — add a GitHub token in Settings → GitHub write-back to make it stick.";
 /** null = unknown, true = Express /api/state reachable, false = use localStorage (Pages / offline) */
 let apiAvailable = null;
+let baseEdits = {};
+let baseTaskEdits = {};
+let statusEditBag = null;
 
 function seedFallbackState() {
   return {
@@ -2235,12 +2251,206 @@ function stampUpdated(iso) {
   if (el && iso) el.textContent = new Date(iso).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
 }
 
+function cloneEditMap(map) {
+  const next = {};
+  if (!map || typeof map !== "object") return next;
+  Object.keys(map).forEach(id => {
+    const row = map[id];
+    next[id] = (row && typeof row === "object") ? Object.assign({}, row) : {};
+  });
+  return next;
+}
+
+function mergeEditField(map, id, field, value) {
+  const next = cloneEditMap(map);
+  if (!next[id] || typeof next[id] !== "object") next[id] = {};
+  next[id][field] = value;
+  return next;
+}
+
+function mergeEditMaps(base, patch, fields) {
+  const next = cloneEditMap(base);
+  const patchMap = (patch && typeof patch === "object") ? patch : {};
+  Object.keys(patchMap).forEach(id => {
+    const incoming = patchMap[id];
+    if (!incoming || typeof incoming !== "object") return;
+    if (!next[id] || typeof next[id] !== "object") next[id] = {};
+    fields.forEach(field => {
+      if (Object.prototype.hasOwnProperty.call(incoming, field)) next[id][field] = incoming[field];
+    });
+  });
+  return next;
+}
+
+function fillMissingEditFields(base, extra) {
+  const next = cloneEditMap(base);
+  const extraMap = (extra && typeof extra === "object") ? extra : {};
+  Object.keys(extraMap).forEach(id => {
+    const incoming = extraMap[id];
+    if (!incoming || typeof incoming !== "object") return;
+    if (!next[id] || typeof next[id] !== "object") next[id] = {};
+    Object.keys(incoming).forEach(field => {
+      if (!Object.prototype.hasOwnProperty.call(next[id], field)) next[id][field] = incoming[field];
+    });
+  });
+  return next;
+}
+
+function isNewerStamp(localIso, remoteIso) {
+  const localMs = Date.parse(localIso || "");
+  const remoteMs = Date.parse(remoteIso || "");
+  if (!Number.isFinite(localMs)) return false;
+  if (!Number.isFinite(remoteMs)) return true;
+  return localMs > remoteMs;
+}
+
+function mergeStatusBags(prev, next) {
+  const out = { tracked: true, tasks: {}, experiments: {} };
+  ["tasks", "experiments"].forEach(bucket => {
+    const prior = (prev && prev[bucket]) || {};
+    const incoming = (next && next[bucket]) || {};
+    const ids = new Set([...Object.keys(prior), ...Object.keys(incoming)]);
+    ids.forEach(id => {
+      out[bucket][id] = Object.assign({}, prior[id] || {}, incoming[id] || {});
+    });
+  });
+  if ((prev && prev.tracked) || (next && next.tracked)) out.tracked = true;
+  return out;
+}
+
+function noteStatusEdit(kind, id, field, value) {
+  const patch = { tracked: true, tasks: {}, experiments: {} };
+  const bucket = kind === "task" ? "tasks" : "experiments";
+  patch[bucket][id] = {};
+  patch[bucket][id][field] = { value: value, at: new Date().toISOString() };
+  statusEditBag = mergeStatusBags(statusEditBag, patch);
+}
+
+function applyRecordedStatus(remote, bag) {
+  const next = Object.assign({}, remote);
+  next.taskEdits = cloneEditMap(remote && remote.taskEdits);
+  next.edits = cloneEditMap(remote && remote.edits);
+  const remoteAt = remote && remote.updated;
+  const applyBucket = (bucket, target, fields) => {
+    const rows = (bag && bag[bucket]) || {};
+    Object.keys(rows).forEach(id => {
+      const rec = rows[id];
+      if (!rec || typeof rec !== "object") return;
+      fields.forEach(field => {
+        const cell = rec[field];
+        if (!cell || typeof cell !== "object" || !Object.prototype.hasOwnProperty.call(cell, "value")) return;
+        if (!isNewerStamp(cell.at, remoteAt)) return;
+        if (!target[id] || typeof target[id] !== "object") target[id] = {};
+        target[id][field] = cell.value;
+      });
+    });
+  };
+  applyBucket("tasks", next.taskEdits, ["status"]);
+  applyBucket("experiments", next.edits, ["stage", "status"]);
+  return next;
+}
+
+function legacyStatusBag(remote, local) {
+  const patch = { tracked: true, tasks: {}, experiments: {} };
+  if (!remote || !local || !isNewerStamp(local.updated, remote.updated)) return patch;
+  const stamp = local.updated;
+  const taskBase = remote.taskEdits || {};
+  const taskLocal = local.taskEdits || {};
+  Object.keys(taskLocal).forEach(id => {
+    const incoming = taskLocal[id];
+    if (!incoming || typeof incoming !== "object" || !Object.prototype.hasOwnProperty.call(incoming, "status")) return;
+    const prev = taskBase[id] && taskBase[id].status;
+    if (incoming.status !== prev) {
+      patch.tasks[id] = { status: { value: incoming.status, at: stamp } };
+    }
+  });
+  const expBase = remote.edits || {};
+  const expLocal = local.edits || {};
+  Object.keys(expLocal).forEach(id => {
+    const incoming = expLocal[id];
+    if (!incoming || typeof incoming !== "object") return;
+    ["stage", "status"].forEach(field => {
+      if (!Object.prototype.hasOwnProperty.call(incoming, field)) return;
+      const prev = expBase[id] && expBase[id][field];
+      if (incoming[field] !== prev) {
+        if (!patch.experiments[id]) patch.experiments[id] = {};
+        patch.experiments[id][field] = { value: incoming[field], at: stamp };
+      }
+    });
+  });
+  return patch;
+}
+
+function overlayStatusEdits(remote, local) {
+  if (!remote || typeof remote !== "object") return remote;
+  if (!local || typeof local !== "object") return remote;
+  const bag = local.statusEdits;
+  if (bag && typeof bag === "object" && bag.tracked) return applyRecordedStatus(remote, bag);
+  if (isNewerStamp(local.updated, remote.updated)) {
+    const next = Object.assign({}, remote);
+    next.taskEdits = mergeEditMaps(remote.taskEdits, local.taskEdits, ["status"]);
+    next.edits = mergeEditMaps(remote.edits, local.edits, ["stage", "status"]);
+    return next;
+  }
+  return remote;
+}
+
+function overlayLocalStatus(remote) {
+  const local = readLocalState();
+  if (local && local.statusEdits && local.statusEdits.tracked) {
+    statusEditBag = mergeStatusBags(statusEditBag, local.statusEdits);
+  } else if (local && remote) {
+    const legacy = legacyStatusBag(remote, local);
+    if (Object.keys(legacy.tasks).length || Object.keys(legacy.experiments).length) {
+      statusEditBag = mergeStatusBags(statusEditBag, legacy);
+    }
+  }
+  return overlayStatusEdits(remote, local);
+}
+
+function captureEditBases(state) {
+  baseEdits = cloneEditMap(state && state.edits);
+  baseTaskEdits = cloneEditMap(state && state.taskEdits);
+  if (state && state.statusEdits) statusEditBag = mergeStatusBags(statusEditBag, state.statusEdits);
+}
+
+function liveExperimentPatch() {
+  const patch = {};
+  experiments.forEach(e => { patch[e.id] = { stage: e.stage, status: e.status }; });
+  return patch;
+}
+
+function liveTaskPatch() {
+  const patch = {};
+  tasks.forEach(t => { patch[t.id] = { status: t.status }; });
+  return patch;
+}
+
+function mergedEditPayload() {
+  const local = readLocalState();
+  const edits = mergeEditMaps(
+    fillMissingEditFields(baseEdits, local && local.edits),
+    liveExperimentPatch(),
+    ["stage", "status"]
+  );
+  const taskEdits = mergeEditMaps(
+    fillMissingEditFields(baseTaskEdits, local && local.taskEdits),
+    liveTaskPatch(),
+    ["status"]
+  );
+  baseEdits = edits;
+  baseTaskEdits = taskEdits;
+  statusEditBag = mergeStatusBags(local && local.statusEdits, statusEditBag);
+  statusEditBag.tracked = true;
+  return { edits: edits, taskEdits: taskEdits, statusEdits: statusEditBag };
+}
+
 async function fetchState() {
   try {
     const res = await fetch(API, { cache: "no-store" });
     if (!res.ok) throw new Error("state fetch failed");
     apiAvailable = true;
-    return res.json();
+    return overlayLocalStatus(await res.json());
   } catch (err) {
     apiAvailable = false;
     // GitHub Pages / static: ship state.json beside index.html
@@ -2249,7 +2459,7 @@ async function fetchState() {
       if (staticRes.ok) {
         const staticState = await staticRes.json();
         console.warn("API unavailable — loaded ./state.json (static host)", err);
-        return staticState;
+        return overlayLocalStatus(staticState);
       }
     } catch (_) {}
     const local = readLocalState();
@@ -2263,11 +2473,19 @@ async function fetchState() {
 }
 
 async function persistAll() {
-  const edits = {};
-  experiments.forEach(e => { edits[e.id] = { stage: e.stage, status: e.status }; });
-  const taskEdits = {};
-  tasks.forEach(t => { taskEdits[t.id] = { status: t.status }; });
-  const payload = { edits, taskEdits, cardDates, milestone, metrics, collectionCommerce, products, updatedBy: "utkarsh-dashboard" };
+  const merged = mergedEditPayload();
+  const payload = {
+    edits: merged.edits,
+    taskEdits: merged.taskEdits,
+    cardDates: cardDates,
+    milestone: milestone,
+    metrics: metrics,
+    collectionCommerce: collectionCommerce,
+    products: products,
+    updatedBy: "utkarsh-dashboard"
+  };
+  const saved = writeLocalState(Object.assign({}, payload, { statusEdits: merged.statusEdits }));
+  stampUpdated(saved.updated);
 
   if (apiAvailable !== false) {
     try {
@@ -2278,17 +2496,14 @@ async function persistAll() {
       });
       if (!res.ok) throw new Error("state save failed");
       apiAvailable = true;
-      const saved = await res.json();
-      stampUpdated(saved.updated);
+      const apiSaved = await res.json();
+      stampUpdated(apiSaved.updated);
       return;
     } catch (err) {
       apiAvailable = false;
-      console.warn("API save failed — falling back to localStorage", err);
+      console.warn("API save failed — kept the merged copy in localStorage", err);
     }
   }
-
-  const saved = writeLocalState(payload);
-  stampUpdated(saved.updated);
 }
 
 function ensureOptions(list, current) {
@@ -2524,6 +2739,7 @@ function renderCollectionDetail(id) {
     <div>
       <h3 style="margin:0 0 10px">Inside this collection</h3>
       ${table}
+      <p id="coll-save-status" class="save-status" role="status" hidden></p>
     </div>
     <div>
       <h3 style="margin:0 0 10px">Notes</h3>
@@ -2542,17 +2758,7 @@ function renderCollectionDetail(id) {
     if (shown) shown.textContent = formatINR(rev);
   });
 
-  panel.querySelectorAll("select.cell-select").forEach(sel => {
-    sel.addEventListener("change", async () => {
-      const row = experiments.find(e => e.id === sel.dataset.id);
-      if (!row) return;
-      row[sel.dataset.kind] = sel.value;
-      sel.disabled = true;
-      try { await persistAll(); }
-      catch (err) { alert("Could not save — retry."); console.error(err); }
-      finally { sel.disabled = false; }
-    });
-  });
+  panel.querySelectorAll("select.cell-select").forEach(sel => bindStatusSelect(sel, "collection"));
 }
 
 function renderCollections() { /* legacy no-op — cards live under Collections tab */ }
@@ -2606,16 +2812,7 @@ function renderExpRows() {
       <td class="muted">${r.blocker}</td>
       <td class="muted" title="Deadlines are locked">${r.deadline}</td>
     </tr>`).join("");
-  tbody.querySelectorAll("select.cell-select").forEach(sel => {
-    sel.addEventListener("change", async () => {
-      const row = experiments.find(e => e.id === sel.dataset.id);
-      if (!row) return;
-      row[sel.dataset.kind] = sel.value;
-      sel.disabled = true;
-      try { await persistAll(); } catch (err) { alert("Could not save — retry."); console.error(err); }
-      finally { sel.disabled = false; }
-    });
-  });
+  tbody.querySelectorAll("select.cell-select").forEach(sel => bindStatusSelect(sel, "experiment"));
 }
 function renderDecisions() {
   document.getElementById("decisions").innerHTML = SEED.decisions.map((d,i) => `
@@ -2775,17 +2972,35 @@ function renderTaskRows() {
     }).join("");
   });
   tbody.innerHTML = html;
-  tbody.querySelectorAll("select.cell-select").forEach(sel => {
-    sel.addEventListener("change", async () => {
-      const row = tasks.find(t => t.id === sel.dataset.id);
-      if (!row) return;
-      row.status = sel.value;
-      syncTaskRowChrome(sel.closest("tr"), row);
-      sel.disabled = true;
-      try { await persistAll(); renderWorkstreams(); renderNextThree(); }
-      catch (err) { alert("Could not save — retry."); console.error(err); }
-      finally { sel.disabled = false; }
-    });
+  tbody.querySelectorAll("select.cell-select").forEach(sel => bindStatusSelect(sel, "task"));
+}
+
+function bindStatusSelect(sel, surface) {
+  sel.addEventListener("change", async () => {
+    const kind = sel.dataset.kind === "task-status" ? "task" : "experiment";
+    const field = kind === "task" ? "status" : sel.dataset.kind;
+    const list = kind === "task" ? tasks : experiments;
+    const row = list.find(item => item.id === sel.dataset.id);
+    if (!row) return;
+    const previous = row[field];
+    if (previous === sel.value) return;
+    row[field] = sel.value;
+    if (kind === "task") syncTaskRowChrome(sel.closest("tr"), row);
+    noteStatusEdit(kind, row.id, field, sel.value);
+    sel.disabled = true;
+    try {
+      await persistAll();
+      if (kind === "task") {
+        renderWorkstreams();
+        renderNextThree();
+      }
+      queueStatusWrite({ kind: kind, surface: surface, id: row.id, field: field, value: sel.value, previous: previous });
+    } catch (err) {
+      alert("Could not save — retry.");
+      console.error(err);
+    } finally {
+      sel.disabled = false;
+    }
   });
 }
 function renderLaunch() {
@@ -3048,7 +3263,8 @@ const GH_REPO = "grey0000-0000/grey-OS";
 const GH_BRANCH = "main";
 const GH_FILE = "state.json";
 const GH_TOKEN_KEY = "grey-os-github-token";
-let productWriteQueue = Promise.resolve();
+let githubWriteQueue = Promise.resolve();
+let githubWritesPending = 0;
 
 function readWritebackToken() {
   try { return String(localStorage.getItem(GH_TOKEN_KEY) || "").trim(); }
@@ -3061,8 +3277,18 @@ function setWritebackStatus(text) {
 }
 
 function refreshWritebackStatus() {
-  if (readWritebackToken()) setWritebackStatus("Token saved in this browser. Product edits commit to main.");
+  if (readWritebackToken()) setWritebackStatus("Token saved in this browser. Product edits and task / experiment status commit to main.");
   else setWritebackStatus("No token yet. Edits stay in this browser until you save a fine-grained PAT.");
+}
+
+function setSaveStatus(which, text, tone) {
+  const id = which === "task" ? "task-save-status" : which === "collection" ? "coll-save-status" : "exp-save-status";
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.hidden = !text;
+  el.textContent = text || "";
+  el.classList.toggle("is-ok", tone === "ok");
+  el.classList.toggle("is-error", tone === "error");
 }
 
 function bindProductWriteback() {
@@ -3155,40 +3381,69 @@ function productEditNote(before, after, edit) {
   return who + " " + edit.field + ": " + quoteValue(prev ? prev[edit.field] : edit.previous) + " → " + quoteValue(edit.value);
 }
 
+function githubContentsUrl() {
+  return "https://api.github.com/repos/" + GH_REPO + "/contents/" + GH_FILE;
+}
+
+function isShaConflict(res, body) {
+  if (!res) return false;
+  if (res.status === 409) return true;
+  const msg = String((body && (body.message || body.error)) || "");
+  return res.status >= 400 && /sha/i.test(msg);
+}
+
+async function readGithubState(token) {
+  const res = await fetch(githubContentsUrl() + "?ref=" + encodeURIComponent(GH_BRANCH), {
+    headers: githubHeaders(token),
+    cache: "no-store"
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.message || ("GitHub read failed (" + res.status + ")"));
+  const text = new TextDecoder().decode(base64ToBytes(body.content));
+  return { sha: body.sha, state: JSON.parse(text) };
+}
+
+async function writeGithubState(token, sha, state, message) {
+  const content = JSON.stringify(state, null, 2) + "\n";
+  const res = await fetch(githubContentsUrl(), {
+    method: "PUT",
+    headers: githubHeaders(token),
+    body: JSON.stringify({
+      message: message,
+      content: bytesToBase64(new TextEncoder().encode(content)),
+      sha: sha,
+      branch: GH_BRANCH
+    })
+  });
+  const body = await res.json().catch(() => ({}));
+  return { res: res, body: body };
+}
+
+function queueGithubWrite(run, surface) {
+  githubWritesPending++;
+  githubWriteQueue = githubWriteQueue.then(async () => {
+    try {
+      await run();
+    } catch (err) {
+      console.error(err);
+      const message = (err && err.message) ? err.message : "GitHub write-back failed";
+      setWritebackStatus(message);
+      if (surface) setSaveStatus(surface, message, "error");
+      alert("Saved in this browser, but GitHub write-back failed: " + message);
+    } finally {
+      githubWritesPending--;
+    }
+  });
+  return githubWriteQueue;
+}
+
 async function commitProductEdit(edit) {
   const token = readWritebackToken();
   if (!token) {
     setWritebackStatus("Saved in this browser only. Save a fine-grained PAT to commit product edits to main.");
     return;
   }
-  const url = "https://api.github.com/repos/" + GH_REPO + "/contents/" + GH_FILE;
-  const readFile = async () => {
-    const res = await fetch(url + "?ref=" + encodeURIComponent(GH_BRANCH), {
-      headers: githubHeaders(token),
-      cache: "no-store"
-    });
-    const body = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(body.message || ("GitHub read failed (" + res.status + ")"));
-    const text = new TextDecoder().decode(base64ToBytes(body.content));
-    return { sha: body.sha, state: JSON.parse(text) };
-  };
-  const writeFile = async (sha, state, message) => {
-    const content = JSON.stringify(state, null, 2) + "\n";
-    const res = await fetch(url, {
-      method: "PUT",
-      headers: githubHeaders(token),
-      body: JSON.stringify({
-        message: "Products: " + message,
-        content: bytesToBase64(new TextEncoder().encode(content)),
-        sha: sha,
-        branch: GH_BRANCH
-      })
-    });
-    const body = await res.json().catch(() => ({}));
-    return { res, body };
-  };
-
-  let file = await readFile();
+  let file = await readGithubState(token);
   let products = applyProductEdit(file.state.products, edit);
   let note = productEditNote(file.state.products, products, edit);
   if (JSON.stringify(file.state.products) === JSON.stringify(products)) {
@@ -3198,15 +3453,15 @@ async function commitProductEdit(edit) {
   file.state.products = products;
   file.state.updated = istStamp();
   file.state.updatedBy = "products-writeback";
-  let saved = await writeFile(file.sha, file.state, note);
-  if (saved.res.status === 409) {
-    file = await readFile();
+  let saved = await writeGithubState(token, file.sha, file.state, "Products: " + note);
+  if (isShaConflict(saved.res, saved.body)) {
+    file = await readGithubState(token);
     products = applyProductEdit(file.state.products, edit);
     note = productEditNote(file.state.products, products, edit);
     file.state.products = products;
     file.state.updated = istStamp();
     file.state.updatedBy = "products-writeback";
-    saved = await writeFile(file.sha, file.state, note);
+    saved = await writeGithubState(token, file.sha, file.state, "Products: " + note);
   }
   if (!saved.res.ok) throw new Error(saved.body.message || ("GitHub commit failed (" + saved.res.status + ")"));
   const sha = saved.body.commit && saved.body.commit.sha;
@@ -3214,13 +3469,76 @@ async function commitProductEdit(edit) {
 }
 
 function queueProductWrite(edit) {
-  productWriteQueue = productWriteQueue.then(() => commitProductEdit(edit)).catch(err => {
-    console.error(err);
-    const message = (err && err.message) ? err.message : "GitHub write-back failed";
-    setWritebackStatus(message);
-    alert("Saved in this browser, but GitHub write-back failed: " + message);
-  });
-  return productWriteQueue;
+  return queueGithubWrite(() => commitProductEdit(edit));
+}
+
+function statusCommitNote(beforeRow, edit) {
+  const previous = beforeRow && Object.prototype.hasOwnProperty.call(beforeRow, edit.field) ? beforeRow[edit.field] : edit.previous;
+  return edit.id + " " + edit.field + ": " + quoteValue(previous) + " → " + quoteValue(edit.value);
+}
+
+function applyStatusCommit(state, edit) {
+  if (edit.kind === "task") state.taskEdits = mergeEditField(state.taskEdits, edit.id, edit.field, edit.value);
+  else state.edits = mergeEditField(state.edits, edit.id, edit.field, edit.value);
+  state.updated = new Date().toISOString();
+  state.updatedBy = "utkarsh-dashboard";
+  return state;
+}
+
+async function commitStatusEdit(edit) {
+  const token = readWritebackToken();
+  if (!token) {
+    setSaveStatus(edit.surface, BROWSER_ONLY_STATUS);
+    setWritebackStatus(BROWSER_ONLY_STATUS);
+    return;
+  }
+  const prefix = edit.kind === "task" ? "Tasks: " : "Experiments: ";
+  let file = await readGithubState(token);
+  const bucket = edit.kind === "task" ? (file.state.taskEdits || {}) : (file.state.edits || {});
+  const before = bucket[edit.id];
+  const previous = before && Object.prototype.hasOwnProperty.call(before, edit.field) ? before[edit.field] : edit.previous;
+  if (previous === edit.value) {
+    setSaveStatus(edit.surface, "Already on main.", "ok");
+    setWritebackStatus("Already on main.");
+    return;
+  }
+  applyStatusCommit(file.state, edit);
+  let note = statusCommitNote(before, edit);
+  let saved = await writeGithubState(token, file.sha, file.state, prefix + note);
+  if (isShaConflict(saved.res, saved.body)) {
+    file = await readGithubState(token);
+    const retryBucket = edit.kind === "task" ? (file.state.taskEdits || {}) : (file.state.edits || {});
+    const retryBefore = retryBucket[edit.id];
+    const retryPrevious = retryBefore && Object.prototype.hasOwnProperty.call(retryBefore, edit.field) ? retryBefore[edit.field] : edit.previous;
+    if (retryPrevious === edit.value) {
+      baseEdits = cloneEditMap(file.state.edits);
+      baseTaskEdits = cloneEditMap(file.state.taskEdits);
+      setSaveStatus(edit.surface, "Already on main.", "ok");
+      setWritebackStatus("Already on main.");
+      return;
+    }
+    applyStatusCommit(file.state, edit);
+    note = statusCommitNote(retryBefore, edit);
+    saved = await writeGithubState(token, file.sha, file.state, prefix + note);
+  }
+  if (!saved.res.ok) throw new Error(saved.body.message || ("GitHub commit failed (" + saved.res.status + ")"));
+  baseEdits = cloneEditMap(file.state.edits);
+  baseTaskEdits = cloneEditMap(file.state.taskEdits);
+  const sha = saved.body.commit && saved.body.commit.sha;
+  const okText = sha ? ("Committed " + sha.slice(0, 7) + " to main. " + note) : ("Committed to main. " + note);
+  setSaveStatus(edit.surface, okText, "ok");
+  setWritebackStatus(okText);
+  if (file.state.updated) stampUpdated(file.state.updated);
+}
+
+function queueStatusWrite(edit) {
+  if (!readWritebackToken()) {
+    setSaveStatus(edit.surface, BROWSER_ONLY_STATUS);
+    setWritebackStatus(BROWSER_ONLY_STATUS);
+    return Promise.resolve();
+  }
+  setSaveStatus(edit.surface, "Committing " + edit.id + " " + edit.field + " to main…");
+  return queueGithubWrite(() => commitStatusEdit(edit), edit.surface);
 }
 
 async function boot() {
@@ -3238,6 +3556,7 @@ async function boot() {
     metrics = applyMetricEdits(state.metrics);
     initCollectionCommerce(state.collectionCommerce || {});
     products = resolveProducts(state);
+    captureEditBases(state);
     if (state.updated) SEED.updated = new Date(state.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
   } catch (err) {
     console.warn("Boot failed — using seed / localStorage", err);
@@ -3255,6 +3574,7 @@ async function boot() {
       if (typeof applyMetricEdits === "function") metrics = applyMetricEdits(local.metrics);
       initCollectionCommerce(local.collectionCommerce || {});
       products = resolveProducts(local);
+      captureEditBases(local);
       if (local.updated) SEED.updated = new Date(local.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
     } else {
       initCardDates({});
@@ -3269,8 +3589,10 @@ async function boot() {
   setView("launch");
   renderLaunch();
   async function refreshFromServer(forceRender) {
+    if (githubWritesPending > 0) return;
     try {
       const state = await fetchState();
+      captureEditBases(state);
       const nextExp = applyExpEdits(state.edits || {});
       const nextTasks = applyTaskEdits(state.taskEdits || {});
       const expChanged = JSON.stringify(nextExp.map(e => [e.id,e.stage,e.status])) !== JSON.stringify(experiments.map(e => [e.id,e.stage,e.status]));
