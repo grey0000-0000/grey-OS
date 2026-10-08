@@ -97,11 +97,27 @@
       "priority": "Medium"
     },
     "film-script": {
-      "status": "In progress",
+      "status": "Done",
       "due": "2026-10-06",
       "priority": "Critical",
       "blocker": "",
-      "notes": "CD 6 Oct — today's third focus is map the film base so exactly what's needed for the film is known; then finalize script. Execution layers: (1) infographic stills, (2) video treatment + video bank. Visual direction exists; execute, don't invent from scratch."
+      "notes": "CD 8 Oct — film base mapped; Done."
+    },
+    "film-assets": {
+      "status": "In progress",
+      "due": "2026-10-08",
+      "priority": "Critical",
+      "blocker": "",
+      "owner": "Utkarsh",
+      "notes": "CD 8 Oct — today's work."
+    },
+    "film-treatment": {
+      "status": "In progress",
+      "due": "2026-10-08",
+      "priority": "Critical",
+      "blocker": "",
+      "owner": "Utkarsh",
+      "notes": "CD 8 Oct — today's work."
     },
     "film-higgs": {
       "status": "Not started",
@@ -257,7 +273,15 @@
       "due": "2026-10-06",
       "blocker": "",
       "owner": "Utkarsh + Operations",
-      "notes": "CD 6 Oct — today's second focus: one product end-to-end through the image pipeline to prove the look before tomorrow's batch shoot. Batch shoot waits on this proof."
+      "notes": "CD 8 Oct — very close to closing; batch shoot of remaining products follows tomorrow."
+    },
+    "sel-shoot-remaining": {
+      "status": "Not started",
+      "priority": "Critical",
+      "due": "2026-10-09",
+      "blocker": "",
+      "owner": "Utkarsh",
+      "notes": "CD 8 Oct — tomorrow, Fri 9 Oct."
     },
     "web-last-mile": {
       "status": "Not started",
@@ -779,6 +803,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-08T10:06:21+05:30",
+  "updated": "2026-10-08T18:42:38+05:30",
   "updatedBy": "orchestrator"
 }
