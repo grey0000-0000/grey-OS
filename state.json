@@ -125,11 +125,11 @@
       "notes": "CD 6 Oct — off today's soft-launch focus. Not part of the run to Sunday 11 Oct."
     },
     "sel-list": {
-      "status": "Not started",
+      "status": "Done",
       "priority": "Medium",
       "due": "2026-10-12",
       "blocker": "",
-      "notes": "CD 6 Oct — not today's focus. Trails the image pipeline; not on the three-item focus for 6 Oct."
+      "notes": "7 Oct: product list finalized with CD — 17 rows on the Products tab (titles, Selection / One of None collections, Product Ready, quantities, INR prices, weights) landed on main at 07db592. Arsenal Cards is the only row not ready; Onra Vinyl Set, A Cold Wall x Nike shoes and the Boy Better Know jacket are quantity 0 / not for sale."
     },
     "sel-photo-approach": {
       "status": "In progress",
@@ -146,8 +146,10 @@
       "notes": "CD 6 Oct — product stills and ComfyUI setup are one run. Batch shoot starts once the one-product proof locks the look (target 7 Oct); ComfyUI chain then makes website-ready assets. Bags shoot rides this same photography/ComfyUI run (oon-bags-photo)."
     },
     "sel-shopify": {
-      "status": "Not started",
-      "priority": "Low"
+      "status": "In progress",
+      "priority": "Low",
+      "blocker": "Shopify Admin API access token (shpat…) with write_products + write_inventory — the token pasted on 7 Oct was an app automation token (atkn…) and returned 401 on jrbwdn-zv.myshopify.com",
+      "notes": "7 Oct: picked up — creating the 17 board products as Shopify drafts (not live on any channel); paused until the Admin API token is in. Captions and images still trail the batch shoot + ComfyUI chain."
     },
     "sel-site-fetch": {
       "status": "Not started",
@@ -777,6 +779,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-07T17:20:07+05:30",
+  "updated": "2026-10-08T10:06:21+05:30",
   "updatedBy": "orchestrator"
 }
