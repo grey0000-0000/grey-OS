@@ -774,7 +774,7 @@
       "productType": "vinyl",
       "productReady": true,
       "tags": "kanye-west, mbdtf, vinyl, hip-hop, limited, george-condo",
-      "price": "6999",
+      "price": "7777",
       "compareAtPrice": "",
       "sku": "GREY-OBJ-009",
       "barcode": "2000000000091",
@@ -1058,6 +1058,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:00:57+05:30",
+  "updated": "2026-10-11T01:01:20+05:30",
   "updatedBy": "orchestrator"
 }
