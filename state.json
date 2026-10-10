@@ -786,18 +786,18 @@
     },
     {
       "id": "product-11",
-      "title": "Rick Owens × Dr. Martens Boots",
+      "title": "Rick Owens × Dr. Martens 1460 Jumbo Lace Boots",
       "description": "Rick's lacing on a Doc's sole.",
       "sequence": 8,
       "shortDescription": "Rick's lacing on a Doc's sole.",
-      "fullDescription": "Rick Owens and Dr. Martens: the Californian-in-Paris goth tailor wrapping his dramatic lacing around Dr. Martens' Goodyear-welted boots, co-branded on the sockliner and heel loop. A collaboration that ran across several drops from 2021.",
-      "year": "2021–2022 (model to confirm)",
+      "fullDescription": "Rick Owens and Dr. Martens' 1460 Jumbo Lace, from their October 2022 drop. Matte black leather on a Quad platform sole with yellow welt stitching, an extended tongue rising past the collar, a side zip, and oversized grey jumbo laces wrapped around the ankle in Rick's signature way. The heel loop carries the co-branded pull tab.",
+      "year": "2022",
       "city": "",
       "origin": "Rick Owens (Paris) × Dr. Martens (UK)",
-      "medium": "Leather upper, Goodyear-welted AirWair sole, Rick Owens lacing",
+      "medium": "Matte black leather upper, Quad platform AirWair sole, side zip, jumbo laces",
       "dimensions": "",
       "saleStatus": "Collect",
-      "condition": "",
+      "condition": "Pre-owned, clean; sole and uppers in good shape.",
       "editionSize": "Collaboration release",
       "unit": "1 pair",
       "process": "",
@@ -816,7 +816,7 @@
       "availableForSale": true,
       "weight": "1200",
       "imageSrc": "",
-      "imageAlt": ""
+      "imageAlt": "Black Rick Owens x Dr. Martens 1460 Jumbo Lace boots with grey laces wrapped around the ankle and a platform sole"
     },
     {
       "id": "product-13",
@@ -990,6 +990,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:27:57+05:30",
+  "updated": "2026-10-11T01:28:29+05:30",
   "updatedBy": "orchestrator"
 }
