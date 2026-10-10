@@ -792,12 +792,12 @@
       "shortDescription": "A work boot, raised and wrapped in Rick's laces.",
       "fullDescription": "Rick Owens and Dr. Martens' Fall/Winter 2025 steel toe boot: a traditional work boot subverted. Black waxy, matte leather over a hardened steel toe cap, eleven eyelets and speed hooks, an exaggerated geometric tongue, and Rick's extra-long wraparound laces circling the ankle. Brushed silver inner zip and hardware, a custom AirWair heel loop, and a towering Quad platform sole held with pearl welt stitching.",
       "year": "2025 (FW25)",
-      "city": "",
+      "city": "London (purchased)",
       "origin": "Rick Owens Dark Shadow (Paris) × Dr. Martens (UK)",
       "medium": "Waxy black leather upper, steel toe cap, Quad platform sole, palladium hardware, side zip, wraparound laces",
       "dimensions": "",
       "saleStatus": "Collect",
-      "condition": "Pre-owned, clean; uppers and sole in good shape.",
+      "condition": "10/10. New, unworn, clean.",
       "editionSize": "FW25 collaboration release, style 41819001",
       "unit": "1 pair",
       "process": "",
@@ -808,7 +808,7 @@
       "productType": "shoes",
       "productReady": true,
       "tags": "rick-owens, dr-martens, boots, footwear, collaboration, avant-garde",
-      "price": "4899",
+      "price": "44999",
       "compareAtPrice": "",
       "sku": "GREY-OBJ-011",
       "barcode": "2000000000114",
@@ -990,6 +990,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:32:59+05:30",
+  "updated": "2026-10-11T01:34:11+05:30",
   "updatedBy": "orchestrator"
 }
