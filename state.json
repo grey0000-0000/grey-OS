@@ -694,7 +694,7 @@
       "origin": "Ireland (All City Records)",
       "medium": "3×2LP with triptych covers, bonus stamped 7-inch (45), limited edition 60×30 cm poster, jute bag",
       "dimensions": "12-inch box set",
-      "saleStatus": "Collect",
+      "saleStatus": "Not for sale",
       "condition": "Two of the three double albums opened, one still sealed; the limited poster and the bonus 45 still sealed; jute bag included.",
       "editionSize": "Limited to 300",
       "unit": "1 box set",
@@ -711,7 +711,7 @@
       "sku": "GREY-OBJ-007",
       "barcode": "2000000000077",
       "inventoryQty": "0",
-      "availableForSale": true,
+      "availableForSale": false,
       "weight": "500",
       "imageSrc": "",
       "imageAlt": ""
@@ -898,7 +898,7 @@
       "origin": "UK (Corteiz × Boy Better Know)",
       "medium": "Crinkle nylon shell with mesh panels, reflective piping, appliqué back lettering",
       "dimensions": "Size M (Medium)",
-      "saleStatus": "Collect",
+      "saleStatus": "Not for sale",
       "condition": "Pre-owned, clean; lettering and piping intact.",
       "editionSize": "Limited collaboration drop",
       "unit": "1 jacket",
@@ -915,7 +915,7 @@
       "sku": "GREY-OBJ-013",
       "barcode": "2000000000138",
       "inventoryQty": "1",
-      "availableForSale": true,
+      "availableForSale": false,
       "weight": "800",
       "imageSrc": "",
       "imageAlt": "Black Corteiz x Boy Better Know nylon and mesh track jacket, BOY BETTER KNOW lettering on the back"
@@ -1058,6 +1058,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:19:17+05:30",
+  "updated": "2026-10-11T01:19:48+05:30",
   "updatedBy": "orchestrator"
 }
