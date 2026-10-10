@@ -581,7 +581,7 @@
       "year": "1994",
       "origin": "UK",
       "medium": "Hardcover with dust jacket, approx. 79 pp., colour plates from the Bridgeman Art Library",
-      "dimensions": "",
+      "dimensions": "21 × 20 × 1.5 cm (hardcover, 79 pages)",
       "saleStatus": "Collect",
       "condition": "9/10",
       "editionSize": "1 (one-off)",
@@ -945,6 +945,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:37:08+05:30",
+  "updated": "2026-10-11T01:39:02+05:30",
   "updatedBy": "orchestrator"
 }
