@@ -28,3 +28,45 @@ Each commit fetches the latest `state.json` and its sha, merges that one field, 
 6. The token is stored only in that browser’s `localStorage` key `grey-os-github-token`. It is not written to the repo. **Forget** removes it. Revoke the token on GitHub to cut off access.
 
 Without a token, a task or experiment status change stays in this browser and the table says so. Reload keeps that newer status instead of reverting to `state.json`. With a token, the same change is committed to `main` and shows a short success or failure line under the table.
+
+## Product schema
+
+Each object in `products` is one listing row. The soft-launch list is SKU `GREY-OBJ-001` through `GREY-OBJ-017`.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `id` | string | Stable row id (`product-1` …). |
+| `title` | string | Listing title. |
+| `description` | string | Existing short line. When `shortDescription` is set, `description` matches it. |
+| `sequence` | integer or null | Order within a collection. Empty until assigned. The column header sorts by this integer. |
+| `shortDescription` | string | Short listing copy. |
+| `fullDescription` | string | Long listing copy. |
+| `year` | string | Date or range, free text. |
+| `city` | string | |
+| `origin` | string | |
+| `medium` | string | |
+| `dimensions` | string | |
+| `saleStatus` | string | Dropdown: Collect, Collected, Make a bid, Request availability, Customize, Not for sale. More options may be added later. |
+| `editionSize` | string | |
+| `unit` | string | |
+| `process` | string | |
+| `story` | string | |
+| `shippingReturns` | string | |
+| `vendor` | string | |
+| `collection` | string | `selection` or `one of none` on the current list. |
+| `productType` | string | |
+| `productReady` | boolean | |
+| `tags` | string | Comma-separated. |
+| `price` | string | INR. |
+| `compareAtPrice` | string | INR. Empty when unset. |
+| `sku` | string | |
+| `barcode` | string | |
+| `inventoryQty` | string | |
+| `availableForSale` | boolean | |
+| `weight` | string | Grams. |
+| `imageSrc` | string | |
+| `imageAlt` | string | |
+
+In the Products table, `sequence` through `shippingReturns` are editable columns placed immediately after Description, in the order listed above. `description` stays in its current column.
+
+Default row order is collection, then sequence (empty sequences last), then SKU. A cell edit on any of these fields, including the new ones, commits through the same GitHub write-back as the other product cells.

@@ -898,6 +898,8 @@
   #view-products textarea.task-cell-input {
     min-height: 68px; resize: vertical; font-weight: 400;
   }
+  #view-products th.sortable { cursor: pointer; }
+  #view-products th.sortable .sort-mark { letter-spacing: 0; text-transform: none; }
   #view-products .product-num { min-width: 88px; font-variant-numeric: tabular-nums; }
   #view-products .product-ready-cell { text-align: center; vertical-align: middle; }
   #view-products .product-ready { width: 16px; height: 16px; accent-color: #cfcfc8; cursor: pointer; }
@@ -1358,7 +1360,7 @@
         <div class="biz-toolbar">
           <div>
             <h3 style="margin:0">Products</h3>
-            <p class="biz-note" style="margin-top:8px;margin-bottom:0">Shopify listing fields. Price is INR. Weight is grams. For sale is off, with quantity 0 and an empty price, when a row is not for sale.</p>
+            <p class="biz-note" style="margin-top:8px;margin-bottom:0">Shopify listing fields. Price is INR. Weight is grams. For sale is off, with quantity 0 and an empty price, when a row is not for sale. Default order is collection, then sequence, then SKU.</p>
           </div>
           <button type="button" class="btn-add" id="btn-add-product">Add product</button>
         </div>
@@ -1371,6 +1373,20 @@
               <tr>
                 <th data-w="180">Title</th>
                 <th data-w="260">Description</th>
+                <th data-w="96" data-sort="sequence" class="sortable" tabindex="0" aria-sort="none">Sequence<span class="sort-mark" id="sequence-sort-mark"></span></th>
+                <th data-w="260">Short description</th>
+                <th data-w="320">Full description</th>
+                <th data-w="140">Year</th>
+                <th data-w="120">City</th>
+                <th data-w="120">Origin</th>
+                <th data-w="240">Medium</th>
+                <th data-w="280">Dimensions</th>
+                <th data-w="200">Sale status</th>
+                <th data-w="200">Edition size</th>
+                <th data-w="160">Unit</th>
+                <th data-w="220">Process</th>
+                <th data-w="240">Story</th>
+                <th data-w="220">Shipping &amp; returns</th>
                 <th data-w="96">Vendor</th>
                 <th data-w="120">Collection</th>
                 <th data-w="130">Product type</th>
@@ -3112,9 +3128,26 @@ function addMetric() {
   persistAll().then(renderBusiness).catch(err => alert("Could not add metric"));
 }
 
+// Sale status dropdown. More options may be added later.
+const SALE_STATUSES = ["Collect", "Collected", "Make a bid", "Request availability", "Customize", "Not for sale"];
+
 const PRODUCT_FIELDS = [
   { key: "title", label: "Title" },
   { key: "description", label: "Description", area: true },
+  { key: "sequence", label: "Sequence", integer: true, sortable: true },
+  { key: "shortDescription", label: "Short description", area: true },
+  { key: "fullDescription", label: "Full description", area: true },
+  { key: "year", label: "Year" },
+  { key: "city", label: "City" },
+  { key: "origin", label: "Origin" },
+  { key: "medium", label: "Medium", area: true },
+  { key: "dimensions", label: "Dimensions", area: true },
+  { key: "saleStatus", label: "Sale status", options: SALE_STATUSES },
+  { key: "editionSize", label: "Edition size" },
+  { key: "unit", label: "Unit" },
+  { key: "process", label: "Process", area: true },
+  { key: "story", label: "Story", area: true },
+  { key: "shippingReturns", label: "Shipping & returns", area: true },
   { key: "vendor", label: "Vendor" },
   { key: "collection", label: "Collection" },
   { key: "productType", label: "Product type" },
@@ -3133,28 +3166,28 @@ const PRODUCT_FIELDS = [
 
 function blankProduct(id) {
   const row = { id: id || ("product-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)) };
-  PRODUCT_FIELDS.forEach(f => { row[f.key] = f.bool ? false : ""; });
+  PRODUCT_FIELDS.forEach(f => { row[f.key] = f.bool ? false : (f.integer ? null : ""); });
   return row;
 }
 
 const LISTING_SEED = [
-  { id: "product-1", title: "French Postcards", description: "A postcard from another France.", vendor: "GREY", collection: "selection", productType: "postcards", productReady: true, tags: "french, postcard, collectible", price: "18.99", sku: "GREY-OBJ-001", barcode: "2000000000015", inventoryQty: "1", availableForSale: true, weight: "20" },
-  { id: "product-2", title: "Eastpak cap", description: "Street-ready, always.", vendor: "GREY", collection: "selection", productType: "caps", productReady: true, tags: "eastpak, cap, streetwear", price: "15.99", sku: "GREY-OBJ-002", barcode: "2000000000022", inventoryQty: "1", availableForSale: true, weight: "120" },
-  { id: "product-3", title: "Second Amendment cap", description: "A quiet mark of stance.", vendor: "GREY", collection: "selection", productType: "caps", productReady: true, tags: "second-amendment, cap, collectible", price: "200", sku: "GREY-OBJ-003", barcode: "2000000000039", inventoryQty: "1", availableForSale: true, weight: "130" },
-  { id: "product-4", title: "The Life and Works of Dali", description: "The life and work, in one spine.", vendor: "GREY", collection: "selection", productType: "books", productReady: true, tags: "dali, book, art", price: "11.99", sku: "GREY-OBJ-004", barcode: "2000000000046", inventoryQty: "1", availableForSale: true, weight: "500" },
-  { id: "product-5", title: "Jacket Tote", description: "A tote cut like a jacket.", vendor: "GREY", collection: "one of none", productType: "totes", productReady: true, tags: "jacket, tote, carry", price: "64.99", sku: "GREY-OBJ-005", barcode: "2000000000053", inventoryQty: "1", availableForSale: true, weight: "400" },
-  { id: "product-6", title: "Skirt Tote", description: "Soft structure, hard to put down.", vendor: "GREY", collection: "one of none", productType: "totes", productReady: true, tags: "skirt, tote, soft", price: "42.99", sku: "GREY-OBJ-006", barcode: "2000000000060", inventoryQty: "1", availableForSale: true, weight: "350" },
-  { id: "product-7", title: "Onra Vinyl Set", description: "Limited press, with the room still in it.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "onra, vinyl, limited", price: "", sku: "GREY-OBJ-007", barcode: "2000000000077", inventoryQty: "0", availableForSale: false, weight: "500" },
-  { id: "product-8", title: "Beethoven Vinyl", description: "Hornies seven, choral, eight — Japanese press.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "beethoven, vinyl, japanese-press", price: "8999", sku: "GREY-OBJ-008", barcode: "2000000000084", inventoryQty: "1", availableForSale: true, weight: "200" },
-  { id: "product-9", title: "Kanye Vinyl", description: "My Beautiful Dark Twisted Fantasy, limited.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "kanye, vinyl, mbdtf", price: "14999", sku: "GREY-OBJ-009", barcode: "2000000000091", inventoryQty: "1", availableForSale: true, weight: "200" },
-  { id: "product-10", title: "Arsenal Cards", description: "Three cards, ready for the wall.", vendor: "GREY", collection: "one of none", productType: "cards", productReady: false, tags: "arsenal, cards, framed", price: "6999", sku: "GREY-OBJ-010", barcode: "2000000000107", inventoryQty: "1", availableForSale: true, weight: "100" },
-  { id: "product-11", title: "Rick Owens x Doc Martens Shoes", description: "Ricoh × Dick Doc Martens.", vendor: "GREY", collection: "selection", productType: "shoes", productReady: true, tags: "ricoh, doc-martens, shoes", price: "4899", sku: "GREY-OBJ-011", barcode: "2000000000114", inventoryQty: "1", availableForSale: true, weight: "1200" },
-  { id: "product-12", title: "A Cold Wall x Nike shoes", description: "Nike × A-Cold-Wall*.", vendor: "GREY", collection: "selection", productType: "shoes", productReady: true, tags: "nike, a-cold-wall, shoes", price: "", sku: "GREY-OBJ-012", barcode: "2000000000121", inventoryQty: "0", availableForSale: false, weight: "900" },
-  { id: "product-13", title: "Cortiezx", description: "Cortese × Boy Better Know.", vendor: "GREY", collection: "selection", productType: "jackets", productReady: true, tags: "cortese, boy-better-know, jacket", price: "", sku: "GREY-OBJ-013", barcode: "2000000000138", inventoryQty: "0", availableForSale: false, weight: "800" },
-  { id: "product-14", title: "YSL reversible jacket", description: "Quiet luxury, sharp edge.", vendor: "GREY", collection: "selection", productType: "jackets", productReady: true, tags: "ysl, luxury, outerwear", price: "21999", sku: "GREY-OBJ-014", barcode: "2000000000145", inventoryQty: "1", availableForSale: true, weight: "900" },
-  { id: "product-15", title: "Nils Frahm vinyl", description: "Felt piano, held close.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "nils-frahm, vinyl, piano", price: "6999", sku: "GREY-OBJ-015", barcode: "2000000000152", inventoryQty: "1", availableForSale: true, weight: "200" },
-  { id: "product-16", title: "MF Doom vinyl", description: "Metal face, on wax.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "mf-doom, vinyl, hip-hop", price: "6999", sku: "GREY-OBJ-016", barcode: "2000000000169", inventoryQty: "1", availableForSale: true, weight: "200" },
-  { id: "product-17", title: "Sampha vinyl", description: "Process, pressed quiet.", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "sampha, vinyl, soul", price: "5999", sku: "GREY-OBJ-017", barcode: "2000000000176", inventoryQty: "1", availableForSale: true, weight: "200" }
+  { id: "product-1", title: "Twenty-Four Cathedrals — ND Phot Postcard Booklet, c. 1910s", description: "Twenty-four cathedrals of France, unbroken. A complete ND Phot booklet, c. 1910s, mint, with original protective tissues.", sequence: 1, shortDescription: "Twenty-four cathedrals of France, unbroken. A complete ND Phot booklet, c. 1910s, mint, with original protective tissues.", fullDescription: "A complete souvenir booklet of twenty-four postcards, Cathédrales & Églises de France, published by Neurdein Frères under their ND Phot mark, the largest French postcard house of its day. Every card is still bound in, separated by its original protective tissues, with captions in French and English. The kraft cover carries an Art Nouveau vine border. Mint, and kept whole for about a century.", year: "c. 1906–1920s", city: "", origin: "France", medium: "Printed postcards on card stock; kraft paper cover; tissue interleaves", dimensions: "approx. 14.5 × 9.5 × 1 cm closed (estimate, pending measurement)", saleStatus: "Collect", editionSize: "1 (one-off; booklet of 24 cards)", unit: "1 booklet, 24 cards", vendor: "GREY", collection: "selection", productType: "Ephemera", productReady: true, tags: "nd-phot, neurdein-freres, france, postcards, ephemera, vintage, art-nouveau, collectible, cathedrals, 1910s", price: "2674", sku: "GREY-OBJ-001", barcode: "2000000000015", inventoryQty: "1", availableForSale: true, weight: "150" },
+  { id: "product-2", title: "Eastpak cap", description: "Street-ready, always.", sequence: 2, shortDescription: "Street-ready, always.", saleStatus: "Collect", unit: "1", vendor: "GREY", collection: "selection", productType: "caps", productReady: true, tags: "eastpak, cap, streetwear", price: "1864", sku: "GREY-OBJ-002", barcode: "2000000000022", inventoryQty: "1", availableForSale: true, weight: "120" },
+  { id: "product-3", title: "'Keep the Change' Cap, c. 2009", description: "A quiet mark of stance.", sequence: 3, shortDescription: "A quiet mark of stance.", year: "c. 2008–2010", origin: "USA", medium: "Embroidered cotton twill crown; faux-leather brim with tooled stitching", saleStatus: "Collect", unit: "1", vendor: "GREY", collection: "selection", productType: "caps", productReady: true, tags: "second-amendment, cap, collectible", price: "2145", sku: "GREY-OBJ-003", barcode: "2000000000039", inventoryQty: "1", availableForSale: true, weight: "130" },
+  { id: "product-4", title: "The Life and Works of Dalí", description: "The life and the work, in one spine.", sequence: 4, shortDescription: "The life and the work, in one spine.", year: "1994", origin: "UK (Parragon)", medium: "Hardcover with dust jacket, approx. 79 pp., colour plates from the Bridgeman Art Library", saleStatus: "Collect", unit: "1", vendor: "GREY", collection: "selection", productType: "books", productReady: true, tags: "dali, salvador-dali, art-book, surrealism, book", price: "999", sku: "GREY-OBJ-004", barcode: "2000000000046", inventoryQty: "1", availableForSale: true, weight: "500" },
+  { id: "product-5", title: "Jacket Tote", description: "A tote cut like a jacket.", saleStatus: "Collect", vendor: "GREY", collection: "one of none", productType: "totes", productReady: true, tags: "jacket, tote, carry", price: "64.99", sku: "GREY-OBJ-005", barcode: "2000000000053", inventoryQty: "1", availableForSale: true, weight: "400" },
+  { id: "product-6", title: "Skirt Tote", description: "Soft structure, hard to put down.", saleStatus: "Collect", vendor: "GREY", collection: "one of none", productType: "totes", productReady: true, tags: "skirt, tote, soft", price: "42.99", sku: "GREY-OBJ-006", barcode: "2000000000060", inventoryQty: "1", availableForSale: true, weight: "350" },
+  { id: "product-7", title: "Onra — Chinoiseries Pt. 1, 2 & 3 (Limited Box, 300 copies)", description: "Limited press, with the room still in it.", sequence: 5, shortDescription: "Limited press, with the room still in it.", fullDescription: "The Chinoiseries trilogy in one limited box: three double albums of beats built from Chinese and Asian records, with triptych covers, a stamped bonus 45 of four exclusive tracks, a limited edition 60×30 cm poster and a jute bag. All City Records, 2017. One of 300.", year: "2017", origin: "Ireland (All City Records)", medium: "3×2LP with triptych covers, bonus stamped 7-inch (45), limited edition 60×30 cm poster, jute bag", saleStatus: "Not for sale", editionSize: "Limited to 300", unit: "1 box set", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "onra, chinoiseries, vinyl, box-set, limited, all-city-records, instrumental-hip-hop", price: "24999", sku: "GREY-OBJ-007", barcode: "2000000000077", inventoryQty: "0", availableForSale: false, weight: "500" },
+  { id: "product-8", title: "Beethoven: Symphonies Nos. 9 'Choral' and 8, Schmidt-Isserstedt, Vienna Philharmonic, Super Analogue Disc, Japan", description: "The Ninth and the Eighth, Vienna 1965. Japanese Super Analogue pressing, sealed.", sequence: 6, shortDescription: "The Ninth and the Eighth, Vienna 1965. Japanese Super Analogue pressing, sealed.", fullDescription: "Beethoven's Ninth and Eighth Symphonies: Hans Schmidt-Isserstedt and the Vienna Philharmonic, with Joan Sutherland and Marilyn Horne, recorded in Vienna in 1965. This is the 1989 Japanese London Records Super Analogue Disc edition on two heavyweight records, still sealed, with its obi strip.", year: "1989 pressing (recorded 1965, Vienna)", origin: "Japan (London Records)", medium: "2× heavyweight LP, sealed, with obi strip; catalogue 310R-56001/2", saleStatus: "Collect", unit: "1", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "beethoven, vinyl, classical, japanese-press, super-analogue-disc, schmidt-isserstedt, vienna-philharmonic, sealed", price: "14999", sku: "GREY-OBJ-008", barcode: "2000000000084", inventoryQty: "1", availableForSale: true, weight: "200" },
+  { id: "product-9", title: "Kanye Vinyl", description: "My Beautiful Dark Twisted Fantasy, limited.", sequence: 7, shortDescription: "My Beautiful Dark Twisted Fantasy, limited.", saleStatus: "Collect", unit: "1", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "kanye, vinyl, mbdtf", price: "14999", sku: "GREY-OBJ-009", barcode: "2000000000091", inventoryQty: "1", availableForSale: true, weight: "200" },
+  { id: "product-10", title: "Arsenal Cards", description: "Three cards, ready for the wall.", saleStatus: "Collect", vendor: "GREY", collection: "one of none", productType: "cards", productReady: false, tags: "arsenal, cards, framed", price: "6999", sku: "GREY-OBJ-010", barcode: "2000000000107", inventoryQty: "1", availableForSale: true, weight: "100" },
+  { id: "product-11", title: "Rick Owens x Doc Martens Shoes", description: "Ricoh × Dick Doc Martens.", sequence: 8, shortDescription: "Ricoh × Dick Doc Martens.", saleStatus: "Collect", unit: "1", vendor: "GREY", collection: "selection", productType: "shoes", productReady: true, tags: "ricoh, doc-martens, shoes", price: "4899", sku: "GREY-OBJ-011", barcode: "2000000000114", inventoryQty: "1", availableForSale: true, weight: "1200" },
+  { id: "product-12", title: "A Cold Wall x Nike shoes", description: "Nike × A-Cold-Wall*.", sequence: 9, shortDescription: "Nike × A-Cold-Wall*.", saleStatus: "Not for sale", unit: "1", vendor: "GREY", collection: "selection", productType: "shoes", productReady: true, tags: "nike, a-cold-wall, shoes", price: "", sku: "GREY-OBJ-012", barcode: "2000000000121", inventoryQty: "0", availableForSale: false, weight: "900" },
+  { id: "product-13", title: "Cortiezx", description: "Cortese × Boy Better Know.", sequence: 10, shortDescription: "Cortese × Boy Better Know.", saleStatus: "Not for sale", unit: "1", vendor: "GREY", collection: "selection", productType: "jackets", productReady: true, tags: "cortese, boy-better-know, jacket", price: "", sku: "GREY-OBJ-013", barcode: "2000000000138", inventoryQty: "0", availableForSale: false, weight: "800" },
+  { id: "product-14", title: "YSL reversible jacket", description: "Quiet luxury, sharp edge.", sequence: 11, shortDescription: "Quiet luxury, sharp edge.", saleStatus: "Collect", unit: "1", vendor: "GREY", collection: "selection", productType: "jackets", productReady: true, tags: "ysl, luxury, outerwear", price: "21999", sku: "GREY-OBJ-014", barcode: "2000000000145", inventoryQty: "1", availableForSale: true, weight: "900" },
+  { id: "product-15", title: "Nils Frahm vinyl", description: "Felt piano, held close.", sequence: 12, shortDescription: "Felt piano, held close.", saleStatus: "Collect", unit: "1", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "nils-frahm, vinyl, piano", price: "6999", sku: "GREY-OBJ-015", barcode: "2000000000152", inventoryQty: "1", availableForSale: true, weight: "200" },
+  { id: "product-16", title: "MF Doom vinyl", description: "Metal face, on wax.", sequence: 13, shortDescription: "Metal face, on wax.", saleStatus: "Collect", unit: "1", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "mf-doom, vinyl, hip-hop", price: "6999", sku: "GREY-OBJ-016", barcode: "2000000000169", inventoryQty: "1", availableForSale: true, weight: "200" },
+  { id: "product-17", title: "Sampha vinyl", description: "Process, pressed quiet.", sequence: 14, shortDescription: "Process, pressed quiet.", saleStatus: "Collect", unit: "1", vendor: "GREY", collection: "selection", productType: "vinyl", productReady: true, tags: "sampha, vinyl, soul", price: "5999", sku: "GREY-OBJ-017", barcode: "2000000000176", inventoryQty: "1", availableForSale: true, weight: "200" }
 ];
 const STARTER_PRODUCTS = LISTING_SEED.map(seed => Object.assign(blankProduct(seed.id), seed));
 let products = STARTER_PRODUCTS.map(p => ({ ...p }));
@@ -3175,10 +3208,83 @@ function normalizeProducts(list) {
       PRODUCT_FIELDS.forEach(f => {
         if (p[f.key] == null) return;
         if (f.bool) row[f.key] = p[f.key] === true || p[f.key] === "true";
+        else if (f.integer) {
+          const n = typeof p[f.key] === "number" ? p[f.key] : Number(String(p[f.key]).trim());
+          row[f.key] = Number.isInteger(n) ? n : null;
+        }
         else row[f.key] = String(p[f.key]);
       });
     }
     return row;
+  });
+}
+
+let productSort = { key: "default", dir: 1 };
+
+function sequenceValue(row) {
+  if (!row || row.sequence == null || row.sequence === "") return null;
+  const n = Number(row.sequence);
+  return Number.isInteger(n) ? n : null;
+}
+
+function compareSku(a, b) {
+  return String(a.sku || "").localeCompare(String(b.sku || ""), undefined, { numeric: true, sensitivity: "base" });
+}
+
+function compareCollection(a, b) {
+  return String(a.collection || "").localeCompare(String(b.collection || ""), undefined, { sensitivity: "base" });
+}
+
+function compareSequence(a, b, dir) {
+  const as = sequenceValue(a);
+  const bs = sequenceValue(b);
+  if (as == null && bs == null) return 0;
+  if (as == null) return 1;
+  if (bs == null) return -1;
+  return (as - bs) * dir;
+}
+
+function compareProducts(a, b) {
+  if (productSort.key === "sequence") {
+    return compareSequence(a, b, productSort.dir) || compareCollection(a, b) || compareSku(a, b);
+  }
+  return compareCollection(a, b) || compareSequence(a, b, 1) || compareSku(a, b);
+}
+
+function updateSequenceSortMark() {
+  const th = document.querySelector('#product-table th[data-sort="sequence"]');
+  const mark = document.getElementById("sequence-sort-mark");
+  if (!th || !mark) return;
+  if (productSort.key !== "sequence") {
+    th.setAttribute("aria-sort", "none");
+    mark.textContent = "";
+    return;
+  }
+  const asc = productSort.dir === 1;
+  th.setAttribute("aria-sort", asc ? "ascending" : "descending");
+  mark.textContent = asc ? " ↑" : " ↓";
+}
+
+function cycleProductSort() {
+  if (productSort.key !== "sequence") productSort = { key: "sequence", dir: 1 };
+  else if (productSort.dir === 1) productSort = { key: "sequence", dir: -1 };
+  else productSort = { key: "default", dir: 1 };
+  renderProducts();
+}
+
+function bindProductSort() {
+  const th = document.querySelector('#product-table th[data-sort="sequence"]');
+  if (!th || th.dataset.sortBound === "1") return;
+  th.dataset.sortBound = "1";
+  th.title = "Sort by sequence. Default order is collection, then sequence, then SKU.";
+  th.addEventListener("click", (ev) => {
+    if (ev.target.closest(".col-resize-handle")) return;
+    cycleProductSort();
+  });
+  th.addEventListener("keydown", (ev) => {
+    if (ev.key !== "Enter" && ev.key !== " ") return;
+    ev.preventDefault();
+    cycleProductSort();
   });
 }
 
@@ -3198,30 +3304,53 @@ function renderProducts(focusId) {
   if (!tbody) return;
   if (count) count.textContent = products.length === 1 ? "1 row" : products.length + " rows";
   if (empty) empty.hidden = products.length > 0;
-  tbody.innerHTML = products.map(p => {
+  updateSequenceSortMark();
+  const visible = products.slice().sort(compareProducts);
+  tbody.innerHTML = visible.map(p => {
     const cells = PRODUCT_FIELDS.map(f => {
       if (f.bool) {
         const on = p[f.key] === true ? " checked" : "";
         return `<td class="product-ready-cell"><input type="checkbox" class="product-ready" data-product-field="${f.key}" data-id="${escHtml(p.id)}" aria-label="${escHtml(f.label)}"${on} /></td>`;
       }
-      const val = escHtml(p[f.key]);
+      if (f.options) {
+        const current = p[f.key] == null ? "" : String(p[f.key]);
+        const options = current && !f.options.includes(current) ? [current, ...f.options] : f.options;
+        const opts = options.map(o => `<option value="${escHtml(o)}"${current === o ? " selected" : ""}>${escHtml(o)}</option>`).join("");
+        const emptyAttr = current === "" ? " data-empty=\"1\"" : "";
+        return `<td><select class="cell-select" data-product-field="${f.key}" data-id="${escHtml(p.id)}" aria-label="${escHtml(f.label)}"${emptyAttr}>${opts}</select></td>`;
+      }
+      const shown = f.integer && (p[f.key] == null || p[f.key] === "") ? "" : p[f.key];
+      const val = escHtml(shown);
       const ph = f.placeholder ? ` placeholder="${escHtml(f.placeholder)}"` : "";
       const mode = f.inputmode ? ` inputmode="${f.inputmode}"` : "";
-      const num = f.numeric ? " product-num" : "";
+      const num = f.numeric || f.integer ? " product-num" : "";
       if (f.area) {
         return `<td><textarea class="task-cell-input" data-product-field="${f.key}" data-id="${escHtml(p.id)}" aria-label="${escHtml(f.label)}" rows="3">${val}</textarea></td>`;
       }
-      return `<td><input class="task-cell-input${num}" data-product-field="${f.key}" data-id="${escHtml(p.id)}" aria-label="${escHtml(f.label)}" value="${val}"${ph}${mode} /></td>`;
+      const step = f.integer ? " type=\"number\" step=\"1\"" : "";
+      const integerMode = f.integer ? " inputmode=\"numeric\"" : mode;
+      return `<td><input class="task-cell-input${num}" data-product-field="${f.key}" data-id="${escHtml(p.id)}" aria-label="${escHtml(f.label)}" value="${val}"${ph}${integerMode}${step} /></td>`;
     }).join("");
     return `<tr data-id="${escHtml(p.id)}">${cells}<td class="product-actions"><button type="button" class="product-remove" data-remove-product="${escHtml(p.id)}" aria-label="Remove product row">Remove</button></td></tr>`;
   }).join("");
 
+  tbody.querySelectorAll('select[data-product-field][data-empty="1"]').forEach(el => { el.selectedIndex = -1; });
   tbody.querySelectorAll("[data-product-field]").forEach(el => {
     const save = async () => {
       const row = products.find(x => x.id === el.dataset.id);
       if (!row) return;
       const field = el.dataset.productField;
-      const next = el.type === "checkbox" ? el.checked : el.value;
+      const spec = PRODUCT_FIELDS.find(f => f.key === field);
+      let next = el.type === "checkbox" ? el.checked : el.value;
+      if (spec && spec.integer) {
+        const raw = String(el.value).trim();
+        if (raw === "") next = null;
+        else {
+          const n = Number(raw);
+          if (!Number.isInteger(n)) return;
+          next = n;
+        }
+      }
       if (row[field] === next) return;
       const previous = row[field];
       row[field] = next;
@@ -3731,6 +3860,7 @@ function bindResizableTables() {
 }
 
 bindResizableTables();
+bindProductSort();
 boot();
 // Flip calendar ticks once a minute so midnight day-change animates without reload
 setInterval(() => { updateGreeting(); renderMilestone(); }, 60000);
