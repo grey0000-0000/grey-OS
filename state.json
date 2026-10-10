@@ -757,14 +757,14 @@
       "sequence": 7,
       "shortDescription": "A decade-defining record, held in hand.",
       "fullDescription": "My Beautiful Dark Twisted Fantasy on three records from Roc-A-Fella, in the red sleeve with George Condo's ballerina painting framed in its window. Still sealed, with the original hype sticker promising the frameable artwork and collector's poster, plus a Korean 19+ sticker from the market it was sold into.",
-      "year": "",
+      "year": "2010",
       "city": "",
-      "origin": "USA (Roc-A-Fella)",
+      "origin": "USA (Roc-A-Fella, pressed at United Record Pressing); sold into Korea",
       "medium": "3×LP, die-cut trifold sleeve",
       "dimensions": "12-inch, 3×LP",
       "saleStatus": "Collect",
       "condition": "Sealed in original shrink, with the yellow hype sticker reading 'Limited Edition 3-Record Set on Premium Vinyl, Includes Frameable Artwork and Collector's Poster', and a Korean-market 19+ age sticker.",
-      "editionSize": "Limited edition (mass-pressed)",
+      "editionSize": "Limited edition 3LP, cat. B0014695-01 (original 2010 US pressing)",
       "unit": "1 triple LP",
       "process": "",
       "story": "",
@@ -1058,6 +1058,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:00:31+05:30",
+  "updated": "2026-10-11T01:00:57+05:30",
   "updatedBy": "orchestrator"
 }
