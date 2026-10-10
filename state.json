@@ -672,7 +672,7 @@
       "productType": "totes",
       "productReady": true,
       "tags": "skirt, tote, soft",
-      "price": "42.99",
+      "price": "3232",
       "compareAtPrice": "",
       "sku": "GREY-OBJ-006",
       "barcode": "2000000000060",
@@ -1058,6 +1058,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T00:59:17+05:30",
+  "updated": "2026-10-11T00:59:37+05:30",
   "updatedBy": "orchestrator"
 }
