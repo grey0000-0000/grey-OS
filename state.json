@@ -944,7 +944,7 @@
       "productType": "jackets",
       "productReady": true,
       "tags": "ysl, yves-saint-laurent, vintage, reversible, jacket, outerwear",
-      "price": "21999",
+      "price": "27272",
       "compareAtPrice": "",
       "sku": "GREY-OBJ-014",
       "barcode": "2000000000145",
@@ -1058,6 +1058,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:20:44+05:30",
+  "updated": "2026-10-11T01:21:54+05:30",
   "updatedBy": "orchestrator"
 }
