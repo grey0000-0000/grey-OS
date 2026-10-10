@@ -897,8 +897,8 @@
       "city": "London",
       "origin": "UK (Corteiz × Boy Better Know)",
       "medium": "Crinkle nylon shell with mesh panels, reflective piping, appliqué back lettering",
-      "dimensions": "",
-      "saleStatus": "Not for sale",
+      "dimensions": "Size M (Medium)",
+      "saleStatus": "Collect",
       "condition": "Pre-owned, clean; lettering and piping intact.",
       "editionSize": "Limited collaboration drop",
       "unit": "1 jacket",
@@ -910,12 +910,12 @@
       "productType": "jackets",
       "productReady": true,
       "tags": "corteiz, boy-better-know, bbk, skepta, jacket, london, streetwear",
-      "price": "",
+      "price": "27200",
       "compareAtPrice": "",
       "sku": "GREY-OBJ-013",
       "barcode": "2000000000138",
-      "inventoryQty": "0",
-      "availableForSale": false,
+      "inventoryQty": "1",
+      "availableForSale": true,
       "weight": "800",
       "imageSrc": "",
       "imageAlt": "Black Corteiz x Boy Better Know nylon and mesh track jacket, BOY BETTER KNOW lettering on the back"
@@ -1058,6 +1058,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:18:46+05:30",
+  "updated": "2026-10-11T01:19:17+05:30",
   "updatedBy": "orchestrator"
 }
