@@ -651,18 +651,18 @@
     {
       "id": "product-6",
       "title": "Skirt Tote",
-      "description": "Soft structure, hard to put down.",
+      "description": "A skirt, turned into a tote.",
       "sequence": null,
-      "shortDescription": "",
-      "fullDescription": "",
+      "shortDescription": "A skirt, turned into a tote.",
+      "fullDescription": "Once a skirt, turned around into the silhouette of a tote. It's lined inside with leftover curtain fabric, also upcycled, and carried on faux-leather straps with a funky charm hanging off one. Inside there's a netted laptop pocket that closes with a YKK zip. Nothing new was made for it; everything was already here.",
       "year": "",
       "city": "",
       "origin": "",
-      "medium": "",
+      "medium": "Upcycled skirt, upcycled curtain-fabric lining, faux-leather straps, charm, netted pocket with YKK zip",
       "dimensions": "",
       "saleStatus": "Collect",
       "condition": "",
-      "editionSize": "1 (one of none)",
+      "editionSize": "",
       "unit": "1 tote",
       "process": "",
       "story": "",
@@ -1058,6 +1058,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T00:56:27+05:30",
+  "updated": "2026-10-11T00:57:20+05:30",
   "updatedBy": "orchestrator"
 }
