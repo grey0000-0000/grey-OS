@@ -931,7 +931,7 @@
       "city": "Paris (house)",
       "origin": "France (Yves Saint Laurent)",
       "medium": "Reversible cotton-blend shell, embroidered YSL monogram, printed collar logo",
-      "dimensions": "",
+      "dimensions": "Size M (Medium)",
       "saleStatus": "Not for sale",
       "condition": "Pre-owned, clean; collar logo crisp.",
       "editionSize": "Vintage, one-off",
@@ -1058,6 +1058,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:20:18+05:30",
+  "updated": "2026-10-11T01:20:44+05:30",
   "updatedBy": "orchestrator"
 }
