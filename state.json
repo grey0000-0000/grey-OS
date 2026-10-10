@@ -786,22 +786,22 @@
     },
     {
       "id": "product-11",
-      "title": "Rick Owens × Dr. Martens 1460 Jumbo Lace Boots",
-      "description": "Rick's lacing on a Doc's sole.",
+      "title": "Rick Owens DRKSHDW × Dr. Martens Steel Toe Boots, FW25",
+      "description": "A work boot, raised and wrapped in Rick's laces.",
       "sequence": 8,
-      "shortDescription": "Rick's lacing on a Doc's sole.",
-      "fullDescription": "Rick Owens and Dr. Martens' 1460 Jumbo Lace, from their October 2022 drop. Matte black leather on a Quad platform sole with yellow welt stitching, an extended tongue rising past the collar, a side zip, and oversized grey jumbo laces wrapped around the ankle in Rick's signature way. The heel loop carries the co-branded pull tab.",
-      "year": "2022",
+      "shortDescription": "A work boot, raised and wrapped in Rick's laces.",
+      "fullDescription": "Rick Owens and Dr. Martens' Fall/Winter 2025 steel toe boot: a traditional work boot subverted. Black waxy, matte leather over a hardened steel toe cap, eleven eyelets and speed hooks, an exaggerated geometric tongue, and Rick's extra-long wraparound laces circling the ankle. Brushed silver inner zip and hardware, a custom AirWair heel loop, and a towering Quad platform sole held with pearl welt stitching.",
+      "year": "2025 (FW25)",
       "city": "",
-      "origin": "Rick Owens (Paris) × Dr. Martens (UK)",
-      "medium": "Matte black leather upper, Quad platform AirWair sole, side zip, jumbo laces",
+      "origin": "Rick Owens DRKSHDW (Paris) × Dr. Martens (UK)",
+      "medium": "Waxy black leather upper, steel toe cap, Quad platform sole, palladium hardware, side zip, wraparound laces",
       "dimensions": "",
       "saleStatus": "Collect",
-      "condition": "Pre-owned, clean; sole and uppers in good shape.",
-      "editionSize": "Collaboration release",
+      "condition": "Pre-owned, clean; uppers and sole in good shape.",
+      "editionSize": "FW25 collaboration release, style 41819001",
       "unit": "1 pair",
       "process": "",
-      "story": "Owens brought his signature oversized lacing and grunge drapery to Dr. Martens' working-class boot, first on the 1460 Bex platform in March 2021, then on later 1460 and 18-eye 1918 styles.",
+      "story": "The fifth chapter of a partnership running since 2021; for FW25 Owens took Dr. Martens' work boot, kept the steel toe, and stacked it on the Quad sole with his signature wraparound laces.",
       "shippingReturns": "",
       "vendor": "GREY",
       "collection": "selection",
@@ -816,7 +816,7 @@
       "availableForSale": true,
       "weight": "1200",
       "imageSrc": "",
-      "imageAlt": "Black Rick Owens x Dr. Martens 1460 Jumbo Lace boots with grey laces wrapped around the ankle and a platform sole"
+      "imageAlt": "Black Rick Owens x Dr. Martens steel toe boots with grey wraparound laces and Quad platform sole"
     },
     {
       "id": "product-13",
@@ -990,6 +990,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:28:29+05:30",
+  "updated": "2026-10-11T01:32:21+05:30",
   "updatedBy": "orchestrator"
 }
