@@ -946,7 +946,7 @@
       "description": "Felt piano, held close.",
       "sequence": 12,
       "shortDescription": "Felt piano, held close.",
-      "fullDescription": "",
+      "fullDescription": "Nils Frahm's Spaces, the 2014 Erased Tapes double LP of live recordings, bought new at Rough Trade in London around its release. The cream sleeve frames Frahm among his keyboards through a cut-out window. Up top, a scuffed, rundown white Rough Trade Essential sticker and the shop's own £21.99 tag are still on: the record carries its journey home. Sleeve clean and flat, likely still in shrink.",
       "year": "",
       "city": "",
       "origin": "",
@@ -963,7 +963,7 @@
       "productType": "vinyl",
       "productReady": true,
       "tags": "nils-frahm, vinyl, piano",
-      "price": "6999",
+      "price": "4222",
       "compareAtPrice": "",
       "sku": "GREY-OBJ-015",
       "barcode": "2000000000152",
@@ -1041,6 +1041,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T00:43:17+05:30",
+  "updated": "2026-10-11T00:46:01+05:30",
   "updatedBy": "orchestrator"
 }
