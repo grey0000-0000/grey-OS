@@ -659,7 +659,7 @@
       "city": "",
       "origin": "India (Grey, upcycled)",
       "medium": "Upcycled skirt, upcycled curtain-fabric lining, faux-leather straps, charm, netted pocket with YKK zip",
-      "dimensions": "",
+      "dimensions": "One size (OS)",
       "saleStatus": "Collect",
       "condition": "New, made from upcycled materials.",
       "editionSize": "",
@@ -990,6 +990,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:24:29+05:30",
+  "updated": "2026-10-11T01:25:58+05:30",
   "updatedBy": "orchestrator"
 }
