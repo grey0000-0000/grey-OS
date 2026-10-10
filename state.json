@@ -808,7 +808,7 @@
       "productType": "shoes",
       "productReady": true,
       "tags": "rick-owens, dr-martens, boots, footwear, collaboration, avant-garde",
-      "price": "44999",
+      "price": "48765",
       "compareAtPrice": "",
       "sku": "GREY-OBJ-011",
       "barcode": "2000000000114",
@@ -990,6 +990,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:34:47+05:30",
+  "updated": "2026-10-11T01:35:06+05:30",
   "updatedBy": "orchestrator"
 }
