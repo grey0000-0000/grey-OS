@@ -3,7 +3,7 @@
 Static GitHub Pages mirror of Grey’s soft-launch board (experiments, launch tasks, decisions).
 
 - **Live API** (Express + `data/state.json`) still runs on the box / Cloudflare tunnel when needed for multi-device sync.
-- **Pages** loads `./state.json` when `/api/state` is unavailable. Product edits, task status, and experiment stage/status commit back to `state.json` on `main` when a fine-grained token is saved in that browser (see below). Other edits stay in `localStorage`. On load, a newer task or experiment status saved in this browser is kept instead of being replaced by `state.json`.
+- **Pages** loads `./state.json` when `/api/state` is unavailable. Product edits, task status, and experiment stage/status commit back to `state.json` on `main` when a fine-grained token is saved in that browser (see below). Other edits stay in `localStorage`. On load, a newer task or experiment status saved in this browser is kept instead of being replaced by `state.json`. Product rows come from `state.json` when its `updated` time is newer than this browser’s `grey-os-state` copy. A newer local product edit is kept, but an empty local field does not wipe a value `state.json` already has.
 - Soft launch target: **11 Oct 2026**. Host path: Hydrogen on Shopify Oxygen (`www.greyobjects.com` live; Production public).
 
 Published as `grey0000-0000/grey-OS`.
@@ -47,6 +47,7 @@ Each object in `products` is one listing row. The soft-launch list is SKU `GREY-
 | `medium` | string | |
 | `dimensions` | string | |
 | `saleStatus` | string | Dropdown: Collect, Collected, Make a bid, Request availability, Customize, Not for sale. More options may be added later. |
+| `condition` | string | Physical condition. Editable wrapping long-text column, immediately after `saleStatus`, with the same auto-grow editor as the other long-text cells. |
 | `editionSize` | string | |
 | `unit` | string | |
 | `process` | string | |

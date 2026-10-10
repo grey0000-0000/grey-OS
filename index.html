@@ -1405,6 +1405,7 @@
                 <th data-w="240">Medium</th>
                 <th data-w="280">Dimensions</th>
                 <th data-w="200">Sale status</th>
+                <th data-w="280">Condition</th>
                 <th data-w="200">Edition size</th>
                 <th data-w="160">Unit</th>
                 <th data-w="220">Process</th>
@@ -3166,6 +3167,7 @@ const PRODUCT_FIELDS = [
   { key: "medium", label: "Medium", area: true },
   { key: "dimensions", label: "Dimensions", area: true },
   { key: "saleStatus", label: "Sale status", options: SALE_STATUSES },
+  { key: "condition", label: "Condition", area: true },
   { key: "editionSize", label: "Edition size" },
   { key: "unit", label: "Unit" },
   { key: "process", label: "Process", area: true },
@@ -3311,12 +3313,55 @@ function bindProductSort() {
   });
 }
 
+function productValueBlank(value) {
+  return value == null || value === "";
+}
+
+// Pages stores a grey-os-state copy of the whole board. That copy used to win
+// whenever /api/state was down, so a stale or sparse local products array hid
+// a newer state.json (and blank local keys hid columns state.json had filled).
+function mergeProductLists(remoteList, localList) {
+  const remote = Array.isArray(remoteList) ? remoteList : [];
+  const local = Array.isArray(localList) ? localList : [];
+  const localById = new Map();
+  local.forEach(row => {
+    if (row && row.id != null) localById.set(String(row.id), row);
+  });
+  const seen = new Set();
+  const merged = remote.map(remoteRow => {
+    const base = (remoteRow && typeof remoteRow === "object") ? remoteRow : {};
+    const id = base.id != null ? String(base.id) : "";
+    seen.add(id);
+    const localRow = localById.get(id);
+    if (!localRow || typeof localRow !== "object") return base;
+    const next = Object.assign({}, base);
+    Object.keys(localRow).forEach(key => {
+      if (key === "id") return;
+      if (productValueBlank(localRow[key])) return;
+      next[key] = localRow[key];
+    });
+    return next;
+  });
+  local.forEach(localRow => {
+    if (!localRow || localRow.id == null) return;
+    const id = String(localRow.id);
+    if (!seen.has(id)) merged.push(localRow);
+  });
+  return merged;
+}
+
 function resolveProducts(state) {
-  const remote = state && Array.isArray(state.products) ? normalizeProducts(state.products) : null;
-  if (apiAvailable === true && remote) return remote;
-  const local = readLocalState();
-  if (local && Array.isArray(local.products)) return normalizeProducts(local.products);
-  if (remote) return remote;
+  const remoteList = state && Array.isArray(state.products) ? state.products : null;
+  const localState = readLocalState();
+  const localList = localState && Array.isArray(localState.products) ? localState.products : null;
+  const remoteUpdated = state && state.updated;
+  const localUpdated = localState && localState.updated;
+  if (remoteList && (!localList || isNewerStamp(remoteUpdated, localUpdated))) {
+    return normalizeProducts(remoteList);
+  }
+  if (remoteList && localList) return normalizeProducts(mergeProductLists(remoteList, localList));
+  if (localList) return normalizeProducts(localList);
+  if (remoteList) return normalizeProducts(remoteList);
   return STARTER_PRODUCTS.map(p => ({ ...p }));
 }
 
