@@ -2485,31 +2485,68 @@ function mergedEditPayload() {
   return { edits: edits, taskEdits: taskEdits, statusEdits: statusEditBag };
 }
 
-async function fetchState() {
-  try {
-    const res = await fetch(API, { cache: "no-store" });
-    if (!res.ok) throw new Error("state fetch failed");
-    apiAvailable = true;
-    return overlayLocalStatus(await res.json());
-  } catch (err) {
-    apiAvailable = false;
-    // GitHub Pages / static: ship state.json beside index.html
-    try {
-      const staticRes = await fetch("./state.json", { cache: "no-store" });
-      if (staticRes.ok) {
-        const staticState = await staticRes.json();
-        console.warn("API unavailable — loaded ./state.json (static host)", err);
-        return overlayLocalStatus(staticState);
-      }
-    } catch (_) {}
-    const local = readLocalState();
-    if (local) {
-      console.warn("API unavailable — loaded grey-os-state from localStorage", err);
-      return local;
-    }
-    console.warn("API unavailable — seeding from embedded SEED (no localStorage yet)", err);
-    return seedFallbackState();
+function stateProductCount(state) {
+  return state && Array.isArray(state.products) ? state.products.length : 0;
+}
+
+function fetchNoStore(url, ms) {
+  const opts = { cache: "no-store" };
+  if (ms && typeof AbortSignal !== "undefined" && typeof AbortSignal.timeout === "function") {
+    opts.signal = AbortSignal.timeout(ms);
   }
+  return fetch(url, opts);
+}
+
+async function readStateResponse(res) {
+  if (!res || !res.ok) throw new Error("state fetch failed" + (res ? " (" + res.status + ")" : ""));
+  const data = await res.json();
+  if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("state payload was not an object");
+  return data;
+}
+
+async function fetchState() {
+  // /api/state on GitHub Pages is the site root, not this project. A 404, a hang,
+  // or a 200 empty object must not count as the catalog.
+  let apiState = null;
+  let apiError = null;
+  try {
+    apiState = await readStateResponse(await fetchNoStore(API, 2500));
+  } catch (err) {
+    apiError = err;
+  }
+
+  let fileState = null;
+  let fileError = null;
+  try {
+    const fileUrl = new URL("state.json", document.baseURI || location.href).href;
+    fileState = await readStateResponse(await fetchNoStore(fileUrl, 8000));
+  } catch (err) {
+    fileError = err;
+  }
+
+  const apiCount = stateProductCount(apiState);
+  const fileCount = stateProductCount(fileState);
+  if (apiState && apiCount > 0 && (fileCount === 0 || !isNewerStamp(fileState && fileState.updated, apiState.updated))) {
+    apiAvailable = true;
+    console.info("Products source: /api/state", apiCount);
+    return overlayLocalStatus(apiState);
+  }
+  if (fileState && Array.isArray(fileState.products) && (fileCount > 0 || apiCount === 0)) {
+    apiAvailable = false;
+    console.warn("API unavailable — loaded state.json", apiError);
+    console.info("Products source: state.json", fileCount);
+    return overlayLocalStatus(fileState);
+  }
+  apiAvailable = false;
+  const local = readLocalState();
+  if (local && stateProductCount(local) > 0) {
+    console.warn("API unavailable — loaded grey-os-state from localStorage", apiError || fileError);
+    console.info("Products source: localStorage", stateProductCount(local));
+    return local;
+  }
+  console.warn("API unavailable — seeding from embedded catalog", apiError || fileError);
+  console.info("Products source: embedded catalog");
+  return seedFallbackState();
 }
 
 async function persistAll() {
@@ -3354,14 +3391,14 @@ function resolveProducts(state) {
   const remoteList = state && Array.isArray(state.products) ? state.products : null;
   const localState = readLocalState();
   const localList = localState && Array.isArray(localState.products) ? localState.products : null;
-  const remoteUpdated = state && state.updated;
-  const localUpdated = localState && localState.updated;
-  if (remoteList && (!localList || isNewerStamp(remoteUpdated, localUpdated))) {
-    return normalizeProducts(remoteList);
-  }
-  if (remoteList && localList) return normalizeProducts(mergeProductLists(remoteList, localList));
-  if (localList) return normalizeProducts(localList);
-  if (remoteList) return normalizeProducts(remoteList);
+  const remoteCount = remoteList ? remoteList.length : 0;
+  const localCount = localList ? localList.length : 0;
+  const remoteNewer = isNewerStamp(state && state.updated, localState && localState.updated);
+  // An empty local products array is not a catalog. It must not hide state.json.
+  if (remoteCount > 0 && (localCount === 0 || remoteNewer)) return normalizeProducts(remoteList);
+  if (remoteCount > 0 && localCount > 0) return normalizeProducts(mergeProductLists(remoteList, localList));
+  if (localCount > 0) return normalizeProducts(localList);
+  if (remoteCount > 0) return normalizeProducts(remoteList);
   return STARTER_PRODUCTS.map(p => ({ ...p }));
 }
 
@@ -3757,53 +3794,67 @@ function queueStatusWrite(edit) {
   return queueGithubWrite(() => commitStatusEdit(edit), edit.surface);
 }
 
+function applyBootState(state) {
+  experiments = applyExpEdits(state.edits || {});
+  tasks = applyTaskEdits(state.taskEdits || {});
+  initCardDates(state.cardDates || {});
+  if (state.milestone && (state.milestone.title || state.milestone.date)) {
+    milestone = { title: state.milestone.title || MILESTONES[0].title, date: state.milestone.date || "2026-10-11" };
+    const soft = MILESTONES.find(x => x.id === "soft-launch") || MILESTONES[0];
+    if (state.milestone.title) soft.title = milestone.title;
+    if (state.milestone.date) soft.date = milestone.date;
+  }
+  metrics = applyMetricEdits(state.metrics);
+  initCollectionCommerce(state.collectionCommerce || {});
+  products = resolveProducts(state);
+  captureEditBases(state);
+  if (state.updated) SEED.updated = new Date(state.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
+}
+
 async function boot() {
+  let state = null;
   try {
-    const state = await fetchState();
-    experiments = applyExpEdits(state.edits || {});
-    tasks = applyTaskEdits(state.taskEdits || {});
-    initCardDates(state.cardDates || {});
-    if (state.milestone && (state.milestone.title || state.milestone.date)) {
-      milestone = { title: state.milestone.title || MILESTONES[0].title, date: state.milestone.date || "2026-10-11" };
-      const soft = MILESTONES.find(x => x.id === "soft-launch") || MILESTONES[0];
-      if (state.milestone.title) soft.title = milestone.title;
-      if (state.milestone.date) soft.date = milestone.date;
-    }
-    metrics = applyMetricEdits(state.metrics);
-    initCollectionCommerce(state.collectionCommerce || {});
-    products = resolveProducts(state);
-    captureEditBases(state);
-    if (state.updated) SEED.updated = new Date(state.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
+    state = await fetchState();
+    applyBootState(state);
   } catch (err) {
     console.warn("Boot failed — using seed / localStorage", err);
-    const local = readLocalState();
-    if (local) {
-      experiments = applyExpEdits(local.edits || {});
-      tasks = applyTaskEdits(local.taskEdits || {});
-      initCardDates(local.cardDates || {});
-      if (local.milestone && (local.milestone.title || local.milestone.date)) {
-        milestone = { title: local.milestone.title || MILESTONES[0].title, date: local.milestone.date || "2026-10-11" };
-        const soft = MILESTONES.find(x => x.id === "soft-launch") || MILESTONES[0];
-        if (local.milestone.title) soft.title = milestone.title;
-        if (local.milestone.date) soft.date = milestone.date;
-      }
-      if (typeof applyMetricEdits === "function") metrics = applyMetricEdits(local.metrics);
-      initCollectionCommerce(local.collectionCommerce || {});
-      products = resolveProducts(local);
-      captureEditBases(local);
-      if (local.updated) SEED.updated = new Date(local.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
-    } else {
+    if (!state || stateProductCount(state) === 0) {
+      const local = readLocalState();
+      if (local && stateProductCount(local) > 0) state = local;
+    }
+    try {
+      if (state && stateProductCount(state) > 0) applyBootState(state);
+    } catch (inner) {
+      console.warn("Boot recovery failed", inner);
+    }
+    if (!Array.isArray(products) || products.length === 0) {
       initCardDates({});
       initCollectionCommerce({});
       products = STARTER_PRODUCTS.map(p => ({ ...p }));
     }
   }
+  console.info("Products rendered from catalog:", products.length);
   bindMilestoneEditors();
   updateGreeting();
   milestoneIndex = nearestMilestoneIndex();
   renderMilestone();
-  setView("launch");
-  renderLaunch();
+  const viewNow = currentView || "launch";
+  if (viewNow === "products") {
+    setView("products");
+    renderProducts();
+  } else if (viewNow === "business") {
+    setView("business");
+    renderBusiness();
+  } else if (viewNow === "collections") {
+    setView("collections");
+    renderCollectionCards();
+  } else if (viewNow === "experiments") {
+    setView("experiments");
+    renderExperiments();
+  } else {
+    setView("launch");
+    renderLaunch();
+  }
   async function refreshFromServer(forceRender) {
     if (githubWritesPending > 0) return;
     try {

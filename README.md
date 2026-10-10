@@ -3,7 +3,7 @@
 Static GitHub Pages mirror of Grey’s soft-launch board (experiments, launch tasks, decisions).
 
 - **Live API** (Express + `data/state.json`) still runs on the box / Cloudflare tunnel when needed for multi-device sync.
-- **Pages** loads `./state.json` when `/api/state` is unavailable. Product edits, task status, and experiment stage/status commit back to `state.json` on `main` when a fine-grained token is saved in that browser (see below). Other edits stay in `localStorage`. On load, a newer task or experiment status saved in this browser is kept instead of being replaced by `state.json`. Product rows come from `state.json` when its `updated` time is newer than this browser’s `grey-os-state` copy. A newer local product edit is kept, but an empty local field does not wipe a value `state.json` already has.
+- **Pages** loads `./state.json` when `/api/state` is unavailable. Product edits, task status, and experiment stage/status commit back to `state.json` on `main` when a fine-grained token is saved in that browser (see below). Other edits stay in `localStorage`. On load, a newer task or experiment status saved in this browser is kept instead of being replaced by `state.json`. Product rows come from `state.json` when its `updated` time is newer than this browser’s `grey-os-state` copy. A newer local product edit is kept, but an empty local field does not wipe a value `state.json` already has. An empty local product list, and an `/api/state` response with no products, do not hide `state.json`. Pages caches `index.html` for about 10 minutes; a hard refresh loads a new copy of that script.
 - Soft launch target: **11 Oct 2026**. Host path: Hydrogen on Shopify Oxygen (`www.greyobjects.com` live; Production public).
 
 Published as `grey0000-0000/grey-OS`.
