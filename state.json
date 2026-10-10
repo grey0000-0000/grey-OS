@@ -1030,7 +1030,7 @@
       "shortDescription": "Process, pressed quiet. Still sealed.",
       "fullDescription": "Sampha's debut, the 2017 Young Turks album that took the Mercury Prize. The cover is his portrait, eyes closed, on a warm cream ground, with PROCESS set in thin type beneath. Standard black single LP, factory sealed, the round black SAMPHA sticker still on the shrink.",
       "year": "2017",
-      "city": "",
+      "city": "London (Young Turks)",
       "origin": "UK (Young Turks)",
       "medium": "1×LP, black vinyl",
       "dimensions": "12-inch, 1×LP",
@@ -1038,8 +1038,8 @@
       "condition": "Factory sealed, clean shrink, sticker intact.",
       "editionSize": "Standard release, cat. YTLP158, barcode 889030015815",
       "unit": "1 LP",
-      "process": "",
-      "story": "",
+      "process": "Pressed vinyl, factory sealed",
+      "story": "Sampha's long-awaited debut, made after his mother's death and named for working through it; it won the 2017 Mercury Prize.",
       "shippingReturns": "",
       "vendor": "GREY",
       "collection": "selection",
@@ -1058,6 +1058,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:17:28+05:30",
+  "updated": "2026-10-11T01:17:59+05:30",
   "updatedBy": "orchestrator"
 }
