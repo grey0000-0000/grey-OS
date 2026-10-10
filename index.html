@@ -895,8 +895,31 @@
     cursor: col-resize !important;
     user-select: none !important;
   }
+  /* Long-text product cells: show the full value, wrapped, with the row growing to fit. */
+  #view-products td.product-text {
+    overflow: visible;
+    height: auto;
+    max-height: none;
+    white-space: normal;
+    text-overflow: clip;
+    vertical-align: top;
+  }
+  #view-products th.product-text-full,
+  #view-products td.product-text-full {
+    min-width: 320px;
+  }
   #view-products textarea.task-cell-input {
-    min-height: 68px; resize: vertical; font-weight: 400;
+    font-weight: 400;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    overflow: hidden;
+    text-overflow: clip;
+    resize: none;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    field-sizing: content;
   }
   #view-products th.sortable { cursor: pointer; }
   #view-products th.sortable .sort-mark { letter-spacing: 0; text-transform: none; }
@@ -1375,7 +1398,7 @@
                 <th data-w="260">Description</th>
                 <th data-w="96" data-sort="sequence" class="sortable" tabindex="0" aria-sort="none">Sequence<span class="sort-mark" id="sequence-sort-mark"></span></th>
                 <th data-w="260">Short description</th>
-                <th data-w="320">Full description</th>
+                <th class="product-text-full" data-w="320" data-min-w="320">Full description</th>
                 <th data-w="140">Year</th>
                 <th data-w="120">City</th>
                 <th data-w="120">Origin</th>
@@ -3325,7 +3348,8 @@ function renderProducts(focusId) {
       const mode = f.inputmode ? ` inputmode="${f.inputmode}"` : "";
       const num = f.numeric || f.integer ? " product-num" : "";
       if (f.area) {
-        return `<td><textarea class="task-cell-input" data-product-field="${f.key}" data-id="${escHtml(p.id)}" aria-label="${escHtml(f.label)}" rows="3">${val}</textarea></td>`;
+        const wide = f.key === "fullDescription" ? " product-text-full" : "";
+        return `<td class="product-text${wide}"><textarea class="task-cell-input" data-product-field="${f.key}" data-id="${escHtml(p.id)}" aria-label="${escHtml(f.label)}" rows="1">${val}</textarea></td>`;
       }
       const step = f.integer ? " type=\"number\" step=\"1\"" : "";
       const integerMode = f.integer ? " inputmode=\"numeric\"" : mode;
@@ -3364,10 +3388,28 @@ function renderProducts(focusId) {
   tbody.querySelectorAll("[data-remove-product]").forEach(btn => {
     btn.addEventListener("click", () => removeProduct(btn.dataset.removeProduct));
   });
+  tbody.querySelectorAll("textarea.task-cell-input").forEach(el => {
+    const fit = () => fitProductTextarea(el);
+    fit();
+    el.addEventListener("input", fit);
+  });
+  requestAnimationFrame(() => fitProductTextareas());
   if (focusId) {
     const el = tbody.querySelector(`[data-id="${CSS.escape(focusId)}"] [data-product-field="title"]`);
     if (el) el.focus();
   }
+}
+
+function fitProductTextarea(el) {
+  if (!el || !el.isConnected || el.getClientRects().length === 0) return;
+  el.style.overflow = "hidden";
+  el.style.height = "0px";
+  const border = el.offsetHeight - el.clientHeight;
+  el.style.height = (el.scrollHeight + border) + "px";
+}
+
+function fitProductTextareas() {
+  document.querySelectorAll("#product-rows textarea.task-cell-input").forEach(fitProductTextarea);
 }
 
 function addProduct() {
@@ -3795,9 +3837,14 @@ function bindResizableTable(table) {
   const saved = Array.isArray(stored[key]) ? stored[key] : [];
 
   const applyWidth = (index, px) => {
-    const width = Math.max(56, Math.round(px));
+    const floor = Number(headers[index].dataset.minW) || 56;
+    const width = Math.max(floor, Math.round(px));
     if (cols[index]) cols[index].style.width = width + "px";
     headers[index].style.width = width + "px";
+    if (headers[index].dataset.minW) {
+      if (cols[index]) cols[index].style.minWidth = floor + "px";
+      headers[index].style.minWidth = floor + "px";
+    }
     return width;
   };
   const syncTableWidth = () => {
@@ -3831,6 +3878,7 @@ function bindResizableTable(table) {
       const onMove = (e) => {
         applyWidth(i, startW + (e.clientX - startX));
         syncTableWidth();
+        if (table.id === "product-table") fitProductTextareas();
       };
       const onUp = (e) => {
         handle.classList.remove("is-dragging");
