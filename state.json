@@ -548,7 +548,7 @@
     },
     {
       "id": "product-3",
-      "title": "'Keep the Change' Cap, c. 2009",
+      "title": "Second Amendment cap",
       "description": "A souvenir of 2009 America. Eagle, shield, and a punchline, stitched in gold.",
       "sequence": 3,
       "shortDescription": "A souvenir of 2009 America. Eagle, shield, and a punchline, stitched in gold.",
@@ -1058,6 +1058,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:15:28+05:30",
+  "updated": "2026-10-11T01:17:28+05:30",
   "updatedBy": "orchestrator"
 }
