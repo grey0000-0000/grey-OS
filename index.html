@@ -1400,7 +1400,6 @@
                 <th data-w="260">Short description</th>
                 <th class="product-text-full" data-w="320" data-min-w="320">Full description</th>
                 <th data-w="140">Year</th>
-                <th data-w="120">City</th>
                 <th data-w="120">Origin</th>
                 <th data-w="240">Medium</th>
                 <th data-w="280">Dimensions</th>
@@ -1408,8 +1407,6 @@
                 <th data-w="280">Condition</th>
                 <th data-w="200">Edition size</th>
                 <th data-w="160">Unit</th>
-                <th data-w="220">Process</th>
-                <th data-w="240">Story</th>
                 <th data-w="220">Shipping &amp; returns</th>
                 <th data-w="96">Vendor</th>
                 <th data-w="120">Collection</th>
@@ -3199,7 +3196,6 @@ const PRODUCT_FIELDS = [
   { key: "shortDescription", label: "Short description", area: true },
   { key: "fullDescription", label: "Full description", area: true },
   { key: "year", label: "Year" },
-  { key: "city", label: "City" },
   { key: "origin", label: "Origin" },
   { key: "medium", label: "Medium", area: true },
   { key: "dimensions", label: "Dimensions", area: true },
@@ -3207,8 +3203,6 @@ const PRODUCT_FIELDS = [
   { key: "condition", label: "Condition", area: true },
   { key: "editionSize", label: "Edition size" },
   { key: "unit", label: "Unit" },
-  { key: "process", label: "Process", area: true },
-  { key: "story", label: "Story", area: true },
   { key: "shippingReturns", label: "Shipping & returns", area: true },
   { key: "vendor", label: "Vendor" },
   { key: "collection", label: "Collection" },
@@ -3233,7 +3227,7 @@ function blankProduct(id) {
 }
 
 const LISTING_SEED = [
-  { id: "product-1", title: "Twenty-Four Cathedrals — ND Phot Postcard Booklet, c. 1910s", description: "Twenty-four cathedrals of France, unbroken. A complete ND Phot booklet, c. 1910s, mint, with original protective tissues.", sequence: 1, shortDescription: "Twenty-four cathedrals of France, unbroken. A complete ND Phot booklet, c. 1910s, mint, with original protective tissues.", fullDescription: "A complete souvenir booklet of twenty-four postcards, Cathédrales & Églises de France, published by Neurdein Frères under their ND Phot mark, the largest French postcard house of its day. Every card is still bound in, separated by its original protective tissues, with captions in French and English. The kraft cover carries an Art Nouveau vine border. Mint, and kept whole for about a century.", year: "c. 1906–1920s", city: "", origin: "France", medium: "Printed postcards on card stock; kraft paper cover; tissue interleaves", dimensions: "approx. 14.5 × 9.5 × 1 cm closed (estimate, pending measurement)", saleStatus: "Collect", editionSize: "1 (one-off; booklet of 24 cards)", unit: "1 booklet, 24 cards", vendor: "GREY", collection: "selection", productType: "Ephemera", productReady: true, tags: "nd-phot, neurdein-freres, france, postcards, ephemera, vintage, art-nouveau, collectible, cathedrals, 1910s", price: "2674", sku: "GREY-OBJ-001", barcode: "2000000000015", inventoryQty: "1", availableForSale: true, weight: "150" },
+  { id: "product-1", title: "Twenty-Four Cathedrals — ND Phot Postcard Booklet, c. 1910s", description: "Twenty-four cathedrals of France, unbroken. A complete ND Phot booklet, c. 1910s, mint, with original protective tissues.", sequence: 1, shortDescription: "Twenty-four cathedrals of France, unbroken. A complete ND Phot booklet, c. 1910s, mint, with original protective tissues.", fullDescription: "A complete souvenir booklet of twenty-four postcards, Cathédrales & Églises de France, published by Neurdein Frères under their ND Phot mark, the largest French postcard house of its day. Every card is still bound in, separated by its original protective tissues, with captions in French and English. The kraft cover carries an Art Nouveau vine border. Mint, and kept whole for about a century.", year: "c. 1906–1920s", origin: "France", medium: "Printed postcards on card stock; kraft paper cover; tissue interleaves", dimensions: "approx. 14.5 × 9.5 × 1 cm closed (estimate, pending measurement)", saleStatus: "Collect", editionSize: "1 (one-off; booklet of 24 cards)", unit: "1 booklet, 24 cards", vendor: "GREY", collection: "selection", productType: "Ephemera", productReady: true, tags: "nd-phot, neurdein-freres, france, postcards, ephemera, vintage, art-nouveau, collectible, cathedrals, 1910s", price: "2674", sku: "GREY-OBJ-001", barcode: "2000000000015", inventoryQty: "1", availableForSale: true, weight: "150" },
   { id: "product-2", title: "Eastpak cap", description: "Street-ready, always.", sequence: 2, shortDescription: "Street-ready, always.", saleStatus: "Collect", unit: "1", vendor: "GREY", collection: "selection", productType: "caps", productReady: true, tags: "eastpak, cap, streetwear", price: "1864", sku: "GREY-OBJ-002", barcode: "2000000000022", inventoryQty: "1", availableForSale: true, weight: "120" },
   { id: "product-3", title: "'Keep the Change' Cap, c. 2009", description: "A quiet mark of stance.", sequence: 3, shortDescription: "A quiet mark of stance.", year: "c. 2008–2010", origin: "USA", medium: "Embroidered cotton twill crown; faux-leather brim with tooled stitching", saleStatus: "Collect", unit: "1", vendor: "GREY", collection: "selection", productType: "caps", productReady: true, tags: "second-amendment, cap, collectible", price: "2145", sku: "GREY-OBJ-003", barcode: "2000000000039", inventoryQty: "1", availableForSale: true, weight: "130" },
   { id: "product-4", title: "The Life and Works of Dalí", description: "The life and the work, in one spine.", sequence: 4, shortDescription: "The life and the work, in one spine.", year: "1994", origin: "UK (Parragon)", medium: "Hardcover with dust jacket, approx. 79 pp., colour plates from the Bridgeman Art Library", saleStatus: "Collect", unit: "1", vendor: "GREY", collection: "selection", productType: "books", productReady: true, tags: "dali, salvador-dali, art-book, surrealism, book", price: "999", sku: "GREY-OBJ-004", barcode: "2000000000046", inventoryQty: "1", availableForSale: true, weight: "500" },

@@ -42,16 +42,13 @@ Each object in `products` is one listing row. The soft-launch list is SKU `GREY-
 | `shortDescription` | string | Short listing copy. |
 | `fullDescription` | string | Long listing copy. |
 | `year` | string | Date or range, free text. |
-| `city` | string | |
-| `origin` | string | |
+| `origin` | string | Country only. |
 | `medium` | string | |
 | `dimensions` | string | |
 | `saleStatus` | string | Dropdown: Collect, Collected, Make a bid, Request availability, Customize, Not for sale. More options may be added later. |
 | `condition` | string | Physical condition. Editable wrapping long-text column, immediately after `saleStatus`, with the same auto-grow editor as the other long-text cells. |
 | `editionSize` | string | |
 | `unit` | string | |
-| `process` | string | |
-| `story` | string | |
 | `shippingReturns` | string | |
 | `vendor` | string | |
 | `collection` | string | `selection` or `one of none` on the current list. |
