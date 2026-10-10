@@ -480,7 +480,7 @@
   "products": [
     {
       "id": "product-1",
-      "title": "Twenty-Four Cathedrals — ND Phot Postcard Booklet, c. 1910s",
+      "title": "24, French Cathedral",
       "description": "Twenty-four cathedrals of France, unbroken. A complete ND Phot booklet, c. 1910s, mint, with original protective tissues.",
       "sequence": 1,
       "shortDescription": "Twenty-four cathedrals of France, unbroken. A complete ND Phot booklet, c. 1910s, mint, with original protective tissues.",
@@ -1058,6 +1058,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:03:06+05:30",
+  "updated": "2026-10-11T01:13:55+05:30",
   "updatedBy": "orchestrator"
 }
