@@ -756,14 +756,14 @@
       "description": "A decade-defining record, held in hand.",
       "sequence": 7,
       "shortDescription": "A decade-defining record, held in hand.",
-      "fullDescription": "My Beautiful Dark Twisted Fantasy on three records from Roc-A-Fella, in the die-cut trifold sleeve, with George Condo's artwork. Opened copy.",
+      "fullDescription": "My Beautiful Dark Twisted Fantasy on three records from Roc-A-Fella, in the red sleeve with George Condo's ballerina painting framed in its window. Still sealed, with the original hype sticker promising the frameable artwork and collector's poster, plus a Korean 19+ sticker from the market it was sold into.",
       "year": "",
       "city": "",
       "origin": "USA (Roc-A-Fella)",
       "medium": "3×LP, die-cut trifold sleeve",
       "dimensions": "12-inch, 3×LP",
       "saleStatus": "Collect",
-      "condition": "Opened; inserts and poster to be confirmed.",
+      "condition": "Sealed in original shrink, with the yellow hype sticker reading 'Limited Edition 3-Record Set on Premium Vinyl, Includes Frameable Artwork and Collector's Poster', and a Korean-market 19+ age sticker.",
       "editionSize": "Limited edition (mass-pressed)",
       "unit": "1 triple LP",
       "process": "",
@@ -782,7 +782,7 @@
       "availableForSale": true,
       "weight": "200",
       "imageSrc": "",
-      "imageAlt": ""
+      "imageAlt": "Sealed Kanye West My Beautiful Dark Twisted Fantasy 3LP with red sleeve, ballerina artwork and yellow hype sticker"
     },
     {
       "id": "product-10",
@@ -1058,6 +1058,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T00:59:37+05:30",
+  "updated": "2026-10-11T01:00:04+05:30",
   "updatedBy": "orchestrator"
 }
