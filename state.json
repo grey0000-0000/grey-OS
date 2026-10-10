@@ -786,14 +786,14 @@
     },
     {
       "id": "product-11",
-      "title": "Rick Owens DRKSHDW × Dr. Martens Steel Toe Boots, FW25",
+      "title": "Rick Owens Dark Shadow × Dr. Martens Steel Toe Boots, 2025",
       "description": "A work boot, raised and wrapped in Rick's laces.",
       "sequence": 8,
       "shortDescription": "A work boot, raised and wrapped in Rick's laces.",
       "fullDescription": "Rick Owens and Dr. Martens' Fall/Winter 2025 steel toe boot: a traditional work boot subverted. Black waxy, matte leather over a hardened steel toe cap, eleven eyelets and speed hooks, an exaggerated geometric tongue, and Rick's extra-long wraparound laces circling the ankle. Brushed silver inner zip and hardware, a custom AirWair heel loop, and a towering Quad platform sole held with pearl welt stitching.",
       "year": "2025 (FW25)",
       "city": "",
-      "origin": "Rick Owens DRKSHDW (Paris) × Dr. Martens (UK)",
+      "origin": "Rick Owens Dark Shadow (Paris) × Dr. Martens (UK)",
       "medium": "Waxy black leather upper, steel toe cap, Quad platform sole, palladium hardware, side zip, wraparound laces",
       "dimensions": "",
       "saleStatus": "Collect",
@@ -801,7 +801,7 @@
       "editionSize": "FW25 collaboration release, style 41819001",
       "unit": "1 pair",
       "process": "",
-      "story": "The fifth chapter of a partnership running since 2021; for FW25 Owens took Dr. Martens' work boot, kept the steel toe, and stacked it on the Quad sole with his signature wraparound laces.",
+      "story": "Rick Owens Dark Shadow's 2025 take on the Dr. Martens work boot: the steel toe kept, the sole stacked into a Quad platform, and his wraparound laces looped around the ankle.",
       "shippingReturns": "",
       "vendor": "GREY",
       "collection": "selection",
@@ -990,6 +990,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:32:21+05:30",
+  "updated": "2026-10-11T01:32:59+05:30",
   "updatedBy": "orchestrator"
 }
