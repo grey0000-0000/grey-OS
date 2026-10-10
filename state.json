@@ -672,7 +672,7 @@
       "productType": "totes",
       "productReady": true,
       "tags": "skirt, tote, upcycled, one-of-none, bag",
-      "price": "3232",
+      "price": "3636",
       "compareAtPrice": "",
       "sku": "GREY-OBJ-006",
       "barcode": "2000000000060",
@@ -990,6 +990,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:26:18+05:30",
+  "updated": "2026-10-11T01:27:32+05:30",
   "updatedBy": "orchestrator"
 }
