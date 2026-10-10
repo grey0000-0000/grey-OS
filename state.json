@@ -680,7 +680,7 @@
       "availableForSale": true,
       "weight": "350",
       "imageSrc": "",
-      "imageAlt": "White upcycled skirt tote with red and blue vertical stripes and black faux-leather straps, shown upside down"
+      "imageAlt": "White upcycled skirt tote with red and blue vertical stripes and black faux-leather straps, the original skirt turned upside down to form the bag"
     },
     {
       "id": "product-7",
@@ -1058,6 +1058,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T00:58:55+05:30",
+  "updated": "2026-10-11T00:59:17+05:30",
   "updatedBy": "orchestrator"
 }
