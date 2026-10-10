@@ -795,7 +795,7 @@
       "city": "London (purchased)",
       "origin": "Rick Owens Dark Shadow (Paris) × Dr. Martens (UK)",
       "medium": "Waxy black leather upper, steel toe cap, Quad platform sole, palladium hardware, side zip, wraparound laces",
-      "dimensions": "",
+      "dimensions": "Size UK 10",
       "saleStatus": "Collect",
       "condition": "10/10. New, unworn, clean.",
       "editionSize": "FW25 collaboration release, style 41819001",
@@ -990,6 +990,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:34:11+05:30",
+  "updated": "2026-10-11T01:34:47+05:30",
   "updatedBy": "orchestrator"
 }
