@@ -654,7 +654,7 @@
       "description": "A skirt, turned into a tote.",
       "sequence": null,
       "shortDescription": "A skirt, turned into a tote.",
-      "fullDescription": "Once a skirt, turned around into the silhouette of a tote. It's lined inside with leftover curtain fabric, also upcycled, and carried on faux-leather straps with a funky charm hanging off one. Inside there's a netted laptop pocket that closes with a YKK zip. Nothing new was made for it; everything was already here.",
+      "fullDescription": "Once a skirt, turned around into the silhouette of a tote. Cream cloth woven with red and blue vertical stripes, trimmed at the mouth and carried on black faux-leather straps that run down the body, with a funky charm hanging off one. It's lined inside with leftover curtain fabric, also upcycled, and there's a netted laptop pocket that closes with a YKK zip. Nothing new was made for it; everything was already here.",
       "year": "",
       "city": "",
       "origin": "",
@@ -680,7 +680,7 @@
       "availableForSale": true,
       "weight": "350",
       "imageSrc": "",
-      "imageAlt": ""
+      "imageAlt": "Striped cream, red and blue upcycled skirt tote with black faux-leather straps"
     },
     {
       "id": "product-7",
@@ -1058,6 +1058,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T00:57:20+05:30",
+  "updated": "2026-10-11T00:58:06+05:30",
   "updatedBy": "orchestrator"
 }
