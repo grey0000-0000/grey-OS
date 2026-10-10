@@ -694,7 +694,7 @@
       "origin": "Ireland (All City Records)",
       "medium": "3×2LP with triptych covers, bonus stamped 7-inch (45), limited edition 60×30 cm poster, jute bag",
       "dimensions": "12-inch box set",
-      "saleStatus": "Not for sale",
+      "saleStatus": "Collect",
       "condition": "Two of the three double albums opened, one still sealed; the limited poster and the bonus 45 still sealed; jute bag included.",
       "editionSize": "Limited to 300",
       "unit": "1 box set",
@@ -706,12 +706,12 @@
       "productType": "vinyl",
       "productReady": true,
       "tags": "onra, chinoiseries, vinyl, box-set, limited, all-city-records, instrumental-hip-hop",
-      "price": "24999",
+      "price": "34343",
       "compareAtPrice": "",
       "sku": "GREY-OBJ-007",
       "barcode": "2000000000077",
       "inventoryQty": "0",
-      "availableForSale": false,
+      "availableForSale": true,
       "weight": "500",
       "imageSrc": "",
       "imageAlt": ""
@@ -1058,6 +1058,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:02:24+05:30",
+  "updated": "2026-10-11T01:03:06+05:30",
   "updatedBy": "orchestrator"
 }
