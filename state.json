@@ -104,34 +104,34 @@
       "notes": "CD 8 Oct — film base mapped; Done."
     },
     "film-assets": {
-      "status": "In progress",
+      "status": "Done",
       "due": "2026-10-08",
       "priority": "Critical",
       "blocker": "",
       "owner": "Utkarsh",
-      "notes": "CD 8 Oct — today's work."
+      "notes": "CD 8 Oct — today's work. CD 17 Oct — Done."
     },
     "film-treatment": {
-      "status": "In progress",
+      "status": "Done",
       "due": "2026-10-08",
       "priority": "Critical",
       "blocker": "",
       "owner": "Utkarsh",
-      "notes": "CD 8 Oct — today's work."
+      "notes": "CD 8 Oct — today's work. CD 17 Oct — Done."
     },
     "film-higgs": {
-      "status": "Not started",
+      "status": "Done",
       "due": "2026-10-08",
       "priority": "Critical",
       "blocker": "",
-      "notes": "CD 6 Oct — video treatment + video bank / generate-shoot (Higgsfield or whatever CD uses). Not started until the film base and script are locked."
+      "notes": "CD 6 Oct — video treatment + video bank / generate-shoot (Higgsfield or whatever CD uses). Not started until the film base and script are locked. CD 17 Oct — Done."
     },
     "film-reel": {
-      "status": "Not started",
+      "status": "Done",
       "due": "2026-10-09",
       "priority": "Critical",
       "blocker": "",
-      "notes": "CD 6 Oct — Instagram reel cut FIRST, then Instagram product template. Folds the Instagram set. Not started until the video treatment / video bank path is ready."
+      "notes": "CD 6 Oct — Instagram reel cut FIRST, then Instagram product template. Folds the Instagram set. Not started until the video treatment / video bank path is ready. CD 17 Oct — Done."
     },
     "sel-logo": {
       "status": "Not started",
@@ -148,35 +148,36 @@
       "notes": "7 Oct: product list finalized with CD — 17 rows on the Products tab (titles, Selection / One of None collections, Product Ready, quantities, INR prices, weights) landed on main at 07db592. Arsenal Cards is the only row not ready; Onra Vinyl Set, A Cold Wall x Nike shoes and the Boy Better Know jacket are quantity 0 / not for sale."
     },
     "sel-photo-approach": {
-      "status": "In progress",
+      "status": "Done",
       "priority": "Critical",
       "due": "2026-10-06",
       "blocker": "",
-      "notes": "CD 6 Oct — collect product image references onto a mood board; this is today's first focus. Photography approach is DIY + ComfyUI (not hire)."
+      "notes": "CD 6 Oct — collect product image references onto a mood board; this is today's first focus. Photography approach is DIY + ComfyUI (not hire). CD 17 Oct — Done."
     },
     "sel-photograph": {
-      "status": "Not started",
+      "status": "Done",
       "priority": "Critical",
       "due": "2026-10-07",
       "blocker": "",
-      "notes": "CD 6 Oct — product stills and ComfyUI setup are one run. Batch shoot starts once the one-product proof locks the look (target 7 Oct); ComfyUI chain then makes website-ready assets. Bags shoot rides this same photography/ComfyUI run (oon-bags-photo)."
+      "notes": "CD 6 Oct — product stills and ComfyUI setup are one run. Batch shoot starts once the one-product proof locks the look (target 7 Oct); ComfyUI chain then makes website-ready assets. Bags shoot rides this same photography/ComfyUI run (oon-bags-photo). CD 17 Oct — Done."
     },
     "sel-shopify": {
-      "status": "In progress",
+      "status": "Done",
       "priority": "Low",
       "blocker": "Shopify Admin API access token (shpat…) with write_products + write_inventory — the token pasted on 7 Oct was an app automation token (atkn…) and returned 401 on jrbwdn-zv.myshopify.com",
-      "notes": "7 Oct: picked up — creating the 17 board products as Shopify drafts (not live on any channel); paused until the Admin API token is in. Captions and images still trail the batch shoot + ComfyUI chain."
+      "notes": "7 Oct: picked up — creating the 17 board products as Shopify drafts (not live on any channel); paused until the Admin API token is in. Captions and images still trail the batch shoot + ComfyUI chain. CD 17 Oct — Done."
     },
     "sel-site-fetch": {
-      "status": "Not started",
-      "priority": "Low"
+      "status": "Done",
+      "priority": "Low",
+      "notes": "CD 17 Oct — Done."
     },
     "oon-bags-photo": {
-      "status": "Not started",
+      "status": "Done",
       "priority": "Medium",
       "due": "2026-10-07",
       "blocker": "",
-      "notes": "CD 6 Oct — bags shoot rides the same photography/ComfyUI run as sel-photograph. Not started until the one-product pipeline proof locks the look."
+      "notes": "CD 6 Oct — bags shoot rides the same photography/ComfyUI run as sel-photograph. Not started until the one-product pipeline proof locks the look. CD 17 Oct — Done."
     },
     "oon-pencil-art": {
       "status": "Parked",
@@ -203,8 +204,8 @@
       "blocker": ""
     },
     "web-copy-review": {
-      "status": "Not started",
-      "notes": "2026-10-04 CD: captions and copy still open — resume once all products are added. CD 6 Oct — waits on real products / website-ready assets."
+      "status": "Done",
+      "notes": "2026-10-04 CD: captions and copy still open — resume once all products are added. CD 6 Oct — waits on real products / website-ready assets. CD 17 Oct — Done."
     },
     "web-seo": {
       "status": "In progress",
@@ -268,28 +269,28 @@
       "blocker": ""
     },
     "img-pipeline-proof": {
-      "status": "In progress",
+      "status": "Done",
       "priority": "Critical",
       "due": "2026-10-06",
       "blocker": "",
       "owner": "Utkarsh + Operations",
-      "notes": "CD 8 Oct — very close to closing; batch shoot of remaining products follows tomorrow."
+      "notes": "CD 8 Oct — very close to closing; batch shoot of remaining products follows tomorrow. CD 17 Oct — Done."
     },
     "sel-shoot-remaining": {
-      "status": "Not started",
+      "status": "Done",
       "priority": "Critical",
       "due": "2026-10-09",
       "blocker": "",
       "owner": "Utkarsh",
-      "notes": "CD 8 Oct — tomorrow, Fri 9 Oct."
+      "notes": "CD 8 Oct — tomorrow, Fri 9 Oct. CD 17 Oct — Done."
     },
     "web-last-mile": {
-      "status": "Not started",
+      "status": "Done",
       "priority": "High",
       "due": "2026-10-11",
       "blocker": "",
       "owner": "Utkarsh + Communications",
-      "notes": "CD 6 Oct — checkup, Razorpay Grey restyle, and go live (window 10–11 Oct). Not started until website-ready assets, film, and the Instagram reel path are ready enough. Razorpay restyle is folded here. Flipping Production URL privacy to Public stays on web-seo and must clear before go-live."
+      "notes": "CD 6 Oct — checkup, Razorpay Grey restyle, and go live (window 10–11 Oct). Not started until website-ready assets, film, and the Instagram reel path are ready enough. Razorpay restyle is folded here. Flipping Production URL privacy to Public stays on web-seo and must clear before go-live. CD 17 Oct — Done."
     },
     "obj-arsenal-frame": {
       "status": "In progress",
@@ -312,9 +313,10 @@
   "cardDatesHistory": [],
   "datesLocked": true,
   "milestone": {
-    "title": "Grey Objects Launch",
+    "title": "Grey Objects announcement",
     "date": "2026-10-11",
-    "dateLocked": true
+    "dateLocked": true,
+    "completed": true
   },
   "milestoneDateHistory": [
     {
@@ -945,6 +947,6 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-11T01:39:02+05:30",
+  "updated": "2026-10-17T20:15:57+05:30",
   "updatedBy": "orchestrator"
 }
