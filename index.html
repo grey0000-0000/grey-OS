@@ -609,6 +609,12 @@
   .milestone-card .ms-countdown.urgent .ms-countdown-label { color: var(--warn); }
   .milestone-card .ms-countdown.past .ms-countdown-num { color: var(--danger); }
   .milestone-card .ms-countdown.past .ms-countdown-label { color: var(--danger); }
+  .milestone-card .ms-countdown.completed .ms-countdown-num {
+    font-size: 22px;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    min-width: 0;
+  }
   .metric-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px;
   }
@@ -1241,7 +1247,7 @@
               <button type="button" class="ms-nav-btn" id="ms-next" aria-label="Next milestone">›</button>
             </div>
           </div>
-          <input class="ms-title" id="ms-title" type="text" value="Soft Launch — Grey Objects" aria-label="Milestone name" />
+          <input class="ms-title" id="ms-title" type="text" value="Grey Objects announcement" aria-label="Milestone name" />
           <div class="ms-countdown" id="ms-countdown" aria-live="polite">
             <span class="ms-countdown-num" id="ms-countdown-num">—</span>
             <span class="ms-countdown-label" id="ms-countdown-label">days left</span>
@@ -1322,6 +1328,9 @@
     </div>
 
     <div id="view-launch-tasks">
+      <div class="launch-deadline-banner glass" id="launch-deadline">
+        <span class="label">Overall launch deadline</span><strong>Sunday, 18 October 2026</strong>
+      </div>
       <div class="launch-focus">
         <section class="next-move glass" id="next-three">
           <div class="label">Next three tasks</div>
@@ -2095,9 +2104,16 @@ function initCardDates(saved) {
 const MILESTONES = [
   {
     id: "soft-launch",
-    title: "Soft Launch — Grey Objects",
+    title: "Grey Objects announcement",
     date: "2026-10-11",
-    description: "Website goes live with the Selection Collection live; One of None marked as \"coming soon.\""
+    description: "Website goes live with the Selection Collection live; One of None marked as \"coming soon.\"",
+    completed: true
+  },
+  {
+    id: "grey-objects-launch",
+    title: "Grey Objects launch",
+    date: "2026-10-18",
+    description: "Grey Objects launch."
   },
   {
     id: "oon-launch",
@@ -2114,19 +2130,8 @@ function currentMilestone() {
   return MILESTONES[milestoneIndex] || MILESTONES[0];
 }
 function nearestMilestoneIndex() {
-  let best = 0;
-  let bestDays = Infinity;
-  MILESTONES.forEach((m, i) => {
-    const d = daysUntil(m.date);
-    if (d === null) return;
-    if (d >= 0 && d < bestDays) { bestDays = d; best = i; }
-  });
-  // If all past, show last
-  if (bestDays === Infinity) {
-    const allPast = MILESTONES.every(m => { const d = daysUntil(m.date); return d !== null && d < 0; });
-    if (allPast) return MILESTONES.length - 1;
-  }
-  return best;
+  const idx = MILESTONES.findIndex(m => !m.completed);
+  return idx >= 0 ? idx : Math.max(0, MILESTONES.length - 1);
 }
 function greetingForNow() {
   // Asia/Kolkata local hour
@@ -2169,8 +2174,12 @@ function renderMilestone() {
   if (descEl) descEl.textContent = m.description || "";
   if (indexEl) indexEl.textContent = `${milestoneIndex + 1} / ${MILESTONES.length}`;
   const days = daysUntil(m.date);
-  countEl.classList.remove("urgent", "past");
-  if (days === null) {
+  countEl.classList.remove("urgent", "past", "completed");
+  if (m.completed) {
+    numEl.textContent = "Completed";
+    labelEl.textContent = "";
+    countEl.classList.add("completed");
+  } else if (days === null) {
     numEl.textContent = "—";
     labelEl.textContent = "set a date";
   } else if (days > 1) {
@@ -2190,11 +2199,11 @@ function renderMilestone() {
     labelEl.textContent = Math.abs(days) === 1 ? "day past" : "days past";
     countEl.classList.add("past");
   }
-  // Overall launch banner always reflects Soft Launch (first milestone / persisted milestone)
-  const soft = MILESTONES.find(x => x.id === "soft-launch") || MILESTONES[0];
+  // Overall launch deadline is the first milestone that is not completed
+  const open = MILESTONES[nearestMilestoneIndex()] || MILESTONES[0];
   const banner = document.getElementById("launch-deadline");
   if (banner) {
-    banner.innerHTML = `<span class="label">Overall launch deadline</span><strong>${formatMilestoneLabel(soft.date) || "Set a date"}</strong>`;
+    banner.innerHTML = `<span class="label">Overall launch deadline</span><strong>${formatMilestoneLabel(open.date) || "Set a date"}</strong>`;
   }
 }
 
@@ -2256,7 +2265,7 @@ function seedFallbackState() {
     edits: {},
     taskEdits: {},
     cardDates: {},
-    milestone: { title: "Soft Launch — Grey Objects", date: "2026-10-11" },
+    milestone: { title: "Grey Objects announcement", date: "2026-10-11", completed: true },
     metrics: null,
     collectionCommerce: {},
     products: null,
@@ -3797,6 +3806,7 @@ function applyBootState(state) {
     const soft = MILESTONES.find(x => x.id === "soft-launch") || MILESTONES[0];
     if (state.milestone.title) soft.title = milestone.title;
     if (state.milestone.date) soft.date = milestone.date;
+    if (state.milestone.completed) soft.completed = true;
   }
   metrics = applyMetricEdits(state.metrics);
   initCollectionCommerce(state.collectionCommerce || {});
@@ -3879,6 +3889,7 @@ async function boot() {
           const soft = MILESTONES.find(x => x.id === "soft-launch") || MILESTONES[0];
           if (nextMs.title) soft.title = milestone.title;
           if (nextMs.date) soft.date = milestone.date;
+          if (nextMs.completed) soft.completed = true;
           renderMilestone();
         }
         if (metricsChanged || forceRender) metrics = nextMetrics;
