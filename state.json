@@ -952,5 +952,288 @@
       }
     },
     "collectionDays": {}
-  }
+  },
+  "shopifySnapshot": {
+    "fetchedAt": "2026-10-22T20:10:00+05:30",
+    "source": "Shopify Admin GraphQL 2025-07 (grey-os app)",
+    "saleStatusRule": "grey.sale_status metafield: Collect = available; Not for sale/Collected = Collected (held); Sold = Sold",
+    "ordersAvailable": false,
+    "ordersReason": "grey-os app lacks read_orders",
+    "products": [
+      {
+        "sku": "GREY-OBJ-001",
+        "title": "French Cathedral Postcards",
+        "handle": "french-cathedral-postcards",
+        "status": "ACTIVE",
+        "price": 2727.0,
+        "currency": "INR",
+        "image": "https://cdn.shopify.com/s/files/1/0839/4293/2716/files/postcard-book_01_cover_front.png?v=1791665395",
+        "imageAlt": "French Cathedral postcards, front",
+        "shopifyCollections": [
+          "selection-collection"
+        ],
+        "collection": "selection",
+        "saleStatusRaw": "Collect",
+        "saleStatus": "Collect",
+        "inventory": 2
+      },
+      {
+        "sku": "GREY-OBJ-002",
+        "title": "Eastpak U.S.A. Globe Cap",
+        "handle": "eastpak-u-s-a-globe-cap",
+        "status": "ARCHIVED",
+        "price": 1864.0,
+        "currency": "INR",
+        "image": "https://cdn.shopify.com/s/files/1/0839/4293/2716/files/eastpak-cap_01_cover_front.png?v=1791665400",
+        "imageAlt": "Eastpak U.S.A. Globe Cap, front",
+        "shopifyCollections": [
+          "selection-collection"
+        ],
+        "collection": "selection",
+        "saleStatusRaw": "Collect",
+        "saleStatus": "Collect",
+        "inventory": 1
+      },
+      {
+        "sku": "GREY-OBJ-003",
+        "title": "Second Amendment Cap",
+        "handle": "second-amendment-cap",
+        "status": "ACTIVE",
+        "price": 2345.0,
+        "currency": "INR",
+        "image": "https://cdn.shopify.com/s/files/1/0839/4293/2716/files/guns-money-freedom-cap_02_front-alt.png?v=1791665403",
+        "imageAlt": "Second Amendment cap, front alt",
+        "shopifyCollections": [
+          "selection-collection"
+        ],
+        "collection": "selection",
+        "saleStatusRaw": "Collect",
+        "saleStatus": "Collect",
+        "inventory": 1
+      },
+      {
+        "sku": "GREY-OBJ-004",
+        "title": "The Life and Works of Dalí",
+        "handle": "the-life-and-works-of-dali",
+        "status": "ACTIVE",
+        "price": 2222.0,
+        "currency": "INR",
+        "image": "https://cdn.shopify.com/s/files/1/0839/4293/2716/files/book-dali-life-and-works_01_cover_front.png?v=1791665406",
+        "imageAlt": "The Life and Works of Dalí, front",
+        "shopifyCollections": [
+          "selection-collection"
+        ],
+        "collection": "selection",
+        "saleStatusRaw": "Collect",
+        "saleStatus": "Collect",
+        "inventory": 1
+      },
+      {
+        "sku": "GREY-OBJ-005",
+        "title": "Upcycled Jacket Sling Bag",
+        "handle": "upcycled-leather-jacket-tote-bag",
+        "status": "ACTIVE",
+        "price": 6969.0,
+        "currency": "INR",
+        "image": "https://cdn.shopify.com/s/files/1/0839/4293/2716/files/reversible-shoulder-bag_01_cover_brown-side-front.png?v=1791711188",
+        "imageAlt": "Upcycled Leather Jacket Tote Bag, cover_brown side front",
+        "shopifyCollections": [
+          "1-of-none"
+        ],
+        "collection": "one-of-none",
+        "saleStatusRaw": "Collect",
+        "saleStatus": "Collect",
+        "inventory": 1
+      },
+      {
+        "sku": "GREY-OBJ-006",
+        "title": "Upcycled Skirt Tote Bag",
+        "handle": "upcycled-skirt-tote-bag",
+        "status": "ACTIVE",
+        "price": 3636.0,
+        "currency": "INR",
+        "image": "https://cdn.shopify.com/s/files/1/0839/4293/2716/files/striped-tote-bag_01_cover_front.png?v=1791665415",
+        "imageAlt": "Upcycled Skirt Tote Bag, front",
+        "shopifyCollections": [
+          "1-of-none"
+        ],
+        "collection": "one-of-none",
+        "saleStatusRaw": "Collect",
+        "saleStatus": "Collect",
+        "inventory": 1
+      },
+      {
+        "sku": "GREY-OBJ-007",
+        "title": "Onra — Chinoiseries Pt. 1, 2 & 3 (Limited Box, 300 Copies)",
+        "handle": "onra-chinoiseries-pt-1-2-3-limited-box-300-copies",
+        "status": "ACTIVE",
+        "price": 43434.0,
+        "currency": "INR",
+        "image": "https://cdn.shopify.com/s/files/1/0839/4293/2716/files/vinyl-onra-box-set_05_burlap-sleeve-front.png?v=1791708004",
+        "imageAlt": "Onra Chinoiseries box set, burlap sleeve front",
+        "shopifyCollections": [
+          "selection-collection"
+        ],
+        "collection": "selection",
+        "saleStatusRaw": "Not for sale",
+        "saleStatus": "Collected",
+        "inventory": 0
+      },
+      {
+        "sku": "GREY-OBJ-008",
+        "title": "Beethoven - Symphonies No. 9 Choral and No. 8",
+        "handle": "beethoven-symphonies-nos-9-choral-and-8-schmidt-isserstedt-vienna-philharmonic-super-analogue-disc-japan",
+        "status": "ACTIVE",
+        "price": 9999.0,
+        "currency": "INR",
+        "image": "https://cdn.shopify.com/s/files/1/0839/4293/2716/files/vinyl-beethoven-symphonies-9-8_01_cover_front.png?v=1791666167",
+        "imageAlt": "Beethoven Symphonies Nos. 9 and 8 LP set, front",
+        "shopifyCollections": [
+          "selection-collection"
+        ],
+        "collection": "selection",
+        "saleStatusRaw": "Collect",
+        "saleStatus": "Collect",
+        "inventory": 1
+      },
+      {
+        "sku": "GREY-OBJ-009",
+        "title": "Kanye West — My Beautiful Dark Twisted Fantasy (3×LP)",
+        "handle": "kanye-west-my-beautiful-dark-twisted-fantasy-3-lp",
+        "status": "ACTIVE",
+        "price": 9999.0,
+        "currency": "INR",
+        "image": "https://cdn.shopify.com/s/files/1/0839/4293/2716/files/vinyl-kanye-west-mbdtf_01_cover_front.png?v=1791665443",
+        "imageAlt": "Kanye West My Beautiful Dark Twisted Fantasy LP, front",
+        "shopifyCollections": [
+          "selection-collection"
+        ],
+        "collection": "selection",
+        "saleStatusRaw": "Collect",
+        "saleStatus": "Collect",
+        "inventory": 1
+      },
+      {
+        "sku": "GREY-OBJ-011",
+        "title": "Rick Owens x Doc Martens Boots",
+        "handle": "rick-owens-dark-shadow-dr-martens-steel-toe-boots-2025",
+        "status": "ACTIVE",
+        "price": 54321.0,
+        "currency": "INR",
+        "image": "https://cdn.shopify.com/s/files/1/0839/4293/2716/files/rick-owens-x-dr-martens-boots_01_cover_pair.png?v=1791665426",
+        "imageAlt": "Rick Owens Dark Shadow x Dr. Martens Steel Toe Boots, pair",
+        "shopifyCollections": [
+          "selection-collection"
+        ],
+        "collection": "selection",
+        "saleStatusRaw": "Collect",
+        "saleStatus": "Collect",
+        "inventory": 1
+      },
+      {
+        "sku": "GREY-OBJ-013",
+        "title": "Corteiz × Boy Better Know Shuku Jacket",
+        "handle": "corteiz-boy-better-know-shuku-jacket",
+        "status": "ACTIVE",
+        "price": 34343.0,
+        "currency": "INR",
+        "image": "https://cdn.shopify.com/s/files/1/0839/4293/2716/files/bbk-corteiz-jacket_01_cover_back-graphic.png?v=1791665432",
+        "imageAlt": "Corteiz x Boy Better Know Shuku Jacket, back graphic",
+        "shopifyCollections": [
+          "selection-collection"
+        ],
+        "collection": "selection",
+        "saleStatusRaw": "Not for sale",
+        "saleStatus": "Collected",
+        "inventory": 0
+      },
+      {
+        "sku": "GREY-OBJ-014",
+        "title": "Yves Saint Laurent Reversible Jacket",
+        "handle": "yves-saint-laurent-reversible-jacket-1990s",
+        "status": "ACTIVE",
+        "price": 22222.0,
+        "currency": "INR",
+        "image": "https://cdn.shopify.com/s/files/1/0839/4293/2716/files/ysl-jacket-green_01_cover_front.png?v=1791665434",
+        "imageAlt": "YSL Reversible Jacket, green side, front",
+        "shopifyCollections": [
+          "selection-collection"
+        ],
+        "collection": "selection",
+        "saleStatusRaw": "Collect",
+        "saleStatus": "Collect",
+        "inventory": 1
+      },
+      {
+        "sku": "GREY-OBJ-015",
+        "title": "Nils Frahm — Spaces (2×LP)",
+        "handle": "nils-frahm-spaces-2-lp-rough-trade-copy",
+        "status": "ACTIVE",
+        "price": 5432.0,
+        "currency": "INR",
+        "image": "https://cdn.shopify.com/s/files/1/0839/4293/2716/files/vinyl-nils-frahm-spaces_01_cover_front.png?v=1791665990",
+        "imageAlt": "Nils Frahm Spaces LP, front",
+        "shopifyCollections": [
+          "selection-collection"
+        ],
+        "collection": "selection",
+        "saleStatusRaw": "Collect",
+        "saleStatus": "Collect",
+        "inventory": 1
+      },
+      {
+        "sku": "GREY-OBJ-016",
+        "title": "MF DOOM — MM..FOOD (Sweetart Marble 2×LP)",
+        "handle": "mf-doom-mm-food-20th-anniversary-sweetart-marble-2-lp",
+        "status": "ACTIVE",
+        "price": 7777.0,
+        "currency": "INR",
+        "image": "https://cdn.shopify.com/s/files/1/0839/4293/2716/files/vinyl-mf-doom-mm-food_01_cover_front.png?v=1791665989",
+        "imageAlt": "MF DOOM MM..FOOD 20th anniversary LP, front",
+        "shopifyCollections": [
+          "selection-collection"
+        ],
+        "collection": "selection",
+        "saleStatusRaw": "Collect",
+        "saleStatus": "Collect",
+        "inventory": 1
+      },
+      {
+        "sku": "GREY-OBJ-017",
+        "title": "Sampha — Process (LP)",
+        "handle": "sampha-process-lp-young-turks-2017",
+        "status": "ACTIVE",
+        "price": 4242.0,
+        "currency": "INR",
+        "image": "https://cdn.shopify.com/s/files/1/0839/4293/2716/files/vinyl-sampha-process_01_cover_front.png?v=1791665440",
+        "imageAlt": "Sampha Process LP, front",
+        "shopifyCollections": [
+          "selection-collection"
+        ],
+        "collection": "selection",
+        "saleStatusRaw": "Collect",
+        "saleStatus": "Collect",
+        "inventory": 1
+      }
+    ],
+    "collections": [
+      {
+        "handle": "1-of-none",
+        "title": "1 OF NONE",
+        "boardId": "one-of-none",
+        "productsCount": 2,
+        "activeProducts": 2,
+        "type": null
+      },
+      {
+        "handle": "selection-collection",
+        "title": "Selection Collection",
+        "boardId": "selection",
+        "productsCount": 13,
+        "activeProducts": 12,
+        "type": null
+      }
+    ]
+  },
+  "ideas": []
 }

@@ -675,6 +675,31 @@
   .biz-coll .bc-num .bs-name { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); }
   .biz-coll .bc-num .bs-val { font: 700 clamp(26px, 5vw, 36px)/1.05 var(--font); letter-spacing: -0.04em; color: var(--ink); margin-top: 4px; }
   .biz-coll .bc-num .bs-val.missing { color: var(--ink-faint); }
+  .shop-filter { display: inline-flex; gap: 8px; align-items: center; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); }
+  .shop-filter select {
+    background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 999px;
+    color: var(--ink); font: 500 12px/1.2 var(--font); padding: 7px 12px; text-transform: none; letter-spacing: 0;
+  }
+  .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .shop-card { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .shop-card .sc-img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 10px; background: rgba(255,255,255,0.04); display: block; }
+  .shop-card .sc-title { font-size: 13px; font-weight: 500; color: var(--ink); margin: 0; line-height: 1.3; }
+  .shop-card .sc-price { font: 700 22px/1.1 var(--font); letter-spacing: -0.03em; color: var(--ink); margin: 0; }
+  .shop-card .sc-meta { font-size: 11px; color: var(--ink-muted); margin: 0; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .sale-pill { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid var(--glass-border); border-radius: 999px; padding: 3px 8px; color: var(--ink); }
+  .sale-pill.collected { color: var(--ink-faint); }
+  .sale-pill.sold { color: var(--warn); border-color: rgba(196,168,106,0.35); }
+  .idea-form { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 12px; }
+  .idea-form input {
+    flex: 1 1 220px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+    border-radius: 8px; color: var(--ink); font: 13px/1.2 var(--font); padding: 9px 10px;
+  }
+  .idea-form input:focus { outline: none; border-color: var(--glass-highlight); }
+  .idea-list { margin: 0; padding: 0 0 0 20px; display: flex; flex-direction: column; gap: 8px; }
+  .idea-list li { font-size: 14px; color: var(--ink); line-height: 1.4; }
+  .idea-list li .idea-note { display: block; font-size: 12px; color: var(--ink-muted); }
+  .idea-list li .idea-meta { display: block; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); margin-top: 2px; }
+  .idea-empty { font-size: 12px; color: var(--ink-muted); margin: 0; }
   .biz-section-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin: 22px 0 10px; }
   .biz-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
   .btn-add {
@@ -1290,12 +1315,15 @@
     </header>
 
     <div class="view-tabs">
-      <button class="view-tab active" data-view="launch" id="view-launch">Tasks</button>
-      <button class="view-tab" data-view="products" id="view-products-tab">Products</button>
-      <button class="view-tab" data-view="collections" id="view-coll">Collections</button>
-      <button class="view-tab" data-view="business" id="view-biz">Business</button>
-      <button class="view-tab" data-view="experiments" id="view-exp">Experiments</button>
+      <button class="view-tab active" data-view="business" id="view-biz">Business</button>
+      <button class="view-tab" data-view="shop-products" id="view-shop-products-tab">Products</button>
+      <button class="view-tab" data-view="shop-collections" id="view-shop-collections-tab">Collections</button>
+      <button class="view-tab" data-view="ideas" id="view-ideas-tab">Experiments</button>
       <button class="view-tab" data-view="identity" id="view-identity-tab">Identity System</button>
+      <button class="view-tab" data-view="launch" id="view-launch">Tasks</button>
+      <button class="view-tab" data-view="products" id="view-products-tab">Product editor</button>
+      <button class="view-tab" data-view="collections" id="view-coll">Collections (board)</button>
+      <button class="view-tab" data-view="experiments" id="view-exp">Experiments (board)</button>
     </div>
 
 
@@ -1484,6 +1512,41 @@
     </div>
 
     
+    <div id="view-shop-products" class="hidden">
+      <section class="panel glass">
+        <div class="biz-toolbar">
+          <div>
+            <h3 style="margin:0">Products</h3>
+            <p class="biz-note" style="margin-top:8px;margin-bottom:0" id="shop-products-note">Read-only snapshot from Shopify.</p>
+          </div>
+          <label class="shop-filter">Collection
+            <select id="shop-products-filter" aria-label="Filter by collection"></select>
+          </label>
+        </div>
+        <div class="shop-grid" id="shop-products-grid"></div>
+      </section>
+    </div>
+    <div id="view-shop-collections" class="hidden">
+      <section class="panel glass">
+        <h3 style="margin:0">Collections</h3>
+        <p class="biz-note" style="margin-top:8px" id="shop-collections-note">Read-only.</p>
+        <div class="biz-coll-grid" id="shop-collections-grid"></div>
+      </section>
+    </div>
+    <div id="view-ideas" class="hidden">
+      <section class="panel glass">
+        <h3 style="margin:0">Experiments</h3>
+        <p class="biz-note" style="margin-top:8px">Brainstorm list — one line per idea, optional short note. With a GitHub token saved (Product editor → Settings → GitHub write-back) each idea commits to <code>state.json</code> on <code>main</code>; without one it stays in this browser only.</p>
+        <form class="idea-form" id="idea-form" autocomplete="off">
+          <input id="idea-title" type="text" maxlength="160" placeholder="New experiment idea…" aria-label="Idea" required />
+          <input id="idea-note" type="text" maxlength="240" placeholder="Short note (optional)" aria-label="Note" />
+          <button type="submit" class="btn-add">Add</button>
+        </form>
+        <p class="save-status" id="idea-status" role="status" hidden></p>
+        <ol class="idea-list" id="idea-list"></ol>
+      </section>
+    </div>
+
     <div id="view-business" class="hidden">
       <section class="panel glass">
         <div class="biz-toolbar">
@@ -2045,7 +2108,7 @@ let filter = "all";
 let taskFilter = "all";
 let query = "";
 let taskQuery = "";
-let currentView = "launch";
+let currentView = "business";
 
 const expTabs = [
   { id: "all", label: "Full board" },
@@ -2659,6 +2722,12 @@ function setView(view) {
   if (productsView) productsView.classList.toggle("hidden", view !== "products");
   const expNext = document.getElementById("exp-next");
   if (expNext) expNext.classList.toggle("hidden", view !== "experiments");
+  [["shop-products", "view-shop-products-tab", "view-shop-products"],
+   ["shop-collections", "view-shop-collections-tab", "view-shop-collections"],
+   ["ideas", "view-ideas-tab", "view-ideas"]].forEach(([v, btnId, viewId]) => {
+    document.getElementById(btnId)?.classList.toggle("active", view === v);
+    document.getElementById(viewId)?.classList.toggle("hidden", view !== v);
+  });
 }
 
 function collectionStats(collectionId) {
@@ -3131,6 +3200,10 @@ document.querySelectorAll(".view-tab").forEach(btn => {
     else if (btn.dataset.view === "products") renderProducts();
     else if (btn.dataset.view === "business") renderBusiness();
     else if (btn.dataset.view === "collections") renderCollectionCards();
+    else if (btn.dataset.view === "shop-products") renderShopProducts();
+    else if (btn.dataset.view === "shop-collections") renderShopCollections();
+    else if (btn.dataset.view === "ideas") renderIdeas();
+    else if (btn.dataset.view === "identity") { /* static */ }
     else renderExperiments();
   });
 });
@@ -3318,6 +3391,138 @@ function renderBusiness() {
       <p class="bs-cap">${ordersMissing ? escHTML((ordersSrc && ordersSrc.reason) || "Shopify orders not connected") : "Paid, non-test orders in range"}</p>
     </article>`;
   }).join("");
+}
+
+/* ---------- Products / Collections (Shopify snapshot, read-only) + Experiments brainstorm ---------- */
+let shopifySnapshot = null;
+let ideas = [];
+let shopProductFilter = "all";
+const IDEAS_LOCAL_KEY = "grey-os-ideas-local";
+
+function rerenderNewView(v) {
+  if (v === "shop-products") renderShopProducts();
+  else if (v === "shop-collections") renderShopCollections();
+  else if (v === "ideas") renderIdeas();
+}
+function boardCollName(id) {
+  const c = (SEED.collections || []).find(x => x.id === id);
+  return c ? c.name : (id || "No collection");
+}
+function saleClass(s) { return s === "Sold" ? "sold" : (s === "Collected" ? "collected" : ""); }
+
+function renderShopProducts() {
+  const grid = document.getElementById("shop-products-grid");
+  if (!grid) return;
+  document.getElementById("updated").textContent = SEED.updated;
+  const snap = shopifySnapshot || { products: [] };
+  const all = snap.products || [];
+  const live = all.filter(p => p.status !== "ARCHIVED");
+  const archived = all.length - live.length;
+  const sel = document.getElementById("shop-products-filter");
+  const collIds = [...new Set(live.map(p => p.collection || "none"))];
+  if (sel) {
+    sel.innerHTML = `<option value="all">All (${live.length})</option>` + collIds.map(id =>
+      `<option value="${escHTML(id)}">${escHTML(boardCollName(id === "none" ? null : id))} (${live.filter(p => (p.collection || "none") === id).length})</option>`).join("");
+    if (!collIds.includes(shopProductFilter)) shopProductFilter = "all";
+    sel.value = shopProductFilter;
+    if (!sel.dataset.bound) { sel.dataset.bound = "1"; sel.addEventListener("change", () => { shopProductFilter = sel.value; renderShopProducts(); }); }
+  }
+  const note = document.getElementById("shop-products-note");
+  if (note) note.textContent = "Read-only snapshot from Shopify" + (snap.fetchedAt ? " · as of " + new Date(snap.fetchedAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST" : "") +
+    (archived ? " · " + archived + " archived product" + (archived > 1 ? "s" : "") + " hidden" : "") + ".";
+  const rows = live.filter(p => shopProductFilter === "all" || (p.collection || "none") === shopProductFilter);
+  if (!rows.length) { grid.innerHTML = `<p class="idea-empty">No products in this view.</p>`; return; }
+  grid.innerHTML = rows.map(p => `<article class="shop-card glass" data-sku="${escHTML(p.sku)}">
+      ${p.image ? `<img class="sc-img" src="${escHTML(p.image + (p.image.includes("?") ? "&" : "?") + "width=480")}" alt="${escHTML(p.imageAlt || p.title)}" loading="lazy" />` : `<div class="sc-img"></div>`}
+      <p class="sc-title">${escHTML(p.title)}</p>
+      <p class="sc-price">${escHTML(formatINR(p.price))}</p>
+      <p class="sc-meta"><span class="sale-pill ${saleClass(p.saleStatus)}">${escHTML(p.saleStatus)}</span><span>${escHTML(boardCollName(p.collection))}</span><span>${escHTML(p.sku)}</span></p>
+    </article>`).join("");
+}
+
+function renderShopCollections() {
+  const grid = document.getElementById("shop-collections-grid");
+  if (!grid) return;
+  document.getElementById("updated").textContent = SEED.updated;
+  const snap = shopifySnapshot || { products: [], collections: [] };
+  const shopCols = snap.collections || [];
+  const rows = (SEED.collections || []).map(c => ({ id: c.id, name: c.name, type: c.label || null }));
+  // Known Grey collections that have no board definition yet
+  [["made-to-order", "Made-to-order"], ["high-art", "High Art"]].forEach(([id, name]) => {
+    if (!rows.find(r => r.id === id)) rows.push({ id, name, type: null });
+  });
+  const ordersOk = !!snap.ordersAvailable;
+  const note = document.getElementById("shop-collections-note");
+  if (note) note.textContent = "Product counts from Shopify collections (active products; archived excluded). Type from the board's collection definitions; “Type not set” where none exists." + (ordersOk ? "" : " Sold / revenue: " + (snap.ordersReason || "Shopify orders not connected") + ".");
+  grid.innerHTML = rows.map(r => {
+    const sc = shopCols.find(x => x.boardId === r.id);
+    const count = sc ? sc.activeProducts : (snap.products || []).filter(p => p.status !== "ARCHIVED" && p.collection === r.id).length;
+    const cc = collectionCommerce[r.id];
+    const caption = sc ? "Shopify: " + sc.title + (sc.productsCount !== sc.activeProducts ? " · " + (sc.productsCount - sc.activeProducts) + " archived" : "") : "No Shopify collection";
+    return `<article class="biz-coll glass" data-id="${escHTML(r.id)}">
+      <p class="bc-title">${escHTML(r.name)}</p>
+      <div class="bc-nums">
+        <div class="bc-num"><div class="bs-name">Products</div><div class="bs-val">${escHTML(fmtNum(count))}</div></div>
+        <div class="bc-num"><div class="bs-name">Sold</div><div class="bs-val${ordersOk ? "" : " missing"}">${ordersOk && cc ? escHTML(fmtNum(cc.sold || 0)) : "—"}</div></div>
+        <div class="bc-num"><div class="bs-name">Revenue</div><div class="bs-val${ordersOk ? "" : " missing"}">${ordersOk && cc ? escHTML(formatINR(cc.revenue || 0)) : "—"}</div></div>
+      </div>
+      <p class="bs-cap">${r.type ? "Type: " + escHTML(r.type) : "Type not set"} · ${escHTML(caption)}</p>
+    </article>`;
+  }).join("");
+}
+
+function readLocalIdeas() {
+  try { const a = JSON.parse(localStorage.getItem(IDEAS_LOCAL_KEY) || "[]"); return Array.isArray(a) ? a : []; } catch (_) { return []; }
+}
+function writeLocalIdeas(list) {
+  try { localStorage.setItem(IDEAS_LOCAL_KEY, JSON.stringify(list)); } catch (_) {}
+}
+function setIdeaStatus(text) {
+  const el = document.getElementById("idea-status");
+  if (!el) return;
+  el.textContent = text || ""; el.hidden = !text;
+}
+function renderIdeas() {
+  const list = document.getElementById("idea-list");
+  if (!list) return;
+  document.getElementById("updated").textContent = SEED.updated;
+  const onMain = new Set(ideas.map(i => i.id));
+  const pending = readLocalIdeas().filter(i => !onMain.has(i.id));
+  const all = ideas.map(i => ({ ...i, _local: false })).concat(pending.map(i => ({ ...i, _local: true })));
+  list.innerHTML = all.length ? all.map(i => `<li>${escHTML(i.title)}${i.note ? `<span class="idea-note">${escHTML(i.note)}</span>` : ""}<span class="idea-meta">${escHTML((i.created || "").slice(0, 10))}${i._local ? " · this browser only" : ""}</span></li>`).join("")
+    : `<p class="idea-empty">No ideas yet — add the first one above.</p>`;
+  const form = document.getElementById("idea-form");
+  if (form && !form.dataset.bound) {
+    form.dataset.bound = "1";
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const t = document.getElementById("idea-title"), n = document.getElementById("idea-note");
+      const title = (t.value || "").trim();
+      if (!title) return;
+      const idea = { id: "idea-" + Date.now().toString(36), title: title, note: (n.value || "").trim(), created: istStamp() };
+      writeLocalIdeas(readLocalIdeas().concat([idea]));
+      t.value = ""; n.value = "";
+      renderIdeas();
+      const token = readWritebackToken();
+      if (!token) { setIdeaStatus("Saved in this browser only — add a GitHub token under Product editor → Settings to commit ideas to main."); return; }
+      setIdeaStatus("Committing to main…");
+      queueGithubWrite(async () => { try {
+        let file = await readGithubState(token);
+        const add = st => { st.ideas = Array.isArray(st.ideas) ? st.ideas : []; if (!st.ideas.find(x => x.id === idea.id)) st.ideas.push(idea); st.updated = istStamp(); st.updatedBy = "utkarsh-dashboard"; return st; };
+        let saved = await writeGithubState(token, file.sha, add(file.state), "Experiments: add idea “" + title.slice(0, 60) + "”");
+        if (isShaConflict(saved.res, saved.body)) {
+          file = await readGithubState(token);
+          saved = await writeGithubState(token, file.sha, add(file.state), "Experiments: add idea “" + title.slice(0, 60) + "”");
+        }
+        if (!saved.res.ok) throw new Error(saved.body.message || ("GitHub commit failed (" + saved.res.status + ")"));
+        ideas = file.state.ideas.slice();
+        writeLocalIdeas(readLocalIdeas().filter(x => x.id !== idea.id));
+        const sha = saved.body.commit && saved.body.commit.sha;
+        setIdeaStatus(sha ? "Committed " + sha.slice(0, 7) + " to main." : "Committed to main.");
+        renderIdeas();
+      } catch (err) { console.error(err); setIdeaStatus("Saved in this browser; GitHub commit failed: " + (err && err.message ? err.message : err)); } });
+    });
+  }
 }
 
 // Sale status dropdown. More options may be added later.
@@ -3935,6 +4140,8 @@ function applyBootState(state) {
   }
   metrics = applyMetricEdits(state.metrics);
   businessDaily = state.businessDaily || businessDaily;
+  shopifySnapshot = state.shopifySnapshot || shopifySnapshot;
+  ideas = Array.isArray(state.ideas) ? state.ideas.slice() : ideas;
   initCollectionCommerce(state.collectionCommerce || {});
   products = resolveProducts(state);
   captureEditBases(state);
@@ -3968,8 +4175,11 @@ async function boot() {
   updateGreeting();
   milestoneIndex = nearestMilestoneIndex();
   renderMilestone();
-  const viewNow = currentView || "launch";
-  if (viewNow === "products") {
+  const viewNow = currentView || "business";
+  if (viewNow === "shop-products" || viewNow === "shop-collections" || viewNow === "ideas") {
+    setView(viewNow);
+    rerenderNewView(viewNow);
+  } else if (viewNow === "products") {
     setView("products");
     renderProducts();
   } else if (viewNow === "business") {
@@ -3999,7 +4209,9 @@ async function boot() {
       const nextMs = state.milestone || milestone;
       const msChanged = JSON.stringify(nextMs) !== JSON.stringify(milestone);
       const nextMetrics = applyMetricEdits(state.metrics);
-      const metricsChanged = JSON.stringify(nextMetrics) !== JSON.stringify(metrics) || JSON.stringify(state.businessDaily || null) !== JSON.stringify(businessDaily);
+      const metricsChanged = JSON.stringify(nextMetrics) !== JSON.stringify(metrics) || JSON.stringify(state.businessDaily || null) !== JSON.stringify(businessDaily)
+        || (Array.isArray(state.ideas) && JSON.stringify(state.ideas) !== JSON.stringify(ideas))
+        || (state.shopifySnapshot && JSON.stringify(state.shopifySnapshot) !== JSON.stringify(shopifySnapshot));
       const prevCommerce = JSON.stringify(collectionCommerce);
       const nextCommerceRaw = state.collectionCommerce || {};
       // merge without losing local seeds when empty
@@ -4020,6 +4232,8 @@ async function boot() {
         }
         if (metricsChanged || forceRender) metrics = nextMetrics;
         if (state.businessDaily) businessDaily = state.businessDaily;
+        if (state.shopifySnapshot) shopifySnapshot = state.shopifySnapshot;
+        if (Array.isArray(state.ideas)) ideas = state.ideas.slice();
         if (commerceChanged || forceRender) initCollectionCommerce(state.collectionCommerce || collectionCommerce);
         if (productsChanged || forceRender) products = nextProducts;
         if (state.updated) SEED.updated = new Date(state.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
@@ -4027,6 +4241,8 @@ async function boot() {
         else if (currentView === "products") renderProducts();
         else if (currentView === "business") renderBusiness();
         else if (currentView === "collections") renderCollectionCards();
+        else if (currentView === "shop-products" || currentView === "shop-collections" || currentView === "ideas") rerenderNewView(currentView);
+        else if (currentView === "identity") { /* static */ }
         else renderExperiments();
       }
     } catch {}
