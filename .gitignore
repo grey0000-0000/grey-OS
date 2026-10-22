@@ -1,0 +1,10 @@
+# GREY credential vault and secrets: never commit
+.grey-vault/
+vault.env
+*.env
+.env*
+*service-account*.json
+*credentials*.json
+.shopify_token
+*.pem
+*.key
