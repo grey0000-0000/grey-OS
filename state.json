@@ -1,13 +1,5 @@
 {
   "edits": {
-    "sel-travel": {
-      "stage": "Concept",
-      "status": "Active"
-    },
-    "oon-lab": {
-      "stage": "Prototype mix",
-      "status": "Active"
-    },
     "oon-bags": {
       "stage": "Asset",
       "status": "Made — needs photos"
@@ -32,10 +24,6 @@
       "status": "3 samples · list open",
       "notes": "CD 6 Oct — Evergray samples deferred off soft launch. Samples stay; list is not on the 11 Oct run."
     },
-    "cg-core": {
-      "stage": "Idea",
-      "status": "Likely temporal"
-    },
     "lunar": {
       "stage": "Idea",
       "status": "Parked",
@@ -49,11 +37,6 @@
     "film": {
       "stage": "Concept",
       "status": "Launch trio"
-    },
-    "site": {
-      "stage": "Live",
-      "status": "Soft-live",
-      "notes": "www.greyobjects.com live on Oxygen/Hydrogen (Production public, HTTP 200). Product pages and website structure still need Claude."
     },
     "razorpay": {
       "stage": "Live",
@@ -72,14 +55,6 @@
     "ig": {
       "stage": "Not started",
       "status": "Open"
-    },
-    "assistant": {
-      "stage": "Hiring",
-      "status": "Open"
-    },
-    "designer": {
-      "stage": "Sourcing",
-      "status": "Recommended"
     }
   },
   "taskEdits": {
@@ -132,13 +107,6 @@
       "priority": "Critical",
       "blocker": "",
       "notes": "CD 6 Oct — Instagram reel cut FIRST, then Instagram product template. Folds the Instagram set. Not started until the video treatment / video bank path is ready. CD 17 Oct — Done."
-    },
-    "sel-logo": {
-      "status": "Not started",
-      "priority": "Low",
-      "due": "2026-10-12",
-      "blocker": "",
-      "notes": "CD 6 Oct — off today's soft-launch focus. Not part of the run to Sunday 11 Oct."
     },
     "sel-list": {
       "status": "Done",
@@ -193,10 +161,6 @@
       "blocker": "",
       "notes": "CD 6 Oct — Hot Wheels deferred off soft launch."
     },
-    "oon-mystery": {
-      "status": "Not started",
-      "priority": "Low"
-    },
     "web-design-spec": {
       "status": "Done",
       "priority": "Medium",
@@ -206,11 +170,6 @@
     "web-copy-review": {
       "status": "Done",
       "notes": "2026-10-04 CD: captions and copy still open — resume once all products are added. CD 6 Oct — waits on real products / website-ready assets. CD 17 Oct — Done."
-    },
-    "web-seo": {
-      "status": "In progress",
-      "notes": "2026-10-04: Critical blocker — www.greyobjects.com returns 401/Private with x-robots-tag noindex. Sitemap.xml is live but only lists /products/test and skirt-tote-bag (not the launch catalog); homepage is missing from the sitemap; EN-CA/FR-CA hreflang look like skeleton markets. Missing or unverifiable behind the gate: Product+Offer JSON-LD, Organization/WebSite JSON-LD, llms.txt, meta/OG/canonicals, Search Console. Suggested order: (1) flip Production URL privacy to Public, (2) lock which products/collections are indexable for soft launch, (3) wire getSeoMeta, (4) add JSON-LD, (5) add llms.txt, (6) Search Console verification. GEO (generative engine optimization) is included in this task: llms.txt, entity clarity, and structured product data so Grey appears in AI-generated answers. CD 6 Oct — flipping Production URL privacy to Public remains a next action (SEO/GEO stays blocked until that privacy flip).",
-      "blocker": "www.greyobjects.com returns 401/Private with x-robots-tag noindex"
     },
     "obj-lenticular": {
       "status": "Parked",
@@ -291,14 +250,6 @@
       "blocker": "",
       "owner": "Utkarsh + Communications",
       "notes": "CD 6 Oct — checkup, Razorpay Grey restyle, and go live (window 10–11 Oct). Not started until website-ready assets, film, and the Instagram reel path are ready enough. Razorpay restyle is folded here. Flipping Production URL privacy to Public stays on web-seo and must clear before go-live. CD 17 Oct — Done."
-    },
-    "obj-arsenal-frame": {
-      "status": "In progress",
-      "priority": "High",
-      "due": "2026-10-06",
-      "blocker": "",
-      "owner": "Utkarsh",
-      "notes": "CD 6 Oct — hand off three Arsenal cards for framing today so they are ready for the weekend. One-off non-collection — not Selection, One of None, or Evergray."
     }
   },
   "cardDates": {
