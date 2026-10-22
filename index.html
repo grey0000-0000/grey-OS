@@ -689,6 +689,9 @@
   .sale-pill { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid var(--glass-border); border-radius: 999px; padding: 3px 8px; color: var(--ink); }
   .sale-pill.collected { color: var(--ink-faint); }
   .sale-pill.sold { color: var(--warn); border-color: rgba(196,168,106,0.35); }
+  .status-pill { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid var(--glass-border); border-radius: 999px; padding: 3px 8px; color: var(--ink-muted); white-space: nowrap; }
+  .status-pill.available { color: var(--color-red-dot); border-color: color-mix(in srgb, var(--color-red-dot) 35%, transparent); }
+  .status-pill.muted { color: var(--ink-faint); }
   .idea-form { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 12px; }
   .idea-form input {
     flex: 1 1 220px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
@@ -3410,6 +3413,59 @@ function boardCollName(id) {
 }
 function saleClass(s) { return s === "Sold" ? "sold" : (s === "Collected" ? "collected" : ""); }
 
+/* Products-tab status tag. Priority: Delivered / Shipped / Awaiting shipping (latest order line item)
+   > Booked (open unpaid / pending / authorized order) > In X carts (open abandoned checkouts)
+   > Not for sale (grey.sale_status metafield) > Available (active, stock > 0, for sale) > Sold out.
+   Order-based statuses fill in automatically once snap.orders / snap.abandonedCheckouts exist
+   (needs read_orders). Expected shapes (Admin GraphQL, flattened):
+   orders: [{ createdAt, closed, cancelledAt, displayFinancialStatus, lineItems: [{ sku, productHandle,
+     fulfillmentStatus: "FULFILLED"|"UNFULFILLED"|..., shipmentStatus: "DELIVERED"|"IN_TRANSIT"|... }] }]
+   abandonedCheckouts: [{ completedAt, closed, lineItems: [{ sku, productHandle }] }] */
+const PRODUCT_STATUS_CLASS = { "Available": "available", "Not for sale": "muted", "Sold out": "muted" };
+function lineMatchesProduct(li, p) {
+  if (!li) return false;
+  if (li.sku && p.sku && String(li.sku) === String(p.sku)) return true;
+  const h = li.productHandle || li.handle || (li.product && li.product.handle);
+  return !!(h && p.handle && h === p.handle);
+}
+function computeProductStatus(p, snap) {
+  snap = snap || {};
+  const up = v => String(v || "").toUpperCase().replace(/[\s-]+/g, "_");
+  const orders = Array.isArray(snap.orders) ? snap.orders : null;
+  if (orders) {
+    const hits = orders.filter(o => !o.cancelledAt && (o.lineItems || []).some(li => lineMatchesProduct(li, p)))
+      .sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+    const o = hits[0];
+    if (o) {
+      const li = (o.lineItems || []).find(x => lineMatchesProduct(x, p)) || {};
+      const ship = up(li.shipmentStatus || o.shipmentStatus);
+      const ful = up(li.fulfillmentStatus || o.displayFulfillmentStatus);
+      const fin = up(o.displayFinancialStatus || o.financialStatus);
+      if (ship === "DELIVERED") return { status: "Delivered", source: "orders" };
+      if ((ship && ship !== "CONFIRMED" && ship !== "LABEL_PRINTED" && ship !== "LABEL_PURCHASED") || ful === "FULFILLED")
+        return { status: "Shipped", source: "orders" };
+      if ((fin === "PAID" || fin === "PARTIALLY_REFUNDED") && ful !== "FULFILLED") return { status: "Awaiting shipping", source: "orders" };
+      if (!o.closed && ["PENDING", "AUTHORIZED", "UNPAID", "PARTIALLY_PAID"].includes(fin)) return { status: "Booked", source: "orders" };
+    }
+  }
+  const carts = Array.isArray(snap.abandonedCheckouts) ? snap.abandonedCheckouts : null;
+  if (carts) {
+    const n = carts.filter(c => !c.completedAt && !c.closed && (c.lineItems || []).some(li => lineMatchesProduct(li, p))).length;
+    if (n > 0) return { status: "In " + n + " cart" + (n > 1 ? "s" : ""), source: "abandonedCheckouts" };
+  }
+  const raw = String(p.saleStatusRaw || "").trim().toLowerCase();
+  if (raw === "not for sale") return { status: "Not for sale", source: "metafield:grey.sale_status" };
+  const inv = Number(p.inventory) || 0;
+  if (p.status === "ACTIVE" && inv > 0 && raw !== "sold") return { status: "Available", source: "inventory" };
+  return { status: "Sold out", source: "inventory" };
+}
+const SHOP_PRODUCT_FILTERS = [
+  { id: "selection", label: "Selection Collection" },
+  { id: "one-of-none", label: "One of None" },
+  { id: "cyber-gunk", label: "CyberGunk" },
+  { id: "evergray", label: "Evergray" }
+];
+
 function renderShopProducts() {
   const grid = document.getElementById("shop-products-grid");
   if (!grid) return;
@@ -3419,10 +3475,10 @@ function renderShopProducts() {
   const live = all.filter(p => p.status !== "ARCHIVED");
   const archived = all.length - live.length;
   const sel = document.getElementById("shop-products-filter");
-  const collIds = [...new Set(live.map(p => p.collection || "none"))];
+  const collIds = SHOP_PRODUCT_FILTERS.map(f => f.id);
   if (sel) {
-    sel.innerHTML = `<option value="all">All (${live.length})</option>` + collIds.map(id =>
-      `<option value="${escHTML(id)}">${escHTML(boardCollName(id === "none" ? null : id))} (${live.filter(p => (p.collection || "none") === id).length})</option>`).join("");
+    sel.innerHTML = `<option value="all">All (${live.length})</option>` + SHOP_PRODUCT_FILTERS.map(f =>
+      `<option value="${escHTML(f.id)}">${escHTML(f.label)} (${live.filter(p => (p.collection || "none") === f.id).length})</option>`).join("");
     if (!collIds.includes(shopProductFilter)) shopProductFilter = "all";
     sel.value = shopProductFilter;
     if (!sel.dataset.bound) { sel.dataset.bound = "1"; sel.addEventListener("change", () => { shopProductFilter = sel.value; renderShopProducts(); }); }
@@ -3431,13 +3487,13 @@ function renderShopProducts() {
   if (note) note.textContent = "Read-only snapshot from Shopify" + (snap.fetchedAt ? " · as of " + new Date(snap.fetchedAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST" : "") +
     (archived ? " · " + archived + " archived product" + (archived > 1 ? "s" : "") + " hidden" : "") + ".";
   const rows = live.filter(p => shopProductFilter === "all" || (p.collection || "none") === shopProductFilter);
-  if (!rows.length) { grid.innerHTML = `<p class="idea-empty">No products in this view.</p>`; return; }
-  grid.innerHTML = rows.map(p => `<article class="shop-card glass" data-sku="${escHTML(p.sku)}">
+  if (!rows.length) { grid.innerHTML = `<p class="idea-empty">${shopProductFilter === "all" ? "No products in this view." : "No products in this collection yet"}</p>`; return; }
+  grid.innerHTML = rows.map(p => { const st = computeProductStatus(p, snap); return `<article class="shop-card glass" data-sku="${escHTML(p.sku)}">
       ${p.image ? `<img class="sc-img" src="${escHTML(p.image + (p.image.includes("?") ? "&" : "?") + "width=480")}" alt="${escHTML(p.imageAlt || p.title)}" loading="lazy" />` : `<div class="sc-img"></div>`}
       <p class="sc-title">${escHTML(p.title)}</p>
       <p class="sc-price">${escHTML(formatINR(p.price))}</p>
-      <p class="sc-meta"><span class="sale-pill ${saleClass(p.saleStatus)}">${escHTML(p.saleStatus)}</span><span>${escHTML(boardCollName(p.collection))}</span><span>${escHTML(p.sku)}</span></p>
-    </article>`).join("");
+      <p class="sc-meta"><span class="sale-pill">${escHTML(boardCollName(p.collection))}</span><span class="status-pill ${PRODUCT_STATUS_CLASS[st.status] || ""}" title="Status source: ${escHTML(st.source)}">${escHTML(st.status)}</span><span>${escHTML(p.sku)}</span></p>
+    </article>`; }).join("");
 }
 
 function renderShopCollections() {

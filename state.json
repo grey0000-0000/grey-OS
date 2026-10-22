@@ -959,6 +959,8 @@
     "saleStatusRule": "grey.sale_status metafield: Collect = available; Not for sale/Collected = Collected (held); Sold = Sold",
     "ordersAvailable": false,
     "ordersReason": "grey-os app lacks read_orders",
+    "statusTagRule": "Card status tag priority: Delivered / Shipped / Awaiting shipping (latest order line item fulfillment + shipment status) > Booked (open unpaid/pending/authorized order) > In X carts (open abandoned checkouts) > Not for sale (grey.sale_status metafield) > Available (active, inventory > 0, for sale) > Sold out. Computed by computeProductStatus() in index.html; statusTag/statusSource per product (product 'status' stays the Shopify product status).",
+    "statusTagNote": "Pending read_orders scope: Delivered, Shipped, Awaiting shipping, Booked and In X carts. Shopify returned ACCESS_DENIED for orders and abandonedCheckouts on 22 Oct 2026; current tags come from inventory + grey.sale_status only and fill in automatically if orders / abandonedCheckouts are added to this snapshot.",
     "products": [
       {
         "sku": "GREY-OBJ-001",
@@ -975,7 +977,9 @@
         "collection": "selection",
         "saleStatusRaw": "Collect",
         "saleStatus": "Collect",
-        "inventory": 2
+        "inventory": 2,
+        "statusTag": "Available",
+        "statusSource": "inventory"
       },
       {
         "sku": "GREY-OBJ-002",
@@ -992,7 +996,9 @@
         "collection": "selection",
         "saleStatusRaw": "Collect",
         "saleStatus": "Collect",
-        "inventory": 1
+        "inventory": 1,
+        "statusTag": "Sold out",
+        "statusSource": "inventory"
       },
       {
         "sku": "GREY-OBJ-003",
@@ -1009,7 +1015,9 @@
         "collection": "selection",
         "saleStatusRaw": "Collect",
         "saleStatus": "Collect",
-        "inventory": 1
+        "inventory": 1,
+        "statusTag": "Available",
+        "statusSource": "inventory"
       },
       {
         "sku": "GREY-OBJ-004",
@@ -1026,7 +1034,9 @@
         "collection": "selection",
         "saleStatusRaw": "Collect",
         "saleStatus": "Collect",
-        "inventory": 1
+        "inventory": 1,
+        "statusTag": "Available",
+        "statusSource": "inventory"
       },
       {
         "sku": "GREY-OBJ-005",
@@ -1043,7 +1053,9 @@
         "collection": "one-of-none",
         "saleStatusRaw": "Collect",
         "saleStatus": "Collect",
-        "inventory": 1
+        "inventory": 1,
+        "statusTag": "Available",
+        "statusSource": "inventory"
       },
       {
         "sku": "GREY-OBJ-006",
@@ -1060,7 +1072,9 @@
         "collection": "one-of-none",
         "saleStatusRaw": "Collect",
         "saleStatus": "Collect",
-        "inventory": 1
+        "inventory": 1,
+        "statusTag": "Available",
+        "statusSource": "inventory"
       },
       {
         "sku": "GREY-OBJ-007",
@@ -1077,7 +1091,9 @@
         "collection": "selection",
         "saleStatusRaw": "Not for sale",
         "saleStatus": "Collected",
-        "inventory": 0
+        "inventory": 0,
+        "statusTag": "Not for sale",
+        "statusSource": "metafield:grey.sale_status"
       },
       {
         "sku": "GREY-OBJ-008",
@@ -1094,7 +1110,9 @@
         "collection": "selection",
         "saleStatusRaw": "Collect",
         "saleStatus": "Collect",
-        "inventory": 1
+        "inventory": 1,
+        "statusTag": "Available",
+        "statusSource": "inventory"
       },
       {
         "sku": "GREY-OBJ-009",
@@ -1111,7 +1129,9 @@
         "collection": "selection",
         "saleStatusRaw": "Collect",
         "saleStatus": "Collect",
-        "inventory": 1
+        "inventory": 1,
+        "statusTag": "Available",
+        "statusSource": "inventory"
       },
       {
         "sku": "GREY-OBJ-011",
@@ -1128,7 +1148,9 @@
         "collection": "selection",
         "saleStatusRaw": "Collect",
         "saleStatus": "Collect",
-        "inventory": 1
+        "inventory": 1,
+        "statusTag": "Available",
+        "statusSource": "inventory"
       },
       {
         "sku": "GREY-OBJ-013",
@@ -1145,7 +1167,9 @@
         "collection": "selection",
         "saleStatusRaw": "Not for sale",
         "saleStatus": "Collected",
-        "inventory": 0
+        "inventory": 0,
+        "statusTag": "Not for sale",
+        "statusSource": "metafield:grey.sale_status"
       },
       {
         "sku": "GREY-OBJ-014",
@@ -1162,7 +1186,9 @@
         "collection": "selection",
         "saleStatusRaw": "Collect",
         "saleStatus": "Collect",
-        "inventory": 1
+        "inventory": 1,
+        "statusTag": "Available",
+        "statusSource": "inventory"
       },
       {
         "sku": "GREY-OBJ-015",
@@ -1179,7 +1205,9 @@
         "collection": "selection",
         "saleStatusRaw": "Collect",
         "saleStatus": "Collect",
-        "inventory": 1
+        "inventory": 1,
+        "statusTag": "Available",
+        "statusSource": "inventory"
       },
       {
         "sku": "GREY-OBJ-016",
@@ -1196,7 +1224,9 @@
         "collection": "selection",
         "saleStatusRaw": "Collect",
         "saleStatus": "Collect",
-        "inventory": 1
+        "inventory": 1,
+        "statusTag": "Available",
+        "statusSource": "inventory"
       },
       {
         "sku": "GREY-OBJ-017",
@@ -1213,7 +1243,9 @@
         "collection": "selection",
         "saleStatusRaw": "Collect",
         "saleStatus": "Collect",
-        "inventory": 1
+        "inventory": 1,
+        "statusTag": "Available",
+        "statusSource": "inventory"
       }
     ],
     "collections": [
