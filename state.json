@@ -348,7 +348,7 @@
       "id": "newsletter",
       "name": "Newsletter signups",
       "unit": "count",
-      "current": "0",
+      "current": "5",
       "target": "150",
       "history": [
         0,
@@ -357,7 +357,7 @@
         0,
         0,
         0,
-        0
+        5
       ],
       "owner": "Strategist · Communications"
     },
@@ -449,16 +449,16 @@
   ],
   "collectionCommerce": {
     "selection": {
-      "products": 0,
+      "products": 12,
       "sold": 0,
       "revenue": 0,
-      "notes": ""
+      "notes": "22 Oct 2026: 12 active products in Shopify collection selection-collection (13 incl. archived GREY-OBJ-002). Sold/revenue not filled: Shopify app lacks read_orders."
     },
     "one-of-none": {
       "products": 2,
       "sold": 0,
       "revenue": 0,
-      "notes": ""
+      "notes": "22 Oct 2026: 2 active products in Shopify collection 1-of-none (GREY-OBJ-005, -006). Sold/revenue not filled: Shopify app lacks read_orders."
     },
     "evergray": {
       "products": 3,
@@ -947,6 +947,59 @@
     }
   ],
   "experiments": null,
-  "updated": "2026-10-17T20:15:57+05:30",
-  "updatedBy": "orchestrator"
+  "updated": "2026-10-22T20:05:00+05:30",
+  "updatedBy": "orchestrator",
+  "businessDaily": {
+    "asOf": "2026-10-22T20:05:00+05:30",
+    "note": "Dated, anonymous daily counts only (no names/emails). Range metrics sum these by IST date.",
+    "days": {
+      "2026-10-18": {
+        "signups": 3
+      },
+      "2026-10-20": {
+        "signups": 1
+      },
+      "2026-10-22": {
+        "signups": 1
+      }
+    },
+    "sources": {
+      "newsletter": {
+        "status": "live",
+        "kind": "range",
+        "field": "signups",
+        "caption": "New Brevo signups in range · 5 total on GREY Newsletter list",
+        "source": "Brevo list #3"
+      },
+      "visitors": {
+        "status": "missing",
+        "reason": "Shopify analytics not reachable — app lacks read_reports (ShopifyQL) and GA4 isn't connected"
+      },
+      "ig": {
+        "status": "missing",
+        "reason": "Instagram not connected"
+      },
+      "cvr": {
+        "status": "missing",
+        "reason": "Needs Shopify sessions (read_reports) and orders (read_orders)"
+      },
+      "aov": {
+        "status": "missing",
+        "reason": "Shopify orders not readable — app lacks read_orders"
+      },
+      "repeat": {
+        "status": "missing",
+        "reason": "Shopify orders not readable — app lacks read_orders"
+      },
+      "reach": {
+        "status": "missing",
+        "reason": "No content-output source connected"
+      },
+      "orders": {
+        "status": "missing",
+        "reason": "Shopify orders not readable — app lacks read_orders"
+      }
+    },
+    "collectionDays": {}
+  }
 }

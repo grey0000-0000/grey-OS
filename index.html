@@ -645,6 +645,37 @@
   .sparkline polyline { fill: none; stroke: rgba(242,242,240,0.55); stroke-width: 1.5; }
   .sparkline circle { fill: #f2f2f0; }
   .biz-note { font-size: 12px; color: var(--ink-muted); line-height: 1.45; margin: 0 0 14px; }
+  /* Business tab: read-only big-number widgets + date filter */
+  .biz-filter { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 16px; }
+  .biz-filter .biz-range-btn {
+    appearance: none; cursor: pointer; background: transparent; color: var(--ink-muted);
+    border: 1px solid var(--glass-border); border-radius: 999px; padding: 7px 12px;
+    font: 500 12px/1 var(--font); letter-spacing: 0.02em;
+  }
+  .biz-filter .biz-range-btn.active { background: rgba(255,255,255,0.10); color: var(--ink); border-color: var(--glass-highlight); }
+  .biz-filter .biz-custom { display: inline-flex; gap: 6px; align-items: center; font-size: 11px; color: var(--ink-faint); }
+  .biz-filter .biz-custom input[type=date] {
+    background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px;
+    color: var(--ink); font: 12px/1.2 var(--font); padding: 6px 8px; color-scheme: dark;
+  }
+  .biz-range-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 14px; }
+  .biz-stat { padding: 18px 18px 16px; display: flex; flex-direction: column; gap: 6px; min-height: 0; }
+  .biz-stat .bs-name { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin: 0; }
+  .biz-stat .bs-val {
+    font: 700 clamp(34px, 7vw, 48px)/1 var(--font); letter-spacing: -0.04em; color: var(--ink);
+    margin: 4px 0 2px; word-break: break-word;
+  }
+  .biz-stat .bs-val.missing { color: var(--ink-faint); }
+  .biz-stat .bs-cap, .biz-coll .bs-cap { font-size: 11px; color: var(--ink-muted); line-height: 1.4; margin: 0; }
+  .biz-stat .bs-cap.faint { color: var(--ink-faint); }
+  .biz-coll-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .biz-coll { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .biz-coll .bc-title { font-size: 13px; font-weight: 500; color: var(--ink); margin: 0; }
+  .biz-coll .bc-nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .biz-coll .bc-num .bs-name { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); }
+  .biz-coll .bc-num .bs-val { font: 700 clamp(26px, 5vw, 36px)/1.05 var(--font); letter-spacing: -0.04em; color: var(--ink); margin-top: 4px; }
+  .biz-coll .bc-num .bs-val.missing { color: var(--ink-faint); }
+  .biz-section-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin: 22px 0 10px; }
   .biz-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
   .btn-add {
     appearance: none; cursor: pointer;
@@ -1458,15 +1489,27 @@
         <div class="biz-toolbar">
           <div>
             <h3 style="margin:0">Business oversight</h3>
-            <p class="biz-note" style="margin-top:8px;margin-bottom:0">Day-one metrics for soft launch. Owned by <strong>Grey Strategist</strong> with Creative Director — edit metric values and numeric targets here (calendar dates stay locked).</p>
+            <p class="biz-note" style="margin-top:8px;margin-bottom:0">Live numbers from connected sources (Shopify, Brevo). Read-only — figures update when the orchestrator refreshes <code>state.json</code>.</p>
           </div>
-          <button type="button" class="btn-add" id="btn-add-metric">Add metric</button>
         </div>
+        <div class="biz-filter" id="biz-filter" role="group" aria-label="Date range">
+          <button type="button" class="biz-range-btn" data-range="7">Last 7 days</button>
+          <button type="button" class="biz-range-btn" data-range="30">Last 30 days</button>
+          <button type="button" class="biz-range-btn" data-range="90">Last 90 days</button>
+          <button type="button" class="biz-range-btn" data-range="all">All time</button>
+          <button type="button" class="biz-range-btn" data-range="custom">Custom</button>
+          <span class="biz-custom hidden" id="biz-custom">
+            <input type="date" id="biz-from" aria-label="From" /> to <input type="date" id="biz-to" aria-label="To" />
+          </span>
+        </div>
+        <p class="biz-range-label" id="biz-range-label"></p>
         <div class="metric-grid" id="metric-grid"></div>
+        <div class="biz-section-label">Collection commerce</div>
+        <div class="biz-coll-grid" id="biz-coll-grid"></div>
       </section>
       <section class="next-move glass" style="margin-top:14px">
         <div class="label">Strategist ownership</div>
-        <p>Populate actuals weekly, interpret against targets, and surface pricing / volume / channel recommendations into experiments. Placeholder sparklines hold history until live analytics connectors are wired.</p>
+        <p>Interpret actuals against targets and surface pricing / volume / channel recommendations into experiments. Metrics without a connected source show “—” with the missing source named.</p>
       </section>
     </div>
 
@@ -3103,7 +3146,6 @@ document.querySelectorAll(".view-tab").forEach(btn => {
     else renderExperiments();
   });
 });
-document.getElementById("btn-add-metric")?.addEventListener("click", addMetric);
 document.getElementById("btn-add-product")?.addEventListener("click", addProduct);
 bindProductWriteback();
 document.getElementById("search").addEventListener("input", e => { query = e.target.value; renderExpRows(); });
@@ -3139,60 +3181,155 @@ function metricProgress(m) {
   return Math.max(0, Math.min(100, Math.round((cur / tgt) * 100)));
 }
 
+/* Business tab — read-only, date-filtered. Daily data lives in state.json → businessDaily. */
+let businessDaily = null;
+let bizRange = { kind: "7", from: null, to: null };
+
+function istToday() {
+  return new Date(Date.now() + 330 * 60000).toISOString().slice(0, 10);
+}
+function addDaysISO(iso, n) {
+  const d = new Date(iso + "T00:00:00Z");
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+function fmtDay(iso) {
+  if (!iso) return "";
+  const d = new Date(iso + "T00:00:00Z");
+  return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+}
+function bizRangeBounds() {
+  const today = istToday();
+  const days = (businessDaily && businessDaily.days) || {};
+  const keys = Object.keys(days).sort();
+  if (bizRange.kind === "all") return { from: keys[0] || today, to: today, label: "All time" };
+  if (bizRange.kind === "custom") {
+    let from = bizRange.from || addDaysISO(today, -6);
+    let to = bizRange.to || today;
+    if (from > to) { const t = from; from = to; to = t; }
+    return { from, to, label: "Custom" };
+  }
+  const n = parseInt(bizRange.kind, 10) || 7;
+  return { from: addDaysISO(today, -(n - 1)), to: today, label: "Last " + n + " days" };
+}
+function sumDaily(field, from, to) {
+  const days = (businessDaily && businessDaily.days) || {};
+  let total = 0, any = false;
+  Object.keys(days).forEach(k => {
+    if (k < from || k > to) return;
+    const v = days[k] && days[k][field];
+    if (typeof v === "number") { total += v; any = true; }
+  });
+  return { total, any };
+}
+function escHTML(v) {
+  return String(v == null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function fmtNum(n, unit) {
+  if (unit === "₹") return formatINR(n);
+  if (unit === "%") return (Math.round(n * 10) / 10) + "%";
+  return new Intl.NumberFormat("en-IN").format(n);
+}
+function targetCap(m) {
+  const t = String(m.target == null ? "" : m.target).trim();
+  if (!t || t === "0") return "";
+  if (m.unit === "₹") return "Target " + formatINR(parseFloat(t) || 0);
+  if (m.unit === "%") return "Target " + t + "%";
+  return "Target " + t;
+}
+
+/** Compute one metric for the active range. Returns {value, missing, caption}. */
+function bizMetricValue(m, b) {
+  const src = (businessDaily && businessDaily.sources && businessDaily.sources[m.id]) || null;
+  if (src && src.status === "missing") return { value: "—", missing: true, caption: src.reason || "Source not connected" };
+  if (src && src.kind === "range" && src.field) {
+    const r = sumDaily(src.field, b.from, b.to);
+    return { value: fmtNum(r.total, m.unit), missing: false, caption: src.caption || "" };
+  }
+  if (src && src.kind === "derived" && m.id === "aov") {
+    const o = sumDaily("orders", b.from, b.to), rv = sumDaily("revenue", b.from, b.to);
+    return o.total ? { value: formatINR(rv.total / o.total), missing: false, caption: "Revenue ÷ paid orders in range" } : { value: "—", missing: false, caption: "No paid orders in range" };
+  }
+  if (src && src.kind === "derived" && m.id === "cvr") {
+    const o = sumDaily("orders", b.from, b.to), se = sumDaily("sessions", b.from, b.to);
+    return se.total ? { value: fmtNum(o.total / se.total * 100, "%"), missing: false, caption: "Paid orders ÷ sessions in range" } : { value: "—", missing: false, caption: "No sessions in range" };
+  }
+  // point-in-time: latest value with as-of caption
+  const cur = parseFloat(String(m.current).replace(/[^0-9.-]/g, ""));
+  const asOf = (src && src.asOf) || (businessDaily && businessDaily.asOf) || "";
+  return { value: Number.isFinite(cur) ? fmtNum(cur, m.unit) : String(m.current), missing: false, caption: asOf ? "As of " + fmtDay(asOf.slice(0, 10)) : "" };
+}
+
+function renderBizFilter(b) {
+  document.querySelectorAll("#biz-filter .biz-range-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.range === bizRange.kind));
+  const custom = document.getElementById("biz-custom");
+  if (custom) custom.classList.toggle("hidden", bizRange.kind !== "custom");
+  const f = document.getElementById("biz-from"), t = document.getElementById("biz-to");
+  if (f && bizRange.kind === "custom") { f.value = b.from; t.value = b.to; }
+  const lbl = document.getElementById("biz-range-label");
+  if (lbl) lbl.textContent = b.label + " · " + fmtDay(b.from) + " – " + fmtDay(b.to) + " (IST)";
+}
+
+function bindBizFilter() {
+  const bar = document.getElementById("biz-filter");
+  if (!bar || bar.dataset.bound) return;
+  bar.dataset.bound = "1";
+  bar.querySelectorAll(".biz-range-btn").forEach(btn => btn.addEventListener("click", () => {
+    bizRange.kind = btn.dataset.range;
+    if (bizRange.kind === "custom" && !bizRange.from) { bizRange.to = istToday(); bizRange.from = addDaysISO(bizRange.to, -6); }
+    renderBusiness();
+  }));
+  ["biz-from", "biz-to"].forEach(id => document.getElementById(id)?.addEventListener("change", e => {
+    if (id === "biz-from") bizRange.from = e.target.value || null; else bizRange.to = e.target.value || null;
+    bizRange.kind = "custom";
+    renderBusiness();
+  }));
+}
+
 function renderBusiness() {
   const grid = document.getElementById("metric-grid");
   if (!grid) return;
   document.getElementById("updated").textContent = SEED.updated;
+  bindBizFilter();
+  const b = bizRangeBounds();
+  renderBizFilter(b);
   grid.innerHTML = metrics.map(m => {
-    const pct = metricProgress(m);
-    const pts = sparkPoints(m.history);
-    const last = (m.history && m.history.length) ? m.history[m.history.length - 1] : 0;
-    return `<article class="metric-card glass" data-id="${m.id}">
-      <div class="m-owner">${m.owner || "Strategist"}</div>
-      <input class="m-name" data-field="name" data-id="${m.id}" value="${String(m.name).replace(/"/g, '&quot;')}" />
-      <div class="m-values">
-        <div class="m-field">
-          <label>Current ${m.unit ? '(' + m.unit + ')' : ''}</label>
-          <input data-field="current" data-id="${m.id}" value="${String(m.current).replace(/"/g, '&quot;')}" />
-        </div>
-        <div class="m-field">
-          <label>Target</label>
-          <input data-field="target" data-id="${m.id}" value="${String(m.target).replace(/"/g, '&quot;')}" />
-        </div>
-      </div>
-      <div class="m-pct">${pct}% of target · trend placeholder</div>
-      <div class="m-progress"><span style="width:${pct}%"></span></div>
-      <svg class="sparkline" viewBox="0 0 220 36" preserveAspectRatio="none" aria-hidden="true">
-        <polyline points="${pts}"></polyline>
-        <circle cx="${pts.split(' ').slice(-1)[0].split(',')[0]}" cy="${pts.split(' ').slice(-1)[0].split(',')[1]}" r="2.2"></circle>
-      </svg>
+    const v = bizMetricValue(m, b);
+    const tgt = targetCap(m);
+    return `<article class="biz-stat glass" data-id="${escHTML(m.id)}">
+      <p class="bs-name">${escHTML(m.name)}</p>
+      <div class="bs-val${v.missing ? " missing" : ""}">${escHTML(v.value)}</div>
+      ${v.caption ? `<p class="bs-cap">${escHTML(v.caption)}</p>` : ""}
+      ${tgt ? `<p class="bs-cap faint">${escHTML(tgt)}</p>` : ""}
     </article>`;
   }).join("");
 
-  grid.querySelectorAll("input").forEach(inp => {
-    const save = async () => {
-      const row = metrics.find(x => x.id === inp.dataset.id);
-      if (!row) return;
-      row[inp.dataset.field] = inp.value;
-      // push current into history tail when current changes
-      if (inp.dataset.field === "current") {
-        const n = parseFloat(String(inp.value).replace(/[^0-9.-]/g, ""));
-        if (!Number.isNaN(n)) {
-          row.history = [...(row.history || []).slice(-6), n];
-        }
-      }
-      try { await persistAll(); renderBusiness(); }
-      catch (err) { alert("Could not save metric — retry."); console.error(err); }
-    };
-    inp.addEventListener("change", save);
-    inp.addEventListener("blur", save);
-  });
-}
-
-function addMetric() {
-  const id = "metric-" + Date.now().toString(36);
-  metrics.push({ id, name: "New metric", unit: "", current: "0", target: "0", history: [0,0,0,0,0,0,0], owner: "Strategist" });
-  persistAll().then(renderBusiness).catch(err => alert("Could not add metric"));
+  const cg = document.getElementById("biz-coll-grid");
+  if (!cg) return;
+  const ordersSrc = businessDaily && businessDaily.sources && businessDaily.sources.orders;
+  const ordersMissing = !ordersSrc || ordersSrc.status === "missing";
+  const byColl = (businessDaily && businessDaily.collectionDays) || {};
+  cg.innerHTML = SEED.collections.map(c => {
+    const m = collectionCommerce[c.id] || { products: 0, sold: 0, revenue: 0 };
+    let sold = "—", rev = "—";
+    if (!ordersMissing) {
+      let s2 = 0, r2 = 0;
+      Object.keys(byColl[c.id] || {}).forEach(k => {
+        if (k < b.from || k > b.to) return;
+        s2 += byColl[c.id][k].sold || 0; r2 += byColl[c.id][k].revenue || 0;
+      });
+      sold = fmtNum(s2); rev = formatINR(r2);
+    }
+    return `<article class="biz-coll glass" data-id="${escHTML(c.id)}">
+      <p class="bc-title">${escHTML(c.name)}</p>
+      <div class="bc-nums">
+        <div class="bc-num"><div class="bs-name">Products</div><div class="bs-val">${escHTML(fmtNum(Number(m.products) || 0))}</div></div>
+        <div class="bc-num"><div class="bs-name">Sold</div><div class="bs-val${ordersMissing ? " missing" : ""}">${escHTML(sold)}</div></div>
+        <div class="bc-num"><div class="bs-name">Revenue</div><div class="bs-val${ordersMissing ? " missing" : ""}">${escHTML(rev)}</div></div>
+      </div>
+      <p class="bs-cap">${ordersMissing ? escHTML((ordersSrc && ordersSrc.reason) || "Shopify orders not connected") : "Paid, non-test orders in range"}</p>
+    </article>`;
+  }).join("");
 }
 
 // Sale status dropdown. More options may be added later.
@@ -3809,6 +3946,7 @@ function applyBootState(state) {
     if (state.milestone.completed) soft.completed = true;
   }
   metrics = applyMetricEdits(state.metrics);
+  businessDaily = state.businessDaily || businessDaily;
   initCollectionCommerce(state.collectionCommerce || {});
   products = resolveProducts(state);
   captureEditBases(state);
@@ -3873,7 +4011,7 @@ async function boot() {
       const nextMs = state.milestone || milestone;
       const msChanged = JSON.stringify(nextMs) !== JSON.stringify(milestone);
       const nextMetrics = applyMetricEdits(state.metrics);
-      const metricsChanged = JSON.stringify(nextMetrics) !== JSON.stringify(metrics);
+      const metricsChanged = JSON.stringify(nextMetrics) !== JSON.stringify(metrics) || JSON.stringify(state.businessDaily || null) !== JSON.stringify(businessDaily);
       const prevCommerce = JSON.stringify(collectionCommerce);
       const nextCommerceRaw = state.collectionCommerce || {};
       // merge without losing local seeds when empty
@@ -3893,6 +4031,7 @@ async function boot() {
           renderMilestone();
         }
         if (metricsChanged || forceRender) metrics = nextMetrics;
+        if (state.businessDaily) businessDaily = state.businessDaily;
         if (commerceChanged || forceRender) initCollectionCommerce(state.collectionCommerce || collectionCommerce);
         if (productsChanged || forceRender) products = nextProducts;
         if (state.updated) SEED.updated = new Date(state.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
