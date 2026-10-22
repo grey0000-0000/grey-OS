@@ -712,6 +712,32 @@
     padding: 8px 14px; font: 500 12px/1 var(--font); letter-spacing: 0.04em;
   }
   .btn-add:hover { border-color: var(--glass-highlight); }
+  /* Settings → Integrations (names and status only; secrets live in ~/.grey-vault on Utkarsh's Mac) */
+  .int-list { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+  .int-row { display: grid; grid-template-columns: minmax(140px, 1.1fr) 130px 170px minmax(180px, 2fr) auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .int-row.int-head { padding: 8px 0; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); }
+  .int-name { font-size: 14px; color: var(--ink); }
+  .int-name .int-note { display: block; font-size: 11px; color: var(--ink-muted); margin-top: 3px; line-height: 1.4; }
+  .int-synced { font-size: 12px; color: var(--ink-muted); }
+  .int-keys { display: flex; flex-wrap: wrap; gap: 4px; }
+  .int-keys code, .int-cmd code { font-family: var(--font-mono, var(--font)); font-size: 11px; color: var(--ink-muted); background: rgba(255,255,255,0.05); border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; word-break: break-all; }
+  .int-label { display: none; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); }
+  .int-panel { grid-column: 1 / -1; padding: 12px 14px; border: 1px solid var(--glass-border); border-radius: 10px; background: rgba(255,255,255,0.03); display: flex; flex-direction: column; gap: 10px; }
+  .int-cmd { display: flex; gap: 8px; align-items: center; }
+  .int-cmd code { flex: 1 1 auto; display: block; padding: 7px 9px; color: var(--ink); }
+  .int-warn { font-size: 12px; color: var(--ink-muted); margin: 0; }
+  .int-panel select { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 999px; color: var(--ink); font: 500 12px/1.2 var(--font); padding: 6px 10px; color-scheme: dark; }
+  .int-add { margin-top: 16px; }
+  @media (max-width: 720px) {
+    .int-row { grid-template-columns: 1fr auto; gap: 6px 10px; }
+    .int-row.int-head { display: none; }
+    .int-row > .int-name { grid-column: 1 / 2; }
+    .int-row > .int-status { grid-column: 2 / 3; grid-row: 1; justify-self: end; }
+    .int-row > .int-synced, .int-row > .int-keys { grid-column: 1 / -1; }
+    .int-row > .int-edit { grid-column: 1 / -1; justify-self: start; }
+    .int-label { display: block; width: 100%; }
+    .int-cmd { flex-direction: column; align-items: stretch; }
+  }
   .writeback-bar {
     display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
     margin-top: 10px;
@@ -1327,6 +1353,7 @@
       <button class="view-tab" data-view="products" id="view-products-tab">Product editor</button>
       <button class="view-tab" data-view="collections" id="view-coll">Collections (board)</button>
       <button class="view-tab" data-view="experiments" id="view-exp">Experiments (board)</button>
+      <button class="view-tab" data-view="settings" id="view-settings-tab">Settings</button>
     </div>
 
 
@@ -1547,6 +1574,28 @@
         </form>
         <p class="save-status" id="idea-status" role="status" hidden></p>
         <ol class="idea-list" id="idea-list"></ol>
+      </section>
+    </div>
+    <div id="view-settings" class="hidden">
+      <section class="panel glass">
+        <h3 style="margin:0">Settings</h3>
+        <div class="biz-filter" role="tablist" aria-label="Settings sections" style="margin-top:12px">
+          <button type="button" class="biz-range-btn active" role="tab" aria-selected="true" data-settings-tab="integrations">Integrations</button>
+        </div>
+        <div id="settings-integrations">
+          <p class="biz-note">Status and vault key <em>names</em> only. Secrets live only in <code>~/.grey-vault</code> on Utkarsh's Mac. Never paste them here.</p>
+          <div class="int-list" id="int-list"></div>
+          <p class="save-status" id="int-status" role="status" hidden></p>
+          <div class="int-add">
+            <div class="biz-section-label" style="margin-top:0">Add integration</div>
+            <form class="idea-form" id="int-form" autocomplete="off">
+              <input id="int-name" type="text" maxlength="60" placeholder="Integration name" aria-label="Integration name" required />
+              <input id="int-keys" type="text" maxlength="240" placeholder="Vault key names, comma-separated (e.g. instagram_token)" aria-label="Vault key names" required spellcheck="false" />
+              <button type="submit" class="btn-add">Add</button>
+            </form>
+            <p class="biz-note" style="margin:0">Key names only: lowercase letters, digits and underscores. Never a value.</p>
+          </div>
+        </div>
       </section>
     </div>
 
@@ -2727,7 +2776,8 @@ function setView(view) {
   if (expNext) expNext.classList.toggle("hidden", view !== "experiments");
   [["shop-products", "view-shop-products-tab", "view-shop-products"],
    ["shop-collections", "view-shop-collections-tab", "view-shop-collections"],
-   ["ideas", "view-ideas-tab", "view-ideas"]].forEach(([v, btnId, viewId]) => {
+   ["ideas", "view-ideas-tab", "view-ideas"],
+   ["settings", "view-settings-tab", "view-settings"]].forEach(([v, btnId, viewId]) => {
     document.getElementById(btnId)?.classList.toggle("active", view === v);
     document.getElementById(viewId)?.classList.toggle("hidden", view !== v);
   });
@@ -3206,6 +3256,7 @@ document.querySelectorAll(".view-tab").forEach(btn => {
     else if (btn.dataset.view === "shop-products") renderShopProducts();
     else if (btn.dataset.view === "shop-collections") renderShopCollections();
     else if (btn.dataset.view === "ideas") renderIdeas();
+    else if (btn.dataset.view === "settings") renderIntegrations();
     else if (btn.dataset.view === "identity") { /* static */ }
     else renderExperiments();
   });
@@ -3406,6 +3457,7 @@ function rerenderNewView(v) {
   if (v === "shop-products") renderShopProducts();
   else if (v === "shop-collections") renderShopCollections();
   else if (v === "ideas") renderIdeas();
+  else if (v === "settings") renderIntegrations();
 }
 function boardCollName(id) {
   const c = (SEED.collections || []).find(x => x.id === id);
@@ -3577,6 +3629,162 @@ function renderIdeas() {
         setIdeaStatus(sha ? "Committed " + sha.slice(0, 7) + " to main." : "Committed to main.");
         renderIdeas();
       } catch (err) { console.error(err); setIdeaStatus("Saved in this browser; GitHub commit failed: " + (err && err.message ? err.message : err)); } });
+    });
+  }
+}
+
+/* ---------- Settings → Integrations ----------
+   Public site: this view shows status and vault key NAMES only. It never asks for,
+   stores or sends a secret value. Credentials live only in ~/.grey-vault on Utkarsh's Mac. */
+let integrations = [];
+const INTEGRATIONS_LOCAL_KEY = "grey-os-integrations-local";
+const INTEGRATION_STATUSES = ["Connected", "Not connected", "Paused"];
+const VAULT_KEY_RE = /^[a-z][a-z0-9_]{1,47}$/;
+const SECRET_LIKE_RE = /(shpat_|shpss_|shpca_|xkeysib-|rzp_(live|test)_|ghp_|gho_|github_pat_|sk_live|sk_test|AKIA|AIza|ya29\.|-----BEGIN|"private_key"|eyJ[A-Za-z0-9_-]{10,})/;
+let intOpenId = "";
+
+function readLocalIntegrations() {
+  try {
+    const o = JSON.parse(localStorage.getItem(INTEGRATIONS_LOCAL_KEY) || "{}");
+    return { added: Array.isArray(o.added) ? o.added : [], status: (o.status && typeof o.status === "object") ? o.status : {} };
+  } catch (_) { return { added: [], status: {} }; }
+}
+function writeLocalIntegrations(o) {
+  try { localStorage.setItem(INTEGRATIONS_LOCAL_KEY, JSON.stringify(o)); } catch (_) {}
+}
+function setIntStatus(text) {
+  const el = document.getElementById("int-status");
+  if (!el) return;
+  el.textContent = text || ""; el.hidden = !text;
+}
+function fmtIstShort(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (isNaN(d)) return "—";
+  return d.toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true }) + " IST";
+}
+function integrationLastSynced(it) {
+  // Live sources first: Shopify = snapshot time; Brevo = when Business-tab newsletter numbers were written.
+  if (it.id === "shopify" && shopifySnapshot && shopifySnapshot.fetchedAt) return shopifySnapshot.fetchedAt;
+  if (it.id === "brevo" && businessDaily && businessDaily.asOf && businessDaily.sources && businessDaily.sources.newsletter && businessDaily.sources.newsletter.status === "live") return businessDaily.asOf;
+  return it.lastSynced || "";
+}
+function vaultCommand(key) {
+  if (key === "ga4_service_account_json") return "cp /path/to/key.json ~/.grey-vault/files/ga4_service_account.json";
+  return "printf '%s' 'PASTE_VALUE' | grey-vault set " + key;
+}
+function intStatusClass(st) { return st === "Connected" ? "available" : (st === "Paused" ? "muted" : ""); }
+function allIntegrations() {
+  const local = readLocalIntegrations();
+  const onMain = new Set(integrations.map(i => i.id));
+  const rows = integrations.map(i => ({ ...i, _local: false }))
+    .concat(local.added.filter(i => !onMain.has(i.id)).map(i => ({ ...i, _local: true })));
+  return rows.map(i => local.status[i.id] && local.status[i.id] !== i.status ? { ...i, status: local.status[i.id], _localStatus: true } : i);
+}
+async function commitIntegrations(mutate, message) {
+  const token = readWritebackToken();
+  if (!token) return null;
+  let file = await readGithubState(token);
+  const apply = st => { st.integrations = Array.isArray(st.integrations) ? st.integrations : []; mutate(st.integrations); st.updated = istStamp(); st.updatedBy = "utkarsh-dashboard"; return st; };
+  let saved = await writeGithubState(token, file.sha, apply(file.state), message);
+  if (isShaConflict(saved.res, saved.body)) {
+    file = await readGithubState(token);
+    saved = await writeGithubState(token, file.sha, apply(file.state), message);
+  }
+  if (!saved.res.ok) throw new Error(saved.body.message || ("GitHub commit failed (" + saved.res.status + ")"));
+  integrations = file.state.integrations.slice();
+  return saved.body.commit && saved.body.commit.sha;
+}
+function saveIntegrationStatus(id, status) {
+  const local = readLocalIntegrations();
+  local.status[id] = status;
+  writeLocalIntegrations(local);
+  renderIntegrations();
+  if (!readWritebackToken()) { setIntStatus("Status saved in this browser only — add a GitHub token under Product editor → Settings to commit it to main."); return; }
+  setIntStatus("Committing to main…");
+  queueGithubWrite(async () => { try {
+    const row = allIntegrations().find(x => x.id === id);
+    const sha = await commitIntegrations(list => {
+      const hit = list.find(x => x.id === id);
+      if (hit) hit.status = status;
+      else if (row) list.push({ id: row.id, name: row.name, status: status, lastSynced: row.lastSynced || null, vaultKeys: (row.vaultKeys || []).slice(), note: row.note || "" });
+    }, "Settings: " + id + " status → " + status);
+    const l = readLocalIntegrations(); delete l.status[id]; l.added = l.added.filter(x => x.id !== id || !integrations.find(y => y.id === id)); writeLocalIntegrations(l);
+    setIntStatus(sha ? "Committed " + sha.slice(0, 7) + " to main." : "Committed to main.");
+    renderIntegrations();
+  } catch (err) { console.error(err); setIntStatus("Saved in this browser; GitHub commit failed: " + (err && err.message ? err.message : err)); } });
+}
+function copyText(text, btn) {
+  const done = () => { if (btn) { const t = btn.textContent; btn.textContent = "Copied"; setTimeout(() => { btn.textContent = t; }, 1200); } };
+  if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(text).then(done, () => {}); return; }
+  const ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+  document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); done(); } catch (_) {} ta.remove();
+}
+function renderIntegrations() {
+  const list = document.getElementById("int-list");
+  if (!list) return;
+  document.getElementById("updated").textContent = SEED.updated;
+  const rows = allIntegrations();
+  const head = `<div class="int-row int-head" aria-hidden="true"><span>Integration</span><span>Status</span><span>Last synced</span><span>Vault keys (names only)</span><span></span></div>`;
+  list.innerHTML = head + (rows.length ? rows.map(it => {
+    const keys = (it.vaultKeys || []).map(k => `<code>${escHTML(k)}</code>`).join("") || `<span class="int-synced">—</span>`;
+    const open = intOpenId === it.id;
+    const panel = !open ? "" : `<div class="int-panel" id="int-panel-${escHTML(it.id)}">
+        <label class="int-synced">Status
+          <select data-int-status="${escHTML(it.id)}" aria-label="${escHTML(it.name)} status">${INTEGRATION_STATUSES.map(o => `<option${o === it.status ? " selected" : ""}>${escHTML(o)}</option>`).join("")}</select>
+        </label>
+        <p class="int-warn">To update a credential, run this on Utkarsh's Mac (Terminal), replacing the placeholder there, not here:</p>
+        ${(it.vaultKeys || []).map(k => { const c = vaultCommand(k); return `<div class="int-cmd"><code>${escHTML(c)}</code><button type="button" class="btn-ghost" data-copy="${escHTML(c)}">Copy</button></div>`; }).join("")}
+        <p class="int-warn">Secrets live only in <code>~/.grey-vault</code> on Utkarsh's Mac. Never paste them here.</p>
+      </div>`;
+    return `<div class="int-row" data-int="${escHTML(it.id)}">
+      <div class="int-name">${escHTML(it.name)}${it.note ? `<span class="int-note">${escHTML(it.note)}</span>` : ""}${it._local ? `<span class="int-note">This browser only</span>` : ""}</div>
+      <div class="int-status"><span class="status-pill ${intStatusClass(it.status)}">${escHTML(it.status || "Not connected")}</span></div>
+      <div class="int-synced"><span class="int-label">Last synced</span>${escHTML(fmtIstShort(integrationLastSynced(it)))}</div>
+      <div class="int-keys"><span class="int-label">Vault keys</span>${keys}</div>
+      <div class="int-edit"><button type="button" class="btn-ghost" data-int-edit="${escHTML(it.id)}" aria-expanded="${open}">${open ? "Close" : "Edit"}</button></div>
+      ${panel}
+    </div>`;
+  }).join("") : `<p class="idea-empty" style="padding:12px 0">No integrations recorded.</p>`);
+  if (!list.dataset.bound) {
+    list.dataset.bound = "1";
+    list.addEventListener("click", e => {
+      const ed = e.target.closest("[data-int-edit]");
+      if (ed) { intOpenId = intOpenId === ed.dataset.intEdit ? "" : ed.dataset.intEdit; renderIntegrations(); return; }
+      const cp = e.target.closest("[data-copy]");
+      if (cp) copyText(cp.dataset.copy, cp);
+    });
+    list.addEventListener("change", e => {
+      const sel = e.target.closest("[data-int-status]");
+      if (sel && INTEGRATION_STATUSES.includes(sel.value)) saveIntegrationStatus(sel.dataset.intStatus, sel.value);
+    });
+  }
+  const form = document.getElementById("int-form");
+  if (form && !form.dataset.bound) {
+    form.dataset.bound = "1";
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const nEl = document.getElementById("int-name"), kEl = document.getElementById("int-keys");
+      const name = (nEl.value || "").trim();
+      const keys = (kEl.value || "").split(",").map(x => x.trim()).filter(Boolean);
+      if (!name) return;
+      if (SECRET_LIKE_RE.test(name) || SECRET_LIKE_RE.test(kEl.value || "")) { nEl.value = ""; kEl.value = ""; setIntStatus("That looks like a secret value. Cleared, nothing saved. Add key names only."); return; }
+      const bad = keys.filter(k => !VAULT_KEY_RE.test(k));
+      if (!keys.length || bad.length) { setIntStatus("Vault key names must be lowercase snake_case names (e.g. instagram_token), not values."); return; }
+      let id = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || ("int-" + Date.now().toString(36));
+      if (allIntegrations().find(x => x.id === id)) id += "-" + Date.now().toString(36);
+      const row = { id: id, name: name.slice(0, 60), status: "Not connected", lastSynced: null, vaultKeys: keys, note: "" };
+      const local = readLocalIntegrations(); local.added.push(row); writeLocalIntegrations(local);
+      nEl.value = ""; kEl.value = "";
+      renderIntegrations();
+      if (!readWritebackToken()) { setIntStatus("Saved in this browser only — add a GitHub token under Product editor → Settings to commit it to main."); return; }
+      setIntStatus("Committing to main…");
+      queueGithubWrite(async () => { try {
+        const sha = await commitIntegrations(list => { if (!list.find(x => x.id === row.id)) list.push(row); }, "Settings: add integration “" + row.name + "”");
+        const l = readLocalIntegrations(); l.added = l.added.filter(x => x.id !== row.id); writeLocalIntegrations(l);
+        setIntStatus(sha ? "Committed " + sha.slice(0, 7) + " to main." : "Committed to main.");
+        renderIntegrations();
+      } catch (err) { console.error(err); setIntStatus("Saved in this browser; GitHub commit failed: " + (err && err.message ? err.message : err)); } });
     });
   }
 }
@@ -4198,6 +4406,7 @@ function applyBootState(state) {
   businessDaily = state.businessDaily || businessDaily;
   shopifySnapshot = state.shopifySnapshot || shopifySnapshot;
   ideas = Array.isArray(state.ideas) ? state.ideas.slice() : ideas;
+  integrations = Array.isArray(state.integrations) ? state.integrations.slice() : integrations;
   initCollectionCommerce(state.collectionCommerce || {});
   products = resolveProducts(state);
   captureEditBases(state);
@@ -4232,7 +4441,7 @@ async function boot() {
   milestoneIndex = nearestMilestoneIndex();
   renderMilestone();
   const viewNow = currentView || "business";
-  if (viewNow === "shop-products" || viewNow === "shop-collections" || viewNow === "ideas") {
+  if (viewNow === "shop-products" || viewNow === "shop-collections" || viewNow === "ideas" || viewNow === "settings") {
     setView(viewNow);
     rerenderNewView(viewNow);
   } else if (viewNow === "products") {
@@ -4267,6 +4476,7 @@ async function boot() {
       const nextMetrics = applyMetricEdits(state.metrics);
       const metricsChanged = JSON.stringify(nextMetrics) !== JSON.stringify(metrics) || JSON.stringify(state.businessDaily || null) !== JSON.stringify(businessDaily)
         || (Array.isArray(state.ideas) && JSON.stringify(state.ideas) !== JSON.stringify(ideas))
+        || (Array.isArray(state.integrations) && JSON.stringify(state.integrations) !== JSON.stringify(integrations))
         || (state.shopifySnapshot && JSON.stringify(state.shopifySnapshot) !== JSON.stringify(shopifySnapshot));
       const prevCommerce = JSON.stringify(collectionCommerce);
       const nextCommerceRaw = state.collectionCommerce || {};
@@ -4290,6 +4500,7 @@ async function boot() {
         if (state.businessDaily) businessDaily = state.businessDaily;
         if (state.shopifySnapshot) shopifySnapshot = state.shopifySnapshot;
         if (Array.isArray(state.ideas)) ideas = state.ideas.slice();
+        if (Array.isArray(state.integrations)) integrations = state.integrations.slice();
         if (commerceChanged || forceRender) initCollectionCommerce(state.collectionCommerce || collectionCommerce);
         if (productsChanged || forceRender) products = nextProducts;
         if (state.updated) SEED.updated = new Date(state.updated).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST";
@@ -4297,7 +4508,7 @@ async function boot() {
         else if (currentView === "products") renderProducts();
         else if (currentView === "business") renderBusiness();
         else if (currentView === "collections") renderCollectionCards();
-        else if (currentView === "shop-products" || currentView === "shop-collections" || currentView === "ideas") rerenderNewView(currentView);
+        else if (currentView === "shop-products" || currentView === "shop-collections" || currentView === "ideas" || currentView === "settings") rerenderNewView(currentView);
         else if (currentView === "identity") { /* static */ }
         else renderExperiments();
       }

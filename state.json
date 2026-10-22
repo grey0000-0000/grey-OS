@@ -1267,5 +1267,52 @@
       }
     ]
   },
-  "ideas": []
+  "ideas": [],
+  "integrations": [
+    {
+      "id": "shopify",
+      "name": "Shopify",
+      "status": "Connected",
+      "lastSynced": "2026-10-22T20:10:00+05:30",
+      "vaultKeys": [
+        "shopify_client_id",
+        "shopify_client_secret",
+        "shopify_token"
+      ],
+      "note": ""
+    },
+    {
+      "id": "brevo",
+      "name": "Brevo",
+      "status": "Connected",
+      "lastSynced": "2026-10-22T20:05:00+05:30",
+      "vaultKeys": [
+        "brevo_api_key"
+      ],
+      "note": ""
+    },
+    {
+      "id": "razorpay",
+      "name": "Razorpay",
+      "status": "Not connected",
+      "lastSynced": null,
+      "vaultKeys": [
+        "razorpay_key_id",
+        "razorpay_key_secret"
+      ],
+      "note": ""
+    },
+    {
+      "id": "ga4",
+      "name": "GA4 / Google Analytics",
+      "status": "Paused",
+      "lastSynced": null,
+      "vaultKeys": [
+        "ga4_service_account_json",
+        "ga4_property_id",
+        "ga4_measurement_id"
+      ],
+      "note": "Paused 22 Oct 2026, stepping back from Google; a lighter analytics source will be chosen later"
+    }
+  ]
 }
